@@ -5,27 +5,15 @@ import ProsCons from "../../components/ProsCons.astro";
 import AffiliateButton from "../../components/AffiliateButton.astro";
 import RatingStars from "../../components/RatingStars.astro";
 import EmailCapture from "../../components/EmailCapture.astro";
-import { getToolBySlug, getAverageRating, getAffiliateLink, getPricingDisplay } from "../../utils/tools";
+import { getAllComparisonPairs, getToolBySlug, getAverageRating, getAffiliateLink, getPricingDisplay } from "../../utils/tools";
 import type { Tool } from "../../utils/tools";
 import { getComparisonMeta } from "../../utils/seo";
 
 export function getStaticPaths() {
-  const pairs = [
-    ['digitail', 'ezyvet'],
-    ['digitail', 'shepherd'],
-    ['ezyvet', 'vetspire'],
-    ['daysmart-vet', 'hippo-manager'],
-    ['shepherd', 'vetbadger'],
-  ];
-
-  return pairs.map(([slugA, slugB]) => {
-    const toolA = getToolBySlug(slugA)!;
-    const toolB = getToolBySlug(slugB)!;
-    return {
-      params: { slugs: `${slugA}-vs-${slugB}` },
-      props: { toolA, toolB },
-    };
-  });
+  return getAllComparisonPairs().map(([toolA, toolB]) => ({
+    params: { slugs: `${toolA.slug}-vs-${toolB.slug}` },
+    props: { toolA, toolB },
+  }));
 }
 
 interface Props {

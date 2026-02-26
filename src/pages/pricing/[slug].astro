@@ -1,0 +1,487 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import AffiliateButton from "../../components/AffiliateButton.astro";
+import EmailCapture from "../../components/EmailCapture.astro";
+import RatingStars from "../../components/RatingStars.astro";
+import {
+  getAllTools,
+  getToolBySlug,
+  getAverageRating,
+  getPricingDisplay,
+  getAffiliateLink,
+} from "../../utils/tools";
+import type { Tool } from "../../utils/tools";
+import { getPricingMeta } from "../../utils/seo";
+
+export function getStaticPaths() {
+  return getAllTools().map((tool) => ({
+    params: { slug: tool.slug },
+    props: { tool },
+  }));
+}
+
+interface Props {
+  tool: Tool;
+}
+
+const { slug } = Astro.params;
+const { tool } = Astro.props;
+const meta = getPricingMeta(tool);
+const avgRating = getAverageRating(tool);
+const affiliateLink = getAffiliateLink(tool, `pricing-${tool.slug}`, "hero");
+const affiliateLinkBottom = getAffiliateLink(tool, `pricing-${tool.slug}`, "bottom");
+
+// Compute pricing tier display
+const pricingTierLabel = (() => {
+  if (tool.free_plan) return "Free";
+  if (tool.starting_price_monthly === null) return "Custom Quote";
+  if (tool.starting_price_monthly <= 100) return "Budget";
+  if (tool.starting_price_monthly <= 200) return "Mid-Range";
+  return "Premium";
+})();
+
+const pricingTierColor = (() => {
+  if (tool.free_plan) return "text-accent-700 bg-accent-50";
+  if (tool.starting_price_monthly === null) return "text-navy-700 bg-navy-50";
+  if (tool.starting_price_monthly <= 100) return "text-green-700 bg-green-50";
+  if (tool.starting_price_monthly <= 200) return "text-amber-700 bg-amber-50";
+  return "text-red-700 bg-red-50";
+})();
+
+// What's included analysis — derived from key_features
+const includedFeatures = tool.key_features;
+
+// Value verdict
+const valueVerdict = (() => {
+  const price = tool.starting_price_monthly;
+  const rating = avgRating || 0;
+  if (tool.free_plan) {
+    return `${tool.name} offers a free plan, which makes it the lowest-risk entry point in the veterinary PIMS market. The free tier covers essential features for solo and mobile veterinarians. Paid tiers unlock additional capabilities.`;
+  }
+  if (price === null) {
+    return `${tool.name} uses custom pricing, meaning the cost scales with your practice size and configuration. While this prevents transparent upfront comparisons, it ensures you pay for what you use. Request a demo and quote directly from the vendor.`;
+  }
+  if (price <= 100 && rating >= 4.5) {
+    return `${tool.name} delivers outstanding value — a high user rating (${rating}/5.0) at an entry-level price point. This is rare in the veterinary PIMS market and makes it one of our top value picks.`;
+  }
+  if (price <= 100) {
+    return `${tool.name} is affordably priced at $${price}/mo. The low cost makes it accessible for small practices and solo vets. Evaluate whether the feature set meets your needs before committing.`;
+  }
+  if (price <= 200 && rating >= 4.5) {
+    return `${tool.name} is fairly priced for the mid-range. With a strong user rating of ${rating}/5.0, the feature set justifies the investment for practices that use the platform fully. We recommend taking advantage of the free trial.`;
+  }
+  if (price <= 200) {
+    return `${tool.name} is mid-range priced. The value depends heavily on how many of its features your practice will actually use. Practices that use only scheduling and basic records may find better value in cheaper alternatives.`;
+  }
+  if (price > 200 && rating >= 4.5) {
+    return `${tool.name} is priced at the premium tier, but the high user rating (${rating}/5.0) suggests the investment pays off for the right practice. Best suited for larger or specialty practices that need the depth of features on offer.`;
+  }
+  return `${tool.name} is a premium-priced platform at $${price}/mo. Before committing, verify that you will realistically use the advanced features that justify the higher cost. Smaller or simpler practices may find more value in mid-range alternatives.`;
+})();
+
+// Hidden costs warning
+const hiddenCostsNote = (() => {
+  const model = tool.pricing_model.toLowerCase();
+  if (model.includes("per veterinarian")) {
+    return `${tool.name} charges per veterinarian per month. A practice with 3 veterinarians would pay approximately $${(tool.starting_price_monthly || 0) * 3}/mo. Budget accordingly for each provider on your team.`;
+  }
+  if (model.includes("per location")) {
+    return `${tool.name} charges per location per month. Multi-location practices will multiply the starting price by the number of active clinic locations.`;
+  }
+  if (model.includes("custom")) {
+    return `${tool.name} uses custom pricing. Be prepared to negotiate — final pricing often depends on practice size, contract length (12 vs 24 vs 36 months), and which modules you select.`;
+  }
+  return `${tool.name} uses a ${model} pricing structure. Ask the vendor about any setup fees, training costs, data migration fees, and whether support is included or billed separately.`;
+})();
+
+// Comparison with 3 alternatives on price
+const allTools = getAllTools();
+const cheaperOptions = allTools
+  .filter((t) => t.slug !== tool.slug && t.starting_price_monthly !== null && tool.starting_price_monthly !== null && t.starting_price_monthly < (tool.starting_price_monthly || Infinity))
+  .sort((a, b) => (a.starting_price_monthly || 0) - (b.starting_price_monthly || 0))
+  .slice(0, 3);
+
+const freeTrialText = tool.free_trial
+  ? `${tool.name} offers a free trial. We recommend taking full advantage of the trial period to test the features your practice uses daily before committing to a paid plan.`
+  : `${tool.name} does not currently offer a free trial. You can request a personalized demo from their sales team to see the platform before purchasing.`;
+
+// FAQ schema
+const faqQ1Answer = tool.starting_price_monthly !== null
+  ? `${tool.name} starts at $${tool.starting_price_monthly} per month. The pricing model is ${tool.pricing_model.toLowerCase()}. Your actual cost may differ based on practice size, number of providers, and any add-on modules. Contact ${tool.name} for a personalized quote.`
+  : `${tool.name} uses custom pricing. The cost depends on your practice size, number of users, and configuration. Contact their sales team directly for an accurate quote.`;
+
+const faqQ2Answer = tool.free_trial
+  ? `Yes. ${tool.name} offers a free trial so you can test the platform before purchasing. Use the trial to evaluate scheduling, medical records, and any integrations your practice relies on.`
+  : `No. ${tool.name} does not currently offer a free trial. You can request a demo from their sales team. Consider alternatives like Shepherd, Hippo Manager, or Digitail if a free trial is important to your evaluation process.`;
+
+const faqQ3Answer = `Common additional costs to ask about include: implementation/setup fees (often $500-$2,000), data migration fees, staff training fees, and whether customer support is included or billed separately. Some vendors also charge extra for add-on modules like telemedicine, inventory management, or client communication tools.`;
+
+const faqQ4Answer = cheaperOptions.length > 0
+  ? `Yes. ${cheaperOptions.map(t => `${t.name} ($${t.starting_price_monthly}/mo)`).join(", ")} all start at a lower price than ${tool.name}. However, cheaper does not always mean better value — evaluate the total feature set and support quality.`
+  : `${tool.name} is already among the more affordable options in the veterinary PIMS market. The only free option available is AcuroVet, which offers a basic free plan for solo and mobile practitioners.`;
+
+const faqSchemaJson = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: `How much does ${tool.name} cost?`,
+      acceptedAnswer: { "@type": "Answer", text: faqQ1Answer },
+    },
+    {
+      "@type": "Question",
+      name: `Does ${tool.name} offer a free trial?`,
+      acceptedAnswer: { "@type": "Answer", text: faqQ2Answer },
+    },
+    {
+      "@type": "Question",
+      name: `Are there hidden costs with ${tool.name}?`,
+      acceptedAnswer: { "@type": "Answer", text: faqQ3Answer },
+    },
+    {
+      "@type": "Question",
+      name: `Is there a cheaper alternative to ${tool.name}?`,
+      acceptedAnswer: { "@type": "Answer", text: faqQ4Answer },
+    },
+  ],
+});
+---
+
+<BaseLayout
+  title={meta.title}
+  description={meta.description}
+  canonical={meta.canonical}
+  ogTitle={meta.ogTitle}
+  ogDescription={meta.ogDescription}
+  schema={meta.schema}
+>
+  <!-- Affiliate Disclosure -->
+  <div class="mb-8 rounded-lg border border-navy-100 bg-navy-50/50 px-4 py-3 text-xs text-navy-500">
+    <strong>Disclosure:</strong> VetSoftwareHub is reader-supported. We may earn a commission when you click affiliate links. Our pricing research is independent.
+  </div>
+
+  <!-- Breadcrumb + H1 -->
+  <header class="mb-10">
+    <div class="mb-3 flex flex-wrap gap-2 text-xs">
+      <a href="/" class="text-navy-400 hover:text-accent-600 transition-colors">Home</a>
+      <span class="text-navy-300">/</span>
+      <a href={`/reviews/${tool.slug}`} class="text-navy-400 hover:text-accent-600 transition-colors">{tool.name} Review</a>
+      <span class="text-navy-300">/</span>
+      <span class="text-navy-600">{tool.name} Pricing</span>
+    </div>
+    <h1 class="font-heading text-3xl font-bold text-navy-900 sm:text-4xl">
+      {tool.name} Pricing 2026: Full Cost Breakdown
+    </h1>
+    <p class="mt-4 text-lg leading-relaxed text-navy-600">
+      How much does {tool.name} actually cost for a veterinary practice? We break down every pricing detail,
+      including starting prices, pricing model, free trial availability, and hidden costs to watch for.
+    </p>
+    <p class="mt-2 text-xs text-navy-400">Last updated: February 2026</p>
+  </header>
+
+  <!-- Pricing at a Glance Hero Card -->
+  <section class="mb-12">
+    <div class="rounded-xl border-2 border-navy-100 bg-white p-6 shadow-md sm:p-8">
+      <div class="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h2 class="font-heading text-xl font-bold text-navy-900">{tool.name} Pricing at a Glance</h2>
+          <div class="mt-4 space-y-3">
+            <div class="flex items-center gap-3">
+              <span class="w-28 shrink-0 text-sm font-medium text-navy-500">Starting price:</span>
+              <span class="font-heading text-2xl font-bold text-navy-900">
+                {tool.starting_price_monthly !== null ? `$${tool.starting_price_monthly}/mo` : "Custom quote"}
+              </span>
+              <span class={`inline-block rounded-full px-3 py-1 text-xs font-bold ${pricingTierColor}`}>
+                {pricingTierLabel}
+              </span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="w-28 shrink-0 text-sm font-medium text-navy-500">Model:</span>
+              <span class="text-sm text-navy-800">{tool.pricing_model}</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="w-28 shrink-0 text-sm font-medium text-navy-500">Free trial:</span>
+              <span class:list={["text-sm font-semibold", tool.free_trial ? "text-accent-600" : "text-navy-400"]}>
+                {tool.free_trial ? "Yes — available" : "No"}
+              </span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="w-28 shrink-0 text-sm font-medium text-navy-500">Free plan:</span>
+              <span class:list={["text-sm font-semibold", tool.free_plan ? "text-accent-600" : "text-navy-400"]}>
+                {tool.free_plan ? "Yes — available" : "No"}
+              </span>
+            </div>
+            {avgRating && (
+              <div class="flex items-center gap-3">
+                <span class="w-28 shrink-0 text-sm font-medium text-navy-500">User rating:</span>
+                <div class="flex items-center gap-2">
+                  <RatingStars rating={avgRating} />
+                  <span class="text-sm text-navy-600">{avgRating}/5.0 ({tool.review_count_approx}+ reviews)</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+        <div class="flex flex-col items-start gap-3 sm:items-end">
+          <AffiliateButton
+            href={affiliateLink}
+            label={tool.free_trial ? `Try ${tool.name} Free` : `Get ${tool.name} Pricing`}
+            tool={tool.name}
+            size="lg"
+          />
+          {tool.free_trial && (
+            <span class="text-xs text-accent-600 font-medium">Free trial — no credit card required</span>
+          )}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- What's Included -->
+  <section class="mb-12">
+    <h2 class="font-heading text-2xl font-bold text-navy-900 sm:text-3xl">What's Included in {tool.name}?</h2>
+    <p class="mt-2 mb-6 text-base text-navy-600">
+      Here are the features included in {tool.name}'s standard plan. Always confirm current inclusions with the vendor, as pricing and bundling can change.
+    </p>
+    <div class="grid gap-3 sm:grid-cols-2">
+      {includedFeatures.map((feature) => (
+        <div class="flex items-center gap-3 rounded-lg border border-navy-100 bg-white px-4 py-3">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 shrink-0 text-accent-500" aria-hidden="true">
+            <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+          </svg>
+          <span class="text-sm font-medium text-navy-700">{feature}</span>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- Pricing Model Explained -->
+  <section class="mb-12">
+    <h2 class="font-heading text-2xl font-bold text-navy-900 sm:text-3xl">How {tool.name} Pricing Works</h2>
+    <div class="mt-6 space-y-6">
+      <div class="rounded-lg border border-navy-100 bg-white p-6">
+        <h3 class="font-heading text-lg font-bold text-navy-800">Pricing Model: {tool.pricing_model}</h3>
+        <p class="mt-3 text-sm leading-relaxed text-navy-600">{hiddenCostsNote}</p>
+      </div>
+
+      <div class="rounded-lg border border-amber-100 bg-amber-50/30 p-6">
+        <h3 class="font-heading text-lg font-bold text-amber-900">Watch Out For: Hidden Costs</h3>
+        <p class="mt-3 text-sm leading-relaxed text-amber-800">
+          Beyond the advertised starting price, veterinary software often has additional costs. Before signing, ask {tool.name} specifically about:
+        </p>
+        <ul class="mt-3 space-y-2 text-sm text-amber-800">
+          <li class="flex items-start gap-2">
+            <span class="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500"></span>
+            <span>One-time implementation or setup fees</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500"></span>
+            <span>Data migration fees (moving records from your old PIMS)</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500"></span>
+            <span>Staff training or onboarding fees</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500"></span>
+            <span>Add-on modules (telemedicine, inventory, client app) not included in base pricing</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500"></span>
+            <span>Annual vs monthly billing discounts (annual often 10-20% cheaper)</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Free Trial Section -->
+  <section class="mb-12">
+    <h2 class="font-heading text-2xl font-bold text-navy-900 sm:text-3xl">
+      Does {tool.name} Offer a Free Trial?
+    </h2>
+    <div class="mt-4 rounded-lg border border-navy-100 bg-white p-6">
+      <div class="flex items-center gap-3">
+        {tool.free_trial ? (
+          <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-accent-100 text-accent-600">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
+              <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+            </svg>
+          </span>
+        ) : (
+          <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-red-100 text-red-500">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
+              <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+            </svg>
+          </span>
+        )}
+        <p class="text-base font-semibold text-navy-800">
+          {tool.free_trial ? `Yes, ${tool.name} offers a free trial.` : `No, ${tool.name} does not currently offer a free trial.`}
+        </p>
+      </div>
+      <p class="mt-3 text-sm leading-relaxed text-navy-600">{freeTrialText}</p>
+    </div>
+  </section>
+
+  <!-- Value Assessment -->
+  <section class="mb-12">
+    <h2 class="font-heading text-2xl font-bold text-navy-900 sm:text-3xl">Is {tool.name} Worth the Price?</h2>
+    <div class="mt-4 rounded-xl border border-accent-100 bg-accent-50/20 p-6 sm:p-8">
+      <p class="text-base leading-relaxed text-navy-700">{valueVerdict}</p>
+    </div>
+  </section>
+
+  <!-- Cheaper Alternatives (if any) -->
+  {cheaperOptions.length > 0 && (
+    <section class="mb-12">
+      <h2 class="font-heading text-2xl font-bold text-navy-900 sm:text-3xl">
+        Cheaper Alternatives to {tool.name}
+      </h2>
+      <p class="mt-2 mb-6 text-base text-navy-600">
+        If price is a primary concern, these tools start at a lower monthly rate:
+      </p>
+      <div class="space-y-3">
+        {cheaperOptions.map((alt) => (
+          <div class="flex items-center justify-between rounded-lg border border-navy-100 bg-white p-4">
+            <div>
+              <a href={`/reviews/${alt.slug}`} class="font-semibold text-accent-600 hover:text-accent-700 transition-colors">
+                {alt.name}
+              </a>
+              <p class="text-xs text-navy-500 mt-0.5">{alt.best_for[0]}</p>
+            </div>
+            <div class="text-right">
+              <p class="font-bold text-navy-900">${alt.starting_price_monthly}/mo</p>
+              <p class="text-xs text-accent-600 font-medium">
+                ${(tool.starting_price_monthly || 0) - (alt.starting_price_monthly || 0)}/mo cheaper
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div class="mt-4">
+        <a href={`/alternatives/${tool.slug}`} class="text-sm font-medium text-accent-600 hover:text-accent-700 transition-colors">
+          See all {tool.name} alternatives →
+        </a>
+      </div>
+    </section>
+  )}
+
+  <!-- Email Capture -->
+  <div class="mb-12">
+    <EmailCapture
+      heading="Get Our Free Vet Software Buyer's Guide"
+      subheading={`Includes full pricing breakdowns for ${tool.name} and 19 other veterinary PIMS. Join 1,000+ practice managers.`}
+    />
+  </div>
+
+  <!-- FAQ -->
+  <section class="mb-12">
+    <h2 class="font-heading text-2xl font-bold text-navy-900">{tool.name} Pricing FAQ</h2>
+    <div class="mt-6 space-y-3">
+      <details class="group rounded-lg border border-navy-100 bg-white">
+        <summary class="flex cursor-pointer items-center justify-between p-5 font-heading font-semibold text-navy-800 transition-colors hover:text-accent-600">
+          How much does {tool.name} cost?
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 shrink-0 text-navy-400 transition-transform group-open:rotate-180" aria-hidden="true">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+          </svg>
+        </summary>
+        <div class="border-t border-navy-100 px-5 py-4 text-sm leading-relaxed text-navy-600">
+          {faqQ1Answer}
+        </div>
+      </details>
+
+      <details class="group rounded-lg border border-navy-100 bg-white">
+        <summary class="flex cursor-pointer items-center justify-between p-5 font-heading font-semibold text-navy-800 transition-colors hover:text-accent-600">
+          Does {tool.name} offer a free trial?
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 shrink-0 text-navy-400 transition-transform group-open:rotate-180" aria-hidden="true">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+          </svg>
+        </summary>
+        <div class="border-t border-navy-100 px-5 py-4 text-sm leading-relaxed text-navy-600">
+          {faqQ2Answer}
+        </div>
+      </details>
+
+      <details class="group rounded-lg border border-navy-100 bg-white">
+        <summary class="flex cursor-pointer items-center justify-between p-5 font-heading font-semibold text-navy-800 transition-colors hover:text-accent-600">
+          Are there hidden costs with {tool.name}?
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 shrink-0 text-navy-400 transition-transform group-open:rotate-180" aria-hidden="true">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+          </svg>
+        </summary>
+        <div class="border-t border-navy-100 px-5 py-4 text-sm leading-relaxed text-navy-600">
+          {faqQ3Answer}
+        </div>
+      </details>
+
+      <details class="group rounded-lg border border-navy-100 bg-white">
+        <summary class="flex cursor-pointer items-center justify-between p-5 font-heading font-semibold text-navy-800 transition-colors hover:text-accent-600">
+          Is there a cheaper alternative to {tool.name}?
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 shrink-0 text-navy-400 transition-transform group-open:rotate-180" aria-hidden="true">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+          </svg>
+        </summary>
+        <div class="border-t border-navy-100 px-5 py-4 text-sm leading-relaxed text-navy-600">
+          {faqQ4Answer}
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="mb-12 rounded-xl border-2 border-accent-200 bg-accent-50/20 p-6 sm:p-8 text-center">
+    <h2 class="font-heading text-xl font-bold text-navy-900">
+      Ready to Evaluate {tool.name}?
+    </h2>
+    <p class="mt-3 text-sm text-navy-600">
+      {tool.free_trial
+        ? `Start your free trial today to test ${tool.name} with your own practice data before committing.`
+        : `Contact the ${tool.name} team for a personalized pricing quote and demo tailored to your practice.`}
+    </p>
+    <div class="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+      <AffiliateButton
+        href={affiliateLinkBottom}
+        label={tool.free_trial ? `Start ${tool.name} Free Trial` : `Get ${tool.name} Pricing`}
+        tool={tool.name}
+        size="lg"
+      />
+      <a
+        href={`/reviews/${tool.slug}`}
+        class="text-sm font-medium text-navy-500 hover:text-accent-600 transition-colors"
+      >
+        Read full review →
+      </a>
+    </div>
+  </section>
+
+  <!-- Related Links -->
+  <nav class="rounded-xl border border-navy-100 bg-white p-6" aria-label="Related content">
+    <h3 class="font-heading text-lg font-bold text-navy-900">Related Resources</h3>
+    <ul class="mt-4 grid gap-2 sm:grid-cols-2">
+      <li>
+        <a href={`/reviews/${tool.slug}`} class="text-sm text-accent-600 underline decoration-accent-200 underline-offset-2 hover:text-accent-700 hover:decoration-accent-400 transition-colors">
+          Full {tool.name} Review
+        </a>
+      </li>
+      <li>
+        <a href={`/alternatives/${tool.slug}`} class="text-sm text-accent-600 underline decoration-accent-200 underline-offset-2 hover:text-accent-700 hover:decoration-accent-400 transition-colors">
+          {tool.name} Alternatives
+        </a>
+      </li>
+      <li>
+        <a href="/best/best-veterinary-software-for-small-practices" class="text-sm text-accent-600 underline decoration-accent-200 underline-offset-2 hover:text-accent-700 hover:decoration-accent-400 transition-colors">
+          Best Vet Software for Small Practices
+        </a>
+      </li>
+      <li>
+        <a href="/best/best-free-veterinary-software" class="text-sm text-accent-600 underline decoration-accent-200 underline-offset-2 hover:text-accent-700 hover:decoration-accent-400 transition-colors">
+          Best Free Veterinary Software
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- FAQ Schema -->
+  <script type="application/ld+json" set:html={faqSchemaJson} />
+</BaseLayout>

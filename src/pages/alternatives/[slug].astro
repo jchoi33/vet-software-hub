@@ -1,0 +1,490 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ToolCard from "../../components/ToolCard.astro";
+import AffiliateButton from "../../components/AffiliateButton.astro";
+import EmailCapture from "../../components/EmailCapture.astro";
+import RatingStars from "../../components/RatingStars.astro";
+import {
+  getAllTools,
+  getToolBySlug,
+  getAverageRating,
+  getPricingDisplay,
+  getAffiliateLink,
+} from "../../utils/tools";
+import type { Tool } from "../../utils/tools";
+import { getAlternativesMeta } from "../../utils/seo";
+
+export function getStaticPaths() {
+  return getAllTools().map((tool) => ({
+    params: { slug: tool.slug },
+    props: { tool },
+  }));
+}
+
+interface Props {
+  tool: Tool;
+}
+
+const { slug } = Astro.params;
+const { tool } = Astro.props;
+const meta = getAlternativesMeta(tool);
+
+// Get all other tools as alternatives, sorted by avg rating desc
+const allOtherTools = getAllTools()
+  .filter((t) => t.slug !== tool.slug)
+  .sort((a, b) => {
+    const rA = a.rating_capterra || a.rating_g2 || 0;
+    const rB = b.rating_capterra || b.rating_g2 || 0;
+    return rB - rA;
+  });
+
+// Top 5 alternatives with a reason why someone switching from `tool` might like each
+function getAlternativeReason(alt: Tool, from: Tool): string {
+  // If the alt is cheaper, highlight price
+  if (
+    alt.starting_price_monthly !== null &&
+    from.starting_price_monthly !== null &&
+    alt.starting_price_monthly < from.starting_price_monthly
+  ) {
+    return `Starts at $${alt.starting_price_monthly}/mo — ${from.starting_price_monthly - alt.starting_price_monthly}/mo cheaper than ${from.name}. A strong option for budget-conscious practices.`;
+  }
+  // If the alt has a free plan
+  if (alt.free_plan) {
+    return `Offers a free plan — ideal for practices that want to try cloud PIMS with zero upfront commitment before choosing a paid tier.`;
+  }
+  // If the alt has a free trial and from does not
+  if (alt.free_trial && !from.free_trial) {
+    return `Offers a free trial, giving you a risk-free way to evaluate the platform before committing — something ${from.name} does not provide.`;
+  }
+  // If the alt is rated higher
+  const altRating = alt.rating_capterra || alt.rating_g2 || 0;
+  const fromRating = from.rating_capterra || from.rating_g2 || 0;
+  if (altRating > fromRating) {
+    return `Higher user rating (${altRating}/5.0 vs ${fromRating}/5.0) across G2 and Capterra. Practices that switched from ${from.name} frequently cite better usability.`;
+  }
+  // If the alt has different deployment
+  if (alt.deployment !== from.deployment) {
+    return `${alt.deployment} platform — a good fit if you want to move ${alt.deployment === "Cloud-based" ? "to the cloud" : "to an on-premise solution"} from ${from.name}.`;
+  }
+  // Generic
+  return `Serves ${alt.best_for.slice(0, 2).join(" and ").toLowerCase()} practices with ${alt.key_features.slice(0, 2).join(" and ").toLowerCase()}. Worth evaluating alongside ${from.name}.`;
+}
+
+const topAlternatives = allOtherTools.slice(0, 5).map((alt) => ({
+  tool: alt,
+  reason: getAlternativeReason(alt, tool),
+  pricingDisplay: getPricingDisplay(alt),
+  avgRating: getAverageRating(alt),
+  affiliateLink: getAffiliateLink(alt, `alternatives-${tool.slug}`, `alt-${alt.slug}`),
+}));
+
+const remainingTools = allOtherTools.slice(5);
+
+// Pre-compute for FAQ
+const cheaperAlt = allOtherTools.find(
+  (t) =>
+    t.starting_price_monthly !== null &&
+    tool.starting_price_monthly !== null &&
+    t.starting_price_monthly < tool.starting_price_monthly
+);
+const freeAlt = allOtherTools.find((t) => t.free_plan);
+const topRatedAlt = allOtherTools[0]; // already sorted by rating
+
+const faqCheaperAnswer = cheaperAlt
+  ? `Yes. ${cheaperAlt.name} starts at $${cheaperAlt.starting_price_monthly}/mo — less than ${tool.name}'s $${tool.starting_price_monthly}/mo. Other affordable options include ${allOtherTools.filter(t => t.starting_price_monthly !== null && tool.starting_price_monthly !== null && t.starting_price_monthly <= (tool.starting_price_monthly || 999)).slice(0, 3).map(t => t.name).join(", ")}.`
+  : `${tool.name} is already among the more affordable options in the market. For free alternatives, consider ${freeAlt ? freeAlt.name : "AcuroVet"} which offers a free basic plan.`;
+
+const faqFreeAnswer = freeAlt
+  ? `${freeAlt.name} offers a free plan with core veterinary practice features. It is the only tool in our database with a permanently free tier. Most other tools (including ${tool.name}) offer free trials but not a free ongoing plan.`
+  : `No tools in our current database offer a completely free plan as a direct alternative to ${tool.name}. AcuroVet comes closest with its free starter plan.`;
+
+const faqMigrateAnswer = `Migrating from ${tool.name} typically involves: (1) exporting your client and patient records from ${tool.name} — most platforms support CSV export; (2) checking whether your new PIMS offers a data migration service (many do, especially ezyVet, Digitail, and Shepherd); (3) running both systems in parallel for 2-4 weeks to ensure no data is lost. Contact your chosen alternative's sales team early — most offer migration support as part of onboarding.`;
+
+const faqBestAnswer = `Our top overall alternative to ${tool.name} is ${topRatedAlt.name} (rated ${getAverageRating(topRatedAlt) || "N/A"}/5.0), which is best for ${topRatedAlt.best_for[0].toLowerCase()}. The right choice depends on your practice size, budget, and which features matter most. See our full comparison table below or read individual reviews for each tool.`;
+
+// Pre-build FAQ schema JSON
+const faqSchemaJson = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: `What is the best alternative to ${tool.name}?`,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faqBestAnswer,
+      },
+    },
+    {
+      "@type": "Question",
+      name: `Is there a cheaper alternative to ${tool.name}?`,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faqCheaperAnswer,
+      },
+    },
+    {
+      "@type": "Question",
+      name: `Is there a free alternative to ${tool.name}?`,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faqFreeAnswer,
+      },
+    },
+    {
+      "@type": "Question",
+      name: `How do I migrate from ${tool.name}?`,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faqMigrateAnswer,
+      },
+    },
+  ],
+});
+---
+
+<BaseLayout
+  title={meta.title}
+  description={meta.description}
+  canonical={meta.canonical}
+  ogTitle={meta.ogTitle}
+  ogDescription={meta.ogDescription}
+  schema={meta.schema}
+>
+  <!-- Affiliate Disclosure -->
+  <div class="mb-8 rounded-lg border border-navy-100 bg-navy-50/50 px-4 py-3 text-xs text-navy-500">
+    <strong>Disclosure:</strong> VetSoftwareHub is reader-supported. When you click our affiliate links and make a purchase, we may earn a commission at no extra cost to you. Our reviews are independent.
+  </div>
+
+  <!-- H1 + Intro -->
+  <header class="mb-10">
+    <div class="mb-3 flex flex-wrap gap-2 text-xs">
+      <a href="/" class="text-navy-400 hover:text-accent-600 transition-colors">Home</a>
+      <span class="text-navy-300">/</span>
+      <a href={`/reviews/${tool.slug}`} class="text-navy-400 hover:text-accent-600 transition-colors">{tool.name} Review</a>
+      <span class="text-navy-300">/</span>
+      <span class="text-navy-600">{tool.name} Alternatives</span>
+    </div>
+    <h1 class="font-heading text-3xl font-bold text-navy-900 sm:text-4xl">
+      Best {tool.name} Alternatives in 2026
+    </h1>
+    <p class="mt-4 text-lg leading-relaxed text-navy-600">
+      {tool.name} is a solid veterinary practice management system, but it is not the right fit for every practice.
+      Whether you need a lower price, a different feature set, or a better workflow match, we have evaluated every
+      major PIMS to find the best {tool.name} alternatives on the market.
+    </p>
+    <div class="mt-4 flex flex-wrap gap-4 text-sm text-navy-500">
+      <span>Comparing: <strong class="text-navy-700">{allOtherTools.length} alternatives</strong></span>
+      <span>Last updated: <strong class="text-navy-700">February 2026</strong></span>
+    </div>
+  </header>
+
+  <!-- Why People Switch From [tool] -->
+  <section class="mb-12 rounded-xl border border-navy-100 bg-white p-6 shadow-sm">
+    <h2 class="font-heading text-xl font-bold text-navy-900">Why Practices Switch From {tool.name}</h2>
+    <p class="mt-3 text-sm leading-relaxed text-navy-600">
+      Based on user reviews on G2 and Capterra, here are the most common reasons practices look for {tool.name} alternatives:
+    </p>
+    <ul class="mt-4 space-y-2">
+      {tool.cons.map((con) => (
+        <li class="flex items-start gap-2 text-sm text-navy-700">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="mt-0.5 h-4 w-4 shrink-0 text-amber-400" aria-hidden="true">
+            <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+          </svg>
+          <span>{con}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <!-- Top 5 Alternatives -->
+  <section class="mb-14">
+    <h2 class="font-heading text-2xl font-bold text-navy-900 sm:text-3xl">
+      Top {topAlternatives.length} {tool.name} Alternatives
+    </h2>
+    <p class="mt-2 mb-8 text-base text-navy-600">
+      Ranked by user rating, value, and fit for practices considering switching from {tool.name}.
+    </p>
+
+    <div class="space-y-8">
+      {topAlternatives.map(({ tool: alt, reason, pricingDisplay, avgRating, affiliateLink }, index) => (
+        <article class="rounded-xl border border-navy-100 bg-white p-6 shadow-sm">
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex items-center gap-3">
+              <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent-100 font-heading text-sm font-bold text-accent-700">
+                #{index + 1}
+              </div>
+              <div>
+                <h3 class="font-heading text-xl font-bold text-navy-900">
+                  <a href={`/reviews/${alt.slug}`} class="hover:text-accent-600 transition-colors">
+                    {alt.name}
+                  </a>
+                </h3>
+                <p class="text-sm text-navy-500">{alt.tagline}</p>
+              </div>
+            </div>
+            <AffiliateButton
+              href={affiliateLink}
+              label={`Visit ${alt.name}`}
+              tool={alt.name}
+              size="sm"
+            />
+          </div>
+
+          <!-- Why switch callout -->
+          <div class="mt-4 rounded-lg border border-accent-100 bg-accent-50/40 px-4 py-3">
+            <p class="text-sm font-medium text-accent-800">
+              <span class="font-bold">Why switch from {tool.name}:</span> {reason}
+            </p>
+          </div>
+
+          <!-- Quick stats grid -->
+          <div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <div class="rounded-lg border border-navy-100 bg-navy-50/30 p-3 text-center">
+              <p class="text-xs font-semibold uppercase tracking-wider text-navy-400">Price</p>
+              <p class="mt-1 text-sm font-bold text-navy-900">{pricingDisplay}</p>
+            </div>
+            <div class="rounded-lg border border-navy-100 bg-navy-50/30 p-3 text-center">
+              <p class="text-xs font-semibold uppercase tracking-wider text-navy-400">Rating</p>
+              <p class="mt-1 text-sm font-bold text-navy-900">{avgRating !== null ? `${avgRating}/5.0` : "N/A"}</p>
+            </div>
+            <div class="rounded-lg border border-navy-100 bg-navy-50/30 p-3 text-center">
+              <p class="text-xs font-semibold uppercase tracking-wider text-navy-400">Free Trial</p>
+              <p class:list={["mt-1 text-sm font-bold", alt.free_trial ? "text-accent-600" : "text-navy-400"]}>
+                {alt.free_trial ? "Yes" : "No"}
+              </p>
+            </div>
+            <div class="rounded-lg border border-navy-100 bg-navy-50/30 p-3 text-center">
+              <p class="text-xs font-semibold uppercase tracking-wider text-navy-400">Deployment</p>
+              <p class="mt-1 text-sm font-bold text-navy-900">{alt.deployment === "Cloud-based" ? "Cloud" : "On-Premise"}</p>
+            </div>
+          </div>
+
+          <!-- Best for tags -->
+          <div class="mt-4 flex flex-wrap gap-2">
+            {alt.best_for.map((tag) => (
+              <span class="inline-block rounded-full bg-navy-100 px-3 py-1 text-xs font-medium text-navy-600">
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          <!-- Review link -->
+          <div class="mt-4">
+            <a
+              href={`/reviews/${alt.slug}`}
+              class="text-sm font-medium text-accent-600 hover:text-accent-700 transition-colors"
+            >
+              Read full {alt.name} review →
+            </a>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <!-- All Alternatives Comparison Table -->
+  <section class="mb-14">
+    <h2 class="font-heading text-2xl font-bold text-navy-900 sm:text-3xl">
+      All {tool.name} Alternatives: Full Comparison Table
+    </h2>
+    <p class="mt-2 mb-6 text-base text-navy-600">
+      Every veterinary PIMS we track, compared side-by-side on the metrics that matter.
+    </p>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b-2 border-navy-200">
+            <th class="py-3 pr-4 text-left font-heading font-bold text-navy-800">Software</th>
+            <th class="py-3 px-3 text-left font-heading font-bold text-navy-800">Starting Price</th>
+            <th class="py-3 px-3 text-left font-heading font-bold text-navy-800">Rating</th>
+            <th class="py-3 px-3 text-left font-heading font-bold text-navy-800">Free Trial</th>
+            <th class="py-3 pl-3 text-left font-heading font-bold text-navy-800">Best For</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Current tool row (greyed out as the one they're leaving) -->
+          <tr class="border-b border-navy-100 bg-navy-50/50">
+            <td class="py-3 pr-4">
+              <span class="font-semibold text-navy-500">{tool.name}</span>
+              <span class="ml-2 text-xs text-navy-400">(current)</span>
+            </td>
+            <td class="py-3 px-3 text-navy-500">{getPricingDisplay(tool)}</td>
+            <td class="py-3 px-3 text-navy-500">
+              {getAverageRating(tool) !== null ? `${getAverageRating(tool)}/5.0` : "N/A"}
+            </td>
+            <td class="py-3 px-3 text-navy-500">{tool.free_trial ? "Yes" : "No"}</td>
+            <td class="py-3 pl-3 text-navy-500">{tool.best_for[0]}</td>
+          </tr>
+          {allOtherTools.map((alt) => (
+            <tr class="border-b border-navy-100 hover:bg-accent-50/20 transition-colors">
+              <td class="py-3 pr-4">
+                <a href={`/reviews/${alt.slug}`} class="font-semibold text-accent-600 hover:text-accent-700 transition-colors">
+                  {alt.name}
+                </a>
+              </td>
+              <td class="py-3 px-3 text-navy-700">{getPricingDisplay(alt)}</td>
+              <td class="py-3 px-3 text-navy-700">
+                {getAverageRating(alt) !== null ? `${getAverageRating(alt)}/5.0` : "N/A"}
+              </td>
+              <td class:list={["py-3 px-3 text-sm font-medium", alt.free_trial ? "text-accent-600" : "text-navy-400"]}>
+                {alt.free_trial ? "Yes" : "No"}
+              </td>
+              <td class="py-3 pl-3 text-navy-700">{alt.best_for[0]}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="mt-3 text-xs text-navy-400">
+      Ratings are averages from Capterra and G2. Prices reflect published starting rates and may vary by practice size.
+    </p>
+  </section>
+
+  <!-- How to Choose -->
+  <section class="mb-14 rounded-xl border border-navy-100 bg-white p-6 sm:p-8 shadow-sm">
+    <h2 class="font-heading text-xl font-bold text-navy-900">
+      How to Choose the Right {tool.name} Alternative
+    </h2>
+    <p class="mt-3 text-sm leading-relaxed text-navy-600">
+      Switching veterinary software is a big decision. Here is a framework to choose the right alternative:
+    </p>
+    <ol class="mt-4 space-y-4">
+      <li class="flex items-start gap-3">
+        <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent-100 text-xs font-bold text-accent-700">1</span>
+        <div>
+          <p class="text-sm font-semibold text-navy-800">Identify why you are leaving {tool.name}</p>
+          <p class="mt-1 text-sm text-navy-600">Is it price? Missing features? Poor support? Your reason for leaving should drive your requirements for the new system.</p>
+        </div>
+      </li>
+      <li class="flex items-start gap-3">
+        <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent-100 text-xs font-bold text-accent-700">2</span>
+        <div>
+          <p class="text-sm font-semibold text-navy-800">Define your must-have features</p>
+          <p class="mt-1 text-sm text-navy-600">List the 3-5 features you use daily that any replacement must cover. Do not pay for features you will not use.</p>
+        </div>
+      </li>
+      <li class="flex items-start gap-3">
+        <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent-100 text-xs font-bold text-accent-700">3</span>
+        <div>
+          <p class="text-sm font-semibold text-navy-800">Set a realistic budget</p>
+          <p class="mt-1 text-sm text-navy-600">Include migration costs, training time, and temporary productivity loss. The cheapest option is rarely the lowest total cost.</p>
+        </div>
+      </li>
+      <li class="flex items-start gap-3">
+        <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent-100 text-xs font-bold text-accent-700">4</span>
+        <div>
+          <p class="text-sm font-semibold text-navy-800">Trial your top 2-3 finalists</p>
+          <p class="mt-1 text-sm text-navy-600">Most tools offer free trials. Use them. Get your actual staff to try the daily workflows — they will surface issues demos never show.</p>
+        </div>
+      </li>
+      <li class="flex items-start gap-3">
+        <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent-100 text-xs font-bold text-accent-700">5</span>
+        <div>
+          <p class="text-sm font-semibold text-navy-800">Ask about data migration support</p>
+          <p class="mt-1 text-sm text-navy-600">Before committing, confirm the new vendor will help migrate your existing patient and client data. This is non-negotiable for practices with years of records.</p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <!-- Email Capture -->
+  <div class="mb-14">
+    <EmailCapture
+      heading="Get Our Free Vet Software Buyer's Guide"
+      subheading={`Includes detailed comparisons of all ${tool.name} alternatives. Join 1,000+ practice managers making smarter software decisions.`}
+    />
+  </div>
+
+  <!-- FAQ -->
+  <section class="mb-14">
+    <h2 class="font-heading text-2xl font-bold text-navy-900">Frequently Asked Questions</h2>
+    <div class="mt-6 space-y-3">
+      <details class="group rounded-lg border border-navy-100 bg-white">
+        <summary class="flex cursor-pointer items-center justify-between p-5 font-heading font-semibold text-navy-800 transition-colors hover:text-accent-600">
+          What is the best alternative to {tool.name}?
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 shrink-0 text-navy-400 transition-transform group-open:rotate-180" aria-hidden="true">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+          </svg>
+        </summary>
+        <div class="border-t border-navy-100 px-5 py-4 text-sm leading-relaxed text-navy-600">
+          {faqBestAnswer}
+        </div>
+      </details>
+
+      <details class="group rounded-lg border border-navy-100 bg-white">
+        <summary class="flex cursor-pointer items-center justify-between p-5 font-heading font-semibold text-navy-800 transition-colors hover:text-accent-600">
+          Is there a cheaper alternative to {tool.name}?
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 shrink-0 text-navy-400 transition-transform group-open:rotate-180" aria-hidden="true">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+          </svg>
+        </summary>
+        <div class="border-t border-navy-100 px-5 py-4 text-sm leading-relaxed text-navy-600">
+          {faqCheaperAnswer}
+        </div>
+      </details>
+
+      <details class="group rounded-lg border border-navy-100 bg-white">
+        <summary class="flex cursor-pointer items-center justify-between p-5 font-heading font-semibold text-navy-800 transition-colors hover:text-accent-600">
+          Is there a free alternative to {tool.name}?
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 shrink-0 text-navy-400 transition-transform group-open:rotate-180" aria-hidden="true">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+          </svg>
+        </summary>
+        <div class="border-t border-navy-100 px-5 py-4 text-sm leading-relaxed text-navy-600">
+          {faqFreeAnswer}
+        </div>
+      </details>
+
+      <details class="group rounded-lg border border-navy-100 bg-white">
+        <summary class="flex cursor-pointer items-center justify-between p-5 font-heading font-semibold text-navy-800 transition-colors hover:text-accent-600">
+          How do I migrate from {tool.name} to a new system?
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 shrink-0 text-navy-400 transition-transform group-open:rotate-180" aria-hidden="true">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+          </svg>
+        </summary>
+        <div class="border-t border-navy-100 px-5 py-4 text-sm leading-relaxed text-navy-600">
+          {faqMigrateAnswer}
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <!-- Related Links -->
+  <nav class="rounded-xl border border-navy-100 bg-white p-6" aria-label="Related content">
+    <h3 class="font-heading text-lg font-bold text-navy-900">More Resources</h3>
+    <ul class="mt-4 grid gap-2 sm:grid-cols-2">
+      <li>
+        <a href={`/reviews/${tool.slug}`} class="text-sm text-accent-600 underline decoration-accent-200 underline-offset-2 hover:text-accent-700 hover:decoration-accent-400 transition-colors">
+          Full {tool.name} Review
+        </a>
+      </li>
+      <li>
+        <a href={`/pricing/${tool.slug}`} class="text-sm text-accent-600 underline decoration-accent-200 underline-offset-2 hover:text-accent-700 hover:decoration-accent-400 transition-colors">
+          {tool.name} Pricing Breakdown
+        </a>
+      </li>
+      <li>
+        <a href="/best/best-veterinary-software-for-small-practices" class="text-sm text-accent-600 underline decoration-accent-200 underline-offset-2 hover:text-accent-700 hover:decoration-accent-400 transition-colors">
+          Best Vet Software for Small Practices
+        </a>
+      </li>
+      <li>
+        <a href="/best/best-cloud-based-veterinary-software" class="text-sm text-accent-600 underline decoration-accent-200 underline-offset-2 hover:text-accent-700 hover:decoration-accent-400 transition-colors">
+          Best Cloud-Based Vet Software
+        </a>
+      </li>
+      {topAlternatives.slice(0, 2).map(({ tool: alt }) => (
+        <li>
+          <a href={`/reviews/${alt.slug}`} class="text-sm text-accent-600 underline decoration-accent-200 underline-offset-2 hover:text-accent-700 hover:decoration-accent-400 transition-colors">
+            {alt.name} Full Review
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+
+  <!-- FAQ Schema -->
+  <script type="application/ld+json" set:html={faqSchemaJson} />
+</BaseLayout>

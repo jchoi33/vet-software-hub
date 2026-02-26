@@ -1,0 +1,678 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import EmailCapture from "../../components/EmailCapture.astro";
+import AffiliateButton from "../../components/AffiliateButton.astro";
+import { getToolBySlug, getAffiliateLink } from "../../utils/tools";
+
+interface GuideContent {
+  title: string;
+  description: string;
+  ogTitle: string;
+  ogDescription: string;
+  intro: string;
+  sections: {
+    heading: string;
+    body: string;
+    bullets?: string[];
+  }[];
+  faqs: { question: string; answer: string }[];
+  relatedTools: string[];
+  relatedLinks: { href: string; label: string }[];
+}
+
+export function getStaticPaths() {
+  const guides: Record<string, GuideContent> = {
+    "how-to-choose-veterinary-software": {
+      title: "How to Choose Veterinary Practice Management Software in 2026 | VetSoftwareHub",
+      description: "A step-by-step guide to choosing the right PIMS for your veterinary practice in 2026. Covers what to evaluate, questions to ask, and how to avoid costly mistakes.",
+      ogTitle: "How to Choose Veterinary Software in 2026",
+      ogDescription: "Step-by-step guide to picking the right PIMS for your practice. Avoid the most common mistakes.",
+      intro: "Choosing a veterinary practice management system (PIMS) is one of the biggest operational decisions you will make as a practice owner or manager. Get it right and the software becomes an invisible, reliable backbone of your daily operations. Get it wrong and you are looking at months of staff frustration, wasted training investment, and the painful cost of switching again. This guide walks you through a proven framework for making the right choice the first time.",
+      sections: [
+        {
+          heading: "Step 1: Clarify Why You Are Looking",
+          body: "Before evaluating any software, get clear on what problem you are actually trying to solve. Are you switching from legacy on-premise software like AVImark or Cornerstone? Are you a new practice looking for your first PIMS? Are you frustrated with a specific feature gap in your current system? Your starting point shapes your entire evaluation.",
+          bullets: [
+            "New practice: Prioritize ease of setup, affordable starting price, and a free trial",
+            "Switching from legacy: Prioritize data migration support and cloud access",
+            "Upgrading for growth: Prioritize multi-location support and advanced reporting",
+            "Adding AI: Look specifically at Digitail and Onward Vet for AI-driven documentation",
+          ],
+        },
+        {
+          heading: "Step 2: Define Your Non-Negotiable Features",
+          body: "Not all features are equal. Some are nice-to-have, and some are absolute requirements. Before looking at any demos, write down your must-have list. Typical non-negotiables for veterinary practices include:",
+          bullets: [
+            "Electronic medical records (EMR/SOAP notes) — every PIMS has this, but quality varies enormously",
+            "Lab integrations (IDEXX, Antech, Zoetis) — verify these work before committing",
+            "Appointment scheduling with multi-provider support",
+            "Invoicing and payment processing",
+            "Client communication (reminders, two-way texting, client portal)",
+            "Inventory management (critical for pharmacies and high-volume practices)",
+          ],
+        },
+        {
+          heading: "Step 3: Set a Realistic Budget",
+          body: "Veterinary PIMS pricing ranges from free (AcuroVet) to $400+/month (Weave). But the advertised starting price is rarely the full cost. Budget for the following when comparing options:",
+          bullets: [
+            "Monthly subscription: The base price you will see advertised",
+            "Implementation fee: Often $500-$2,500 one-time — ask specifically",
+            "Data migration: Moving records from your old PIMS can cost extra",
+            "Training: Some vendors charge for onboarding; others include it",
+            "Add-ons: Telemedicine, client apps, and advanced modules are often extra",
+            "Annual vs monthly billing: Annual contracts often save 10-20%",
+          ],
+        },
+        {
+          heading: "Step 4: Evaluate Deployment Options",
+          body: "Cloud-based (SaaS) software is now the default for most new practices, but some established practices still prefer or require on-premise systems. Understanding the tradeoffs helps you make the right call.",
+          bullets: [
+            "Cloud-based: Access from anywhere, automatic updates, no server hardware, subscription pricing",
+            "On-premise: Data stays local, works without internet, one-time license cost — but requires IT maintenance and hardware",
+            "Hybrid: Some tools offer both (rare in veterinary PIMS)",
+            "Most new entrants (Digitail, Shepherd, Hippo Manager, Onward Vet) are cloud-only",
+          ],
+        },
+        {
+          heading: "Step 5: Get Your Staff Into the Trial",
+          body: "This is the most skipped step and the most important. Demos are designed to look impressive. Free trials reveal the real experience. When trialing a system, do not just have the manager test it — get the front desk, the technicians, and the veterinarians to run through their actual daily tasks.",
+          bullets: [
+            "Have the front desk try booking a full day of appointments",
+            "Have a technician enter a SOAP note from an actual case",
+            "Have the veterinarian sign off on a treatment plan and generate an invoice",
+            "Test the client reminder workflow end-to-end",
+            "Try to run a report that you actually care about",
+          ],
+        },
+        {
+          heading: "Step 6: Ask the Right Questions Before Signing",
+          body: "Before committing to any veterinary software, get explicit answers to these questions in writing from the vendor:",
+          bullets: [
+            "What is included in the base price, and what costs extra?",
+            "How long is the contract, and what are the cancellation terms?",
+            "Do you offer data migration support, and what does it cost?",
+            "What does onboarding and training look like, and is it included?",
+            "What is your customer support response time, and how do we reach you?",
+            "Can we export our data if we decide to leave?",
+            "Is pricing locked for the contract period, or can it increase?",
+          ],
+        },
+      ],
+      faqs: [
+        {
+          question: "How long does it take to switch veterinary software?",
+          answer: "Most practices take 4-12 weeks to complete a full switch, including data migration, staff training, and a parallel-running period. Rushed migrations are the number one cause of data loss and staff frustration. Budget at least 6 weeks minimum for a smooth transition.",
+        },
+        {
+          question: "Can I migrate my patient records from my old PIMS?",
+          answer: "Yes, in most cases. All major PIMS providers offer data migration services, though some charge for it. Common exported data includes patient records, client contacts, appointment history, and invoice history. Ask your new vendor explicitly what data they can migrate and what will need to be re-entered manually.",
+        },
+        {
+          question: "What is the best veterinary software for a new practice?",
+          answer: "For new practices, we recommend Shepherd ($99/mo with a 50% startup discount) or Hippo Manager ($120/mo). Both are easy to learn, cloud-based, and affordably priced. Shepherd was designed by a practicing veterinarian and has the most intuitive workflow for general practice.",
+        },
+        {
+          question: "Do I need AI features in my veterinary software?",
+          answer: "AI features (like automated SOAP note generation) are increasingly valuable but not required. If you find documentation takes significant time away from patient care, Digitail and Onward Vet offer meaningful AI-powered note generation that can save 30-60 minutes per day for a busy veterinarian.",
+        },
+      ],
+      relatedTools: ["shepherd", "digitail", "hippo-manager"],
+      relatedLinks: [
+        { href: "/best/best-veterinary-software-for-small-practices", label: "Best Vet Software for Small Practices" },
+        { href: "/best/best-veterinary-software-with-ai", label: "Best AI Veterinary Software" },
+        { href: "/tools/compare", label: "Side-by-Side Comparison Tool" },
+      ],
+    },
+
+    "veterinary-software-pricing-guide": {
+      title: "Veterinary Software Pricing Guide 2026: What You'll Really Pay | VetSoftwareHub",
+      description: "The complete guide to veterinary PIMS pricing in 2026. Understand starting prices, hidden costs, contract terms, and how to get the best deal.",
+      ogTitle: "Veterinary Software Pricing Guide 2026",
+      ogDescription: "What does veterinary software actually cost? Full breakdown of pricing, hidden fees, and negotiation tips.",
+      intro: "Veterinary practice management software pricing is notoriously opaque. Most vendors prefer custom quotes over published pricing, and the advertised starting price rarely tells the full story. This guide breaks down everything you need to know about veterinary PIMS pricing in 2026 — from the base subscription to the hidden fees vendors hope you will not ask about.",
+      sections: [
+        {
+          heading: "The Real Cost of Veterinary Software",
+          body: "The sticker price of veterinary software is just the beginning. When evaluating total cost of ownership, factor in all of the following cost categories:",
+          bullets: [
+            "Monthly subscription: $0 (AcuroVet free plan) to $399+/mo (Weave)",
+            "Implementation/setup: $0-$2,500 one-time (often waived during promotions)",
+            "Data migration: $0-$1,500 depending on data volume and complexity",
+            "Training: $0-$1,000 (many cloud PIMS include basic training)",
+            "Add-on modules: $25-$100/mo each for telemedicine, client apps, advanced inventory",
+            "Per-location fees: For multi-location practices, costs multiply by location count",
+            "Annual vs monthly billing: Annual contracts save 10-20% at most vendors",
+          ],
+        },
+        {
+          heading: "Veterinary Software Price Tiers (2026)",
+          body: "We categorize the veterinary PIMS market into four pricing tiers based on the starting monthly cost:",
+          bullets: [
+            "Free tier: AcuroVet (free basic plan) — covers essentials for solo and mobile vets",
+            "Budget tier ($80-$130/mo): Shepherd ($99), Hippo Manager ($120), DaySmart Vet ($120), VETport ($99), VetBadger ($99) — good for small practices",
+            "Mid-range tier ($150-$250/mo): Digitail ($150), Provet Cloud ($169), Neo ($200), ezyVet ($250) — most practices fall here",
+            "Premium tier ($300+/mo): Vetspire ($349), Weave ($399), Cornerstone (custom $15K+ upfront) — for specialty, enterprise, and IDEXX-committed practices",
+          ],
+        },
+        {
+          heading: "Per-Veterinarian vs Per-Location Pricing",
+          body: "Understanding the pricing model is critical for accurate budgeting. Veterinary PIMS vendors use different models, and your practice size determines which model works best for you:",
+          bullets: [
+            "Per veterinarian: Digitail, Vetspire, Onward Vet — scales with doctor count. A 3-vet practice at $150/vet = $450/mo",
+            "Per location: Shepherd, Hippo Manager, VetBadger — scales with clinic count. 1 location = stated price, 3 locations = 3x",
+            "Flat rate (custom): ezyVet, ezyVet, Covetrus Ascend — negotiated based on practice size",
+            "One-time license: AVImark, Cornerstone — large upfront cost + annual support fees",
+          ],
+        },
+        {
+          heading: "How to Negotiate a Better Price",
+          body: "Veterinary software vendors have more pricing flexibility than they let on. Use these negotiation tactics to reduce your total cost:",
+          bullets: [
+            "Ask for a longer free trial: Standard is 14-30 days, but many vendors will extend to 60-90 days if asked",
+            "Request a startup discount: Shepherd offers 50% off for new practices. Ask others — many have unpublicized discounts",
+            "Negotiate implementation fees: Implementation fees are often waived for practices that commit to annual billing",
+            "Bundle training: Ask for training to be included, especially if you are bringing a large team",
+            "Compare quotes: Get written quotes from 2-3 vendors, then use them in negotiation",
+            "Commit to annual billing: Ask for the annual rate — typically 10-20% lower than monthly",
+          ],
+        },
+        {
+          heading: "When to Choose a More Expensive Option",
+          body: "Price is not the only factor. Here are situations where paying more makes financial sense:",
+          bullets: [
+            "If the AI features save a veterinarian 1 hour/day, that is worth $200-400/mo in recovered clinical time",
+            "If switching to a cheaper option means losing a key integration your lab workflow depends on, the migration cost exceeds the savings",
+            "If a premium tool reduces no-shows by 20% through automated reminders, the revenue recovery can dwarf the subscription cost",
+            "For multi-location practices, a scalable enterprise system often costs less than managing multiple cheaper systems",
+          ],
+        },
+      ],
+      faqs: [
+        {
+          question: "What is the average cost of veterinary practice management software?",
+          answer: "The average cost for a single-location veterinary practice is approximately $150-$200 per month for a cloud-based PIMS. Smaller practices often pay less ($99-$120/mo), while larger hospitals and specialty clinics typically pay $250-$400+/mo. Additional modules and per-vet pricing can push total costs significantly higher.",
+        },
+        {
+          question: "Is there a free veterinary practice management software?",
+          answer: "AcuroVet is the only veterinary PIMS in our database that offers a truly free plan. It covers basic scheduling, records, and billing for solo and mobile veterinarians. Most other tools offer free trials (14-30 days) but require a paid subscription to continue.",
+        },
+        {
+          question: "How do veterinary software vendors calculate pricing for large practices?",
+          answer: "For large or multi-location practices, most vendors switch to custom enterprise pricing. The calculation typically factors in number of active veterinarians, number of clinic locations, and which modules are selected. Request a formal quote and be specific about your practice size to get an accurate number.",
+        },
+        {
+          question: "Should I choose annual or monthly billing for veterinary software?",
+          answer: "Annual billing is almost always cheaper — typically 10-20% less than monthly. The tradeoff is commitment. If you are confident in a platform after a thorough trial, annual billing is the better value. If you are still evaluating, stay monthly until you are sure.",
+        },
+      ],
+      relatedTools: ["acurovet", "shepherd", "digitail"],
+      relatedLinks: [
+        { href: "/tools/revenue-calculator", label: "Vet Practice Revenue Calculator" },
+        { href: "/best/best-free-veterinary-software", label: "Best Free Veterinary Software" },
+        { href: "/best/best-veterinary-software-for-small-practices", label: "Best Vet Software for Small Practices" },
+      ],
+    },
+
+    "cloud-vs-server-veterinary-software": {
+      title: "Cloud vs Server-Based Veterinary Software: Which Is Right for You? | VetSoftwareHub",
+      description: "Should your veterinary practice use cloud-based or server-based PIMS in 2026? We compare both deployment models on cost, reliability, security, and practical fit.",
+      ogTitle: "Cloud vs Server Veterinary Software 2026",
+      ogDescription: "Cloud or server? Full comparison of both deployment models for veterinary practices.",
+      intro: "One of the first decisions in choosing veterinary software is deployment model: cloud-based (SaaS) or server-based (on-premise). This was a heated debate five years ago. Today, for most new practices, the answer is cloud. But for established practices with significant investment in server infrastructure and legacy software like AVImark or Cornerstone, the calculus is more nuanced. Here is everything you need to know to make the right call.",
+      sections: [
+        {
+          heading: "What Is Cloud-Based Veterinary Software?",
+          body: "Cloud-based veterinary PIMS (also called SaaS or web-based) stores your data on remote servers managed by the software vendor. You access the software through a web browser on any device — laptop, tablet, or smartphone. Examples include Digitail, ezyVet, Shepherd, Hippo Manager, and most modern PIMS.",
+          bullets: [
+            "Access from anywhere with internet — clinic, home, or field",
+            "No server hardware to purchase, maintain, or upgrade",
+            "Automatic software updates — new features deploy without downtime",
+            "Subscription pricing (monthly or annual) — lower upfront cost",
+            "Data backed up automatically by the vendor",
+            "Requires reliable internet connection — slow internet = slow software",
+          ],
+        },
+        {
+          heading: "What Is Server-Based (On-Premise) Veterinary Software?",
+          body: "Server-based veterinary software runs on physical hardware located at your clinic. Data is stored locally. Examples include AVImark and Cornerstone (IDEXX). You access the software only on computers connected to your local network.",
+          bullets: [
+            "Works without internet — no connectivity dependency",
+            "Data stays on your premises — local control",
+            "One-time license cost (typically $15,000-$30,000) + annual support fees",
+            "Requires IT support for server maintenance, backups, and updates",
+            "Not accessible remotely without VPN setup",
+            "Updates are infrequent and often require paid upgrades",
+          ],
+        },
+        {
+          heading: "Cost Comparison: Cloud vs Server",
+          body: "Total cost of ownership over 5 years tells a very different story than the sticker price. Here is how the math typically breaks down:",
+          bullets: [
+            "Cloud PIMS: $150-$300/mo x 60 months = $9,000-$18,000 over 5 years, no hardware",
+            "Server PIMS: $15,000-$25,000 upfront + $2,000-$4,000/year support + $3,000-$8,000 server hardware = $30,000-$50,000 over 5 years",
+            "Cloud wins on total cost for most practices over a 5-year horizon",
+            "Exception: Practices already owning server hardware with AVImark paid off may find short-term costs lower staying server-based",
+          ],
+        },
+        {
+          heading: "Reliability and Uptime",
+          body: "A common concern about cloud software is: what happens if the internet goes down? This is a valid question, but the risk is manageable:",
+          bullets: [
+            "Major cloud PIMS vendors maintain 99.9%+ uptime SLAs — typically more reliable than local servers",
+            "Invest in a business-grade internet connection with cellular LTE backup",
+            "Local server failures can be just as catastrophic (and often more expensive to recover from)",
+            "Cloud vendors handle disaster recovery automatically; server-based requires you to manage it",
+          ],
+        },
+        {
+          heading: "Who Should Choose Cloud-Based PIMS?",
+          body: "Cloud is the right choice for the following practice profiles:",
+          bullets: [
+            "New practices without existing server infrastructure — lowest startup cost",
+            "Multi-location practices that need shared data across locations",
+            "Practices where veterinarians want mobile access or to check records remotely",
+            "Teams that value automatic updates and do not want to manage IT",
+            "Practices with stable, high-quality internet connectivity",
+          ],
+        },
+        {
+          heading: "Who Might Still Choose Server-Based PIMS?",
+          body: "Server-based software still makes sense in limited scenarios:",
+          bullets: [
+            "Rural practices with unreliable or expensive internet connectivity",
+            "Practices already running AVImark or Cornerstone with significant workflow investment",
+            "Practices in industries with strict local data sovereignty requirements (rare in veterinary)",
+            "Short-term: Practices that cannot afford migration costs right now",
+          ],
+        },
+      ],
+      faqs: [
+        {
+          question: "Is cloud veterinary software secure?",
+          answer: "Yes. Major cloud PIMS vendors use enterprise-grade security including AES-256 encryption, SOC 2 compliance, and regular security audits. In practice, cloud data is typically more secure than local server data because: the vendor's security team manages it full-time, automatic backups prevent data loss, and remote access is controlled via modern authentication. Local servers are frequently the target of ransomware attacks in veterinary practices.",
+        },
+        {
+          question: "What happens to my data if the cloud vendor shuts down?",
+          answer: "This is a legitimate concern. Before committing to any cloud PIMS, ask the vendor specifically: Can we export all our data? In what format? What is the data retention policy if we cancel? All reputable vendors guarantee data export. Look for vendors with strong financial backing or established track records (ezyVet, Digitail, Shepherd) to minimize this risk.",
+        },
+        {
+          question: "Can I switch from server-based to cloud veterinary software?",
+          answer: "Yes, and thousands of practices do it every year. The main challenge is data migration — moving years of patient records from your old server to the new cloud system. Most cloud PIMS vendors offer migration services, sometimes for an additional fee. Expect the process to take 4-12 weeks.",
+        },
+        {
+          question: "What is the best cloud-based veterinary software?",
+          answer: "For small practices: Shepherd ($99/mo) or Hippo Manager ($120/mo). For growing and multi-location practices: Digitail ($150/mo) or ezyVet ($250/mo). For specialty clinics: Vetspire ($349/mo). See our full best cloud-based veterinary software guide for detailed comparisons.",
+        },
+      ],
+      relatedTools: ["shepherd", "digitail", "ezyvet", "avimark"],
+      relatedLinks: [
+        { href: "/best/best-cloud-based-veterinary-software", label: "Best Cloud-Based Vet Software" },
+        { href: "/reviews/avimark", label: "AVImark Review" },
+        { href: "/reviews/cornerstone", label: "Cornerstone Review" },
+        { href: "/guides/how-to-choose-veterinary-software", label: "How to Choose Vet Software" },
+      ],
+    },
+
+    "veterinary-software-for-multi-location-practices": {
+      title: "Veterinary Software for Multi-Location Practices: 2026 Guide | VetSoftwareHub",
+      description: "How to choose veterinary practice management software for multi-location and corporate veterinary groups. Features, pricing, and top picks for 2026.",
+      ogTitle: "Multi-Location Veterinary Software Guide 2026",
+      ogDescription: "The complete guide to vet software for practices with multiple locations. Features that matter and top picks.",
+      intro: "Managing multiple veterinary clinic locations introduces a whole new layer of operational complexity. You need centralized patient records that follow clients across locations, consolidated financial reporting across the organization, and consistent workflows that do not fragment into location-specific silos. Most entry-level veterinary PIMS are designed for single-location practices and will quickly become a bottleneck as you scale. This guide covers what to look for and which platforms actually deliver for multi-location operations.",
+      sections: [
+        {
+          heading: "What Features Multi-Location Practices Must Have",
+          body: "Not all veterinary software supports multi-location operations. Before evaluating any platform, confirm it includes all of the following:",
+          bullets: [
+            "Unified patient records: A client's pet record must be accessible from any location without data duplication",
+            "Centralized scheduling: Staff at location B should be able to schedule an appointment at location A",
+            "Consolidated reporting: Revenue, appointment volume, and clinical metrics must roll up across all locations",
+            "Role-based access control: Define who can see what data at which location",
+            "Location-specific configuration: Different fee schedules, appointment types, and staff assignments per location",
+            "Inventory management across locations: Transfer stock between locations and view group-wide inventory",
+          ],
+        },
+        {
+          heading: "Top PIMS for Multi-Location Veterinary Groups",
+          body: "Based on our evaluation, these platforms are the strongest options for multi-location veterinary practices:",
+          bullets: [
+            "ezyVet: The most customizable cloud PIMS — powerful multi-location workflows, consolidated reporting, and deep IDEXX integration",
+            "Digitail: Strong multi-location support with AI features — best for growing groups that want modern technology",
+            "Provet Cloud: Excellent inventory management and multi-location support — strong for international groups",
+            "Vetspire: Built for specialty and teaching hospitals — handles complex multi-location clinical workflows",
+            "Cornerstone (IDEXX): The gold standard for large IDEXX-committed hospital groups — but server-based",
+          ],
+        },
+        {
+          heading: "Pricing for Multi-Location Operations",
+          body: "Costs scale significantly for multi-location practices. Here is what to expect:",
+          bullets: [
+            "Per-location pricing: Tools like Shepherd and Hippo Manager charge per location — 3 locations = 3x the price",
+            "Per-veterinarian pricing: Digitail and Vetspire charge per vet — a 10-doctor group at $150/vet = $1,500/mo",
+            "Enterprise custom pricing: ezyVet and Provet Cloud negotiate custom contracts for groups with 3+ locations",
+            "Implementation costs are higher for multi-location: Budget $2,000-$10,000 for enterprise onboarding and migration",
+          ],
+        },
+        {
+          heading: "Integration Requirements for Groups",
+          body: "Multi-location groups often have tighter integration requirements than single-location practices:",
+          bullets: [
+            "Central lab connectivity: IDEXX and Antech integrations must work across all locations",
+            "Accounting system integration: QuickBooks or Xero integration must handle multi-entity reporting",
+            "Payroll and HR systems: Some groups need PIMS data to feed into workforce management tools",
+            "Inventory suppliers: Covetrus, Patterson, and other distributors need to integrate for group purchasing",
+          ],
+        },
+        {
+          heading: "Common Mistakes When Scaling Veterinary Software",
+          body: "Multi-location practices frequently make these avoidable mistakes when choosing or scaling their PIMS:",
+          bullets: [
+            "Starting with a single-location PIMS and trying to scale: Tools like VetBadger or Panacea Vet are not designed for this",
+            "Underestimating migration complexity: Moving 3+ locations of historical data requires careful planning",
+            "Not negotiating enterprise pricing: Groups have more leverage than single locations — negotiate aggressively",
+            "Skipping the consolidated reporting evaluation: Test multi-location reports before committing",
+            "Locking all locations into a contract before running a multi-location pilot: Test 1-2 locations first",
+          ],
+        },
+      ],
+      faqs: [
+        {
+          question: "Which veterinary software is best for multi-location practices?",
+          answer: "ezyVet is our top pick for large multi-location groups and enterprises, offering the most powerful customizable workflows and consolidated reporting. Digitail is the best choice for growing groups that want AI-powered features at a more accessible price point. Provet Cloud excels for groups with complex inventory management needs.",
+        },
+        {
+          question: "Can I use different software at different clinic locations?",
+          answer: "Technically yes, but we strongly advise against it. Using different PIMS across locations creates data silos, prevents centralized reporting, complicates staff training when people rotate between locations, and makes client record sharing impossible. The operational cost of fragmented software far exceeds any savings from using cheaper tools at some locations.",
+        },
+        {
+          question: "How does pricing work for multi-location veterinary groups?",
+          answer: "Pricing models vary significantly. Per-location tools like Shepherd multiply by location count. Per-veterinarian tools like Digitail multiply by doctor count. Enterprise tools like ezyVet use custom quotes negotiated for the group. Always request an enterprise pricing quote if you have 3+ locations — vendors often offer meaningful discounts for larger commitments.",
+        },
+        {
+          question: "How long does it take to roll out new software across multiple locations?",
+          answer: "A typical multi-location rollout takes 3-6 months from contract to full deployment. Best practice: pilot with one location first, refine the process, then roll out remaining locations in waves of 2-3 at a time. Rushing a multi-location rollout is the primary cause of catastrophic data loss and staff attrition.",
+        },
+      ],
+      relatedTools: ["ezyvet", "digitail", "provet-cloud", "vetspire"],
+      relatedLinks: [
+        { href: "/best/best-veterinary-software-for-multi-location", label: "Best Vet Software for Multi-Location" },
+        { href: "/best/best-veterinary-software-for-large-hospitals", label: "Best Vet Software for Large Hospitals" },
+        { href: "/reviews/ezyvet", label: "ezyVet Full Review" },
+        { href: "/guides/cloud-vs-server-veterinary-software", label: "Cloud vs Server Vet Software" },
+      ],
+    },
+
+    "ai-in-veterinary-practice-management": {
+      title: "AI in Veterinary Practice Management Software: 2026 Guide | VetSoftwareHub",
+      description: "How AI is changing veterinary PIMS in 2026. Automated SOAP notes, diagnostic support, and which tools actually deliver on their AI promises.",
+      ogTitle: "AI in Veterinary Software 2026: What's Real, What's Hype",
+      ogDescription: "The definitive guide to AI features in veterinary software — what works, what does not, and which tools to choose.",
+      intro: "Artificial intelligence has arrived in veterinary practice management software, but the marketing claims can be difficult to parse. Some vendors use 'AI' to mean sophisticated automation rules. Others have genuine machine learning that changes how veterinarians work day-to-day. This guide cuts through the hype to tell you what AI can actually do for your veterinary practice today, which tools deliver the most meaningful results, and what to watch out for.",
+      sections: [
+        {
+          heading: "What AI Actually Means in Veterinary Software",
+          body: "When vendors talk about 'AI' in their PIMS, they typically mean one of four things — ranging from genuine machine learning to simple automation that has been rebranded:",
+          bullets: [
+            "Automated SOAP notes: True AI that listens to or reads appointment data and generates structured clinical notes — the most valuable use case",
+            "Speech-to-text transcription: AI-powered voice recognition that converts spoken words to text in real time",
+            "Diagnostic decision support: AI that surfaces relevant clinical guidelines or drug interactions based on the patient record",
+            "Smart automation: Rule-based workflows for reminders, follow-ups, and waitlists — often called 'AI' but closer to advanced automation",
+            "Marketing AI: Vendors who label basic features as AI without meaningful machine learning behind them",
+          ],
+        },
+        {
+          heading: "AI-Powered SOAP Note Generation: The Game Changer",
+          body: "The single most impactful AI feature in veterinary software today is automated SOAP note generation. Documentation burden is a leading contributor to veterinary burnout, with some studies suggesting veterinarians spend 20-30% of their day on medical records. AI that genuinely reduces this burden is high-value.",
+          bullets: [
+            "Digitail (Tails AI): Automatically generates SOAP notes from appointment activity and prompts — saves 30-60 min/day per veterinarian",
+            "Onward Vet: Speech-to-text AI that transcribes the appointment in real time and structures it into SOAP format",
+            "Comparison: Both are meaningfully AI-powered, not just automation relabeling",
+            "ROI: At $100/hour clinical time, saving 1 hour/day = $2,000-2,500/month in recovered clinical capacity",
+          ],
+        },
+        {
+          heading: "Clinical Decision Support: What Is Available",
+          body: "A smaller set of PIMS offer features that go beyond documentation to help veterinarians during the clinical encounter:",
+          bullets: [
+            "Vetspire: Built-in clinical decision support originally designed for teaching hospitals — surfaces relevant protocols during patient care",
+            "This category is still early-stage — expect significant expansion over the next 2 years as LLMs integrate into clinical tools",
+            "Diagnostic AI (analyzing lab results, imaging) is still primarily handled by specialist tools outside PIMS",
+          ],
+        },
+        {
+          heading: "Which Practices Benefit Most from AI Features?",
+          body: "AI features are not equally valuable for every practice. Here is where the ROI is strongest:",
+          bullets: [
+            "High-volume general practices: More appointments = more documentation time saved",
+            "Solo veterinarians: Every hour saved on notes is directly recovered for patient care or personal time",
+            "Practices with documentation backlogs: If notes are routinely completed after hours, AI can reclaim that time",
+            "Growing practices: AI scales with volume without adding administrative staff",
+            "Practices with high associate turnover: AI reduces onboarding time for new veterinarians who join without deep note-taking habits",
+          ],
+        },
+        {
+          heading: "Questions to Ask AI-Powered PIMS Vendors",
+          body: "When a vendor claims AI features, ask these specific questions to separate genuine ML from marketing:",
+          bullets: [
+            "Is the AI trained on veterinary clinical data specifically, or is it a general language model?",
+            "How does the SOAP note generation work — does it require a template prompt, or does it learn from the appointment itself?",
+            "Can I see a live demo on a real case, not a pre-scripted example?",
+            "What is the accuracy rate on your clinical note generation? How is that measured?",
+            "What data is used to train the AI, and where is my practice data stored?",
+          ],
+        },
+      ],
+      faqs: [
+        {
+          question: "Does AI veterinary software actually work?",
+          answer: "For SOAP note generation specifically: yes, it works, and the time savings are real. Digitail's Tails AI and Onward Vet's speech-to-text have genuine user reviews documenting meaningful documentation time reduction. The quality varies by case complexity — straightforward wellness visits benefit most, while complex multi-system cases may still require significant manual editing.",
+        },
+        {
+          question: "Is AI in veterinary software safe for patient care?",
+          answer: "Current AI features in veterinary PIMS assist with documentation, not with clinical decisions. The veterinarian still makes all diagnostic and treatment decisions — the AI just reduces the time spent writing them up. Clinical decision support features (like those in Vetspire) surface guidelines but do not replace veterinary judgment. Always review AI-generated notes before finalizing.",
+        },
+        {
+          question: "How much extra does AI veterinary software cost?",
+          answer: "In most cases, AI features are bundled into the standard subscription rather than sold as a separate add-on. Digitail includes Tails AI in its base plan starting at $150/mo per veterinarian. Onward Vet starts at $99/mo per veterinarian with AI included. Compared to the time saved, the cost premium over non-AI PIMS is minimal.",
+        },
+        {
+          question: "What is the best AI veterinary software?",
+          answer: "For automated SOAP notes: Digitail (Tails AI) is the most established and widely reviewed AI PIMS in the market. Onward Vet is the most innovative but newer and less proven at scale. Both offer free trials — we recommend testing each with real clinical cases before deciding.",
+        },
+      ],
+      relatedTools: ["digitail", "onward-vet", "vetspire"],
+      relatedLinks: [
+        { href: "/best/best-veterinary-software-with-ai", label: "Best AI Veterinary Software" },
+        { href: "/reviews/digitail", label: "Digitail Review" },
+        { href: "/reviews/onward-vet", label: "Onward Vet Review" },
+        { href: "/guides/how-to-choose-veterinary-software", label: "How to Choose Vet Software" },
+      ],
+    },
+  };
+
+  return Object.keys(guides).map((slug) => ({
+    params: { slug },
+    props: { guide: guides[slug] },
+  }));
+}
+
+interface Props {
+  guide: GuideContent;
+}
+
+const { slug } = Astro.params;
+const { guide } = Astro.props;
+
+// Resolve related tools
+const relatedTools = guide.relatedTools
+  .map((s) => getToolBySlug(s))
+  .filter(Boolean) as any[];
+
+// Build FAQ schema
+const faqSchemaJson = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: guide.faqs.map((f) => ({
+    "@type": "Question",
+    name: f.question,
+    acceptedAnswer: { "@type": "Answer", text: f.answer },
+  })),
+});
+
+const articleSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: guide.title,
+  description: guide.description,
+  author: { "@type": "Organization", name: "VetSoftwareHub" },
+  datePublished: "2026-02-25",
+  dateModified: "2026-02-25",
+});
+---
+
+<BaseLayout
+  title={guide.title}
+  description={guide.description}
+  canonical={`https://vetsoftwarehub.com/guides/${slug}`}
+  ogTitle={guide.ogTitle}
+  ogDescription={guide.ogDescription}
+  schema={{ "@context": "https://schema.org", "@type": "Article", headline: guide.ogTitle }}
+>
+  <!-- Breadcrumb -->
+  <div class="mb-6 flex flex-wrap gap-2 text-xs">
+    <a href="/" class="text-navy-400 hover:text-accent-600 transition-colors">Home</a>
+    <span class="text-navy-300">/</span>
+    <a href="/guides" class="text-navy-400 hover:text-accent-600 transition-colors">Guides</a>
+    <span class="text-navy-300">/</span>
+    <span class="text-navy-600">{guide.ogTitle}</span>
+  </div>
+
+  <!-- Header -->
+  <header class="mb-10">
+    <h1 class="font-heading text-3xl font-bold text-navy-900 sm:text-4xl leading-tight">
+      {guide.ogTitle}
+    </h1>
+    <p class="mt-4 text-lg leading-relaxed text-navy-600">{guide.intro}</p>
+    <div class="mt-4 flex flex-wrap gap-4 text-xs text-navy-400">
+      <span>By VetSoftwareHub Editorial Team</span>
+      <span>Last updated: February 2026</span>
+    </div>
+  </header>
+
+  <!-- Table of Contents -->
+  <nav class="mb-10 rounded-xl border border-navy-100 bg-navy-50/30 p-5" aria-label="Table of contents">
+    <h2 class="font-heading text-sm font-bold uppercase tracking-wider text-navy-500">In This Guide</h2>
+    <ol class="mt-3 space-y-1.5">
+      {guide.sections.map((section, i) => (
+        <li class="flex items-start gap-2">
+          <span class="shrink-0 text-xs font-bold text-accent-500">{i + 1}.</span>
+          <a href={`#section-${i}`} class="text-sm text-accent-600 hover:text-accent-700 transition-colors">
+            {section.heading}
+          </a>
+        </li>
+      ))}
+      <li class="flex items-start gap-2">
+        <span class="shrink-0 text-xs font-bold text-accent-500">{guide.sections.length + 1}.</span>
+        <a href="#faq" class="text-sm text-accent-600 hover:text-accent-700 transition-colors">FAQ</a>
+      </li>
+    </ol>
+  </nav>
+
+  <!-- Sections -->
+  <div class="space-y-12 mb-14">
+    {guide.sections.map((section, i) => (
+      <section id={`section-${i}`}>
+        <h2 class="font-heading text-2xl font-bold text-navy-900 sm:text-3xl">
+          {i + 1}. {section.heading}
+        </h2>
+        <p class="mt-4 text-base leading-relaxed text-navy-600">{section.body}</p>
+        {section.bullets && (
+          <ul class="mt-4 space-y-2">
+            {section.bullets.map((bullet) => (
+              <li class="flex items-start gap-2 text-sm text-navy-700">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="mt-0.5 h-4 w-4 shrink-0 text-accent-500" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+                </svg>
+                <span>{bullet}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+    ))}
+  </div>
+
+  <!-- Related Tools -->
+  {relatedTools.length > 0 && (
+    <section class="mb-14">
+      <h2 class="font-heading text-2xl font-bold text-navy-900">Tools Referenced in This Guide</h2>
+      <div class="mt-6 grid gap-4 sm:grid-cols-3">
+        {relatedTools.map((tool: any) => (
+          <div class="rounded-xl border border-navy-100 bg-white p-5 shadow-sm">
+            <h3 class="font-heading text-base font-bold text-navy-900">{tool.name}</h3>
+            <p class="mt-1 text-xs text-navy-500">{tool.tagline}</p>
+            <p class="mt-2 text-sm font-semibold text-navy-800">
+              {tool.starting_price_monthly !== null ? `From $${tool.starting_price_monthly}/mo` : "Custom pricing"}
+            </p>
+            <div class="mt-3 flex gap-2">
+              <a
+                href={`/reviews/${tool.slug}`}
+                class="text-xs font-medium text-accent-600 hover:text-accent-700 transition-colors"
+              >
+                Read review →
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- Email Capture -->
+  <div class="mb-14">
+    <EmailCapture
+      heading="Get Our Free Vet Software Buyer's Guide"
+      subheading="The complete guide to choosing, pricing, and switching veterinary PIMS. Join 1,000+ practice managers."
+    />
+  </div>
+
+  <!-- FAQ -->
+  <section id="faq" class="mb-14">
+    <h2 class="font-heading text-2xl font-bold text-navy-900">
+      {guide.sections.length + 1}. Frequently Asked Questions
+    </h2>
+    <div class="mt-6 space-y-3">
+      {guide.faqs.map((faq) => (
+        <details class="group rounded-lg border border-navy-100 bg-white">
+          <summary class="flex cursor-pointer items-center justify-between p-5 font-heading font-semibold text-navy-800 transition-colors hover:text-accent-600">
+            {faq.question}
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 shrink-0 text-navy-400 transition-transform group-open:rotate-180" aria-hidden="true">
+              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+            </svg>
+          </summary>
+          <div class="border-t border-navy-100 px-5 py-4 text-sm leading-relaxed text-navy-600">
+            {faq.answer}
+          </div>
+        </details>
+      ))}
+    </div>
+  </section>
+
+  <!-- Related Links -->
+  <nav class="rounded-xl border border-navy-100 bg-white p-6" aria-label="Related content">
+    <h3 class="font-heading text-lg font-bold text-navy-900">Related Resources</h3>
+    <ul class="mt-4 grid gap-2 sm:grid-cols-2">
+      {guide.relatedLinks.map((link) => (
+        <li>
+          <a href={link.href} class="text-sm text-accent-600 underline decoration-accent-200 underline-offset-2 hover:text-accent-700 hover:decoration-accent-400 transition-colors">
+            {link.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+
+  <!-- Schema -->
+  <script type="application/ld+json" set:html={faqSchemaJson} />
+  <script type="application/ld+json" set:html={articleSchema} />
+</BaseLayout>

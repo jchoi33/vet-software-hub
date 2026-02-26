@@ -1,0 +1,177 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import EmailCapture from "../../components/EmailCapture.astro";
+import SectionHeader from "../../components/SectionHeader.astro";
+
+// Hardcoded — mirrors exact slugs in guides/[slug].astro getStaticPaths
+const guides = [
+  {
+    slug: "how-to-choose-veterinary-software",
+    emoji: "📋",
+    title: "How to Choose Veterinary Software",
+    description: "A step-by-step framework for evaluating and selecting the right PIMS for your practice. Covers budget, practice type, deployment model, and switching costs.",
+    readingTime: "12 min read",
+    tag: "Buyer's Guide",
+    tagBg: "#eef3fb",
+    tagColor: "#1e3d6f",
+  },
+  {
+    slug: "veterinary-software-pricing-guide",
+    emoji: "💰",
+    title: "Veterinary Software Pricing Guide",
+    description: "Everything you need to know about PIMS pricing: what's included, what's hidden, and how to negotiate better rates. With a full tier breakdown across all 25 tools.",
+    readingTime: "10 min read",
+    tag: "Pricing",
+    tagBg: "#fffbeb",
+    tagColor: "#b45309",
+  },
+  {
+    slug: "cloud-vs-server-veterinary-software",
+    emoji: "☁️",
+    title: "Cloud vs Server Veterinary Software",
+    description: "Which deployment model is right for your clinic? We compare uptime, security, cost, and control between cloud-based and on-premise PIMS solutions.",
+    readingTime: "8 min read",
+    tag: "Deep Dive",
+    tagBg: "#f0fdfa",
+    tagColor: "#0f766e",
+  },
+  {
+    slug: "veterinary-software-for-multi-location-practices",
+    emoji: "📍",
+    title: "Veterinary Software for Multi-Location Practices",
+    description: "Managing two or more clinics? This guide covers what to look for in a multi-site PIMS: centralized billing, shared records, and consolidated reporting.",
+    readingTime: "9 min read",
+    tag: "Use Case Guide",
+    tagBg: "#eef3fb",
+    tagColor: "#1e3d6f",
+  },
+  {
+    slug: "ai-in-veterinary-practice-management",
+    emoji: "🤖",
+    title: "AI in Veterinary Practice Management",
+    description: "AI SOAP notes, predictive scheduling, and automated charge capture are reshaping vet workflows. Here's what's real, what's hype, and what to look for in 2026.",
+    readingTime: "11 min read",
+    tag: "Trends",
+    tagBg: "#fdf4ff",
+    tagColor: "#7e22ce",
+  },
+];
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  name: "Veterinary Software Guides",
+  description: "In-depth buyer's guides and how-tos for choosing and using veterinary practice management software.",
+  url: "https://vetsoftwares.com/guides",
+  breadcrumb: {
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://vetsoftwares.com" },
+      { "@type": "ListItem", position: 2, name: "Guides", item: "https://vetsoftwares.com/guides" },
+    ],
+  },
+};
+---
+
+<BaseLayout
+  title="Veterinary Software Guides 2026 — Buyer's Guides & How-Tos | VetSoftwares"
+  description="In-depth guides for choosing veterinary practice management software. Covers pricing, cloud vs server, multi-location, AI features, and how to evaluate PIMS."
+  canonical="https://vetsoftwares.com/guides"
+  schema={schema}
+>
+
+  <!-- ═══ HERO ═══ -->
+  <section style="background:linear-gradient(135deg,#0a1628 0%,#162d54 60%,#0f2140 100%); margin:0 -1.5rem; padding:0 1.5rem;">
+    <div class="container-wide" style="padding-top:4rem; padding-bottom:4rem; text-align:center;">
+
+      <!-- Breadcrumb -->
+      <nav style="margin-bottom:1.5rem;">
+        <ol style="display:inline-flex; align-items:center; gap:0.5rem; list-style:none; padding:0; margin:0; font-family:var(--font-body); font-size:0.8rem; color:#6b90c8;">
+          <li><a href="/" style="color:#6b90c8; text-decoration:none;">Home</a></li>
+          <li style="opacity:0.5;">/</li>
+          <li style="color:#b9d0ef; font-weight:600;">Guides</li>
+        </ol>
+      </nav>
+
+      <!-- Badge -->
+      <div style="display:inline-flex; align-items:center; gap:0.5rem; background:rgba(45,212,191,0.12); border:1px solid rgba(45,212,191,0.3); border-radius:999px; padding:0.35rem 1rem; margin-bottom:1.5rem;">
+        <span style="font-family:var(--font-body); font-size:0.72rem; font-weight:700; letter-spacing:0.06em; color:#2dd4bf; text-transform:uppercase;">Updated February 2026</span>
+      </div>
+
+      <h1 style="font-family:var(--font-heading); font-size:clamp(1.75rem,4vw,3rem); font-weight:900; color:white; line-height:1.2; margin:0 auto 1rem; max-width:700px;">
+        Veterinary Software Guides
+      </h1>
+      <p style="font-family:var(--font-body); font-size:1.0625rem; color:#b9d0ef; line-height:1.7; max-width:560px; margin:0 auto 2.5rem;">
+        In-depth buyer's guides and how-tos written for practice managers — not IT departments. Plain language, real decisions.
+      </p>
+
+      <!-- Stat cards -->
+      <div style="display:inline-flex; gap:1rem; flex-wrap:wrap; justify-content:center;">
+        {[
+          { stat: String(guides.length), label: "In-Depth Guides" },
+          { stat: "Free", label: "Always" },
+          { stat: "2026", label: "Data Current" },
+        ].map((item) => (
+          <div style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12); border-radius:12px; padding:0.875rem 1.25rem; text-align:center; min-width:110px;">
+            <div style="font-family:var(--font-mono); font-size:1.5rem; font-weight:700; color:#2dd4bf; line-height:1;">{item.stat}</div>
+            <div style="font-family:var(--font-body); font-size:0.72rem; color:#96b8e7; margin-top:0.25rem; font-weight:500;">{item.label}</div>
+          </div>
+        ))}
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══ GUIDES LIST ═══ -->
+  <section style="background:#f5f5f4; margin:0 -1.5rem; padding:0 1.5rem;">
+    <div class="container-wide" style="padding-top:4rem; padding-bottom:4.5rem;">
+
+      <SectionHeader
+        label="All Guides"
+        title="Everything You Need to Decide"
+        subtitle="Each guide is written to answer a specific question vet practice managers actually have."
+        align="center"
+      />
+
+      <div style="display:flex; flex-direction:column; gap:1.25rem; margin-top:2.5rem; max-width:800px; margin-left:auto; margin-right:auto;">
+        {guides.map(({ slug, emoji, title, description, readingTime, tag, tagBg, tagColor }) => (
+          <a
+            href={"/guides/" + slug}
+            style="display:flex; align-items:flex-start; gap:1.25rem; background:white; border:1px solid #e7e5e4; border-radius:14px; padding:1.5rem 1.75rem; text-decoration:none; transition:box-shadow 0.2s, border-color 0.2s, transform 0.2s;"
+            onmouseover="this.style.boxShadow='0 8px 24px rgba(0,0,0,0.08)';this.style.borderColor='#b9d0ef';this.style.transform='translateY(-2px)';"
+            onmouseout="this.style.boxShadow='none';this.style.borderColor='#e7e5e4';this.style.transform='none';"
+          >
+            <!-- Emoji icon -->
+            <div style="width:52px; height:52px; background:#f5f5f4; border:1px solid #e7e5e4; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:1.5rem;">
+              {emoji}
+            </div>
+
+            <!-- Content -->
+            <div style="flex:1; min-width:0;">
+              <div style="display:flex; align-items:center; gap:0.625rem; flex-wrap:wrap; margin-bottom:0.4rem;">
+                <span style={"font-family:var(--font-body); font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; background:" + tagBg + "; color:" + tagColor + "; border-radius:999px; padding:0.2rem 0.625rem;"}>
+                  {tag}
+                </span>
+                <span style="font-family:var(--font-body); font-size:0.75rem; color:#a8a29e;">{readingTime}</span>
+              </div>
+              <h2 style="font-family:var(--font-heading); font-size:1.0625rem; font-weight:700; color:#0a1628; margin:0 0 0.4rem; line-height:1.3;">{title}</h2>
+              <p style="font-family:var(--font-body); font-size:0.8375rem; color:#78716c; margin:0; line-height:1.6;">{description}</p>
+            </div>
+
+            <!-- Arrow -->
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="width:18px;height:18px;color:#0d9488;flex-shrink:0;margin-top:4px;">
+              <path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L11.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 11-1.04-1.08l3.158-2.96H3.75A.75.75 0 013 10z" clip-rule="evenodd" />
+            </svg>
+          </a>
+        ))}
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══ NEWSLETTER ═══ -->
+  <section style="margin:0 -1.5rem; padding:0 1.5rem;">
+    <EmailCapture variant="dark" />
+  </section>
+
+</BaseLayout>

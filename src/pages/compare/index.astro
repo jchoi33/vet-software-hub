@@ -1,0 +1,203 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import EmailCapture from "../../components/EmailCapture.astro";
+import SectionHeader from "../../components/SectionHeader.astro";
+import { getAllTools, getAllComparisonPairs, getComparisonSlug, getAverageRating, getPricingDisplay } from "../../utils/tools";
+import type { Tool } from "../../utils/tools";
+
+const allTools = getAllTools();
+const allPairs = getAllComparisonPairs();
+const pairCount = allPairs.length;
+
+// Popular comparisons — 12 hand-curated pairs
+const popularComparisons = [
+  { slugA: "digitail", slugB: "ezyvet" },
+  { slugA: "digitail", slugB: "shepherd" },
+  { slugA: "ezyvet", slugB: "vetspire" },
+  { slugA: "shepherd", slugB: "hippo-manager" },
+  { slugA: "daysmart-vet", slugB: "hippo-manager" },
+  { slugA: "ezyvet", slugB: "cornerstone" },
+  { slugA: "shepherd", slugB: "vetbadger" },
+  { slugA: "digitail", slugB: "daysmart-vet" },
+  { slugA: "ezyvet", slugB: "provet-cloud" },
+  { slugA: "digitail", slugB: "vetspire" },
+  { slugA: "shepherd", slugB: "daysmart-vet" },
+  { slugA: "hippo-manager", slugB: "vetbadger" },
+];
+
+// Build popular pair cards with display data
+const toolMap = new Map(allTools.map((t) => [t.slug, t]));
+
+const popularCards = popularComparisons
+  .map(({ slugA, slugB }) => {
+    const a = toolMap.get(slugA);
+    const b = toolMap.get(slugB);
+    if (!a || !b) return null;
+    const slug = getComparisonSlug(a, b);
+    const priceA = a.starting_price_monthly ? "$" + a.starting_price_monthly + "/mo" : "Custom";
+    const priceB = b.starting_price_monthly ? "$" + b.starting_price_monthly + "/mo" : "Custom";
+    return { a, b, slug, priceA, priceB, label: a.name + " vs " + b.name };
+  })
+  .filter(Boolean) as { a: Tool; b: Tool; slug: string; priceA: string; priceB: string; label: string }[];
+
+// Group ALL pairs by alphabetically-first tool name
+type PairEntry = { slug: string; otherName: string; otherSlug: string };
+const groupedPairs: Record<string, PairEntry[]> = {};
+
+for (const [toolA, toolB] of allPairs) {
+  const slug = getComparisonSlug(toolA, toolB);
+  // getComparisonSlug sorts alphabetically, so sorted[0] is always the "first" tool
+  const sorted = [toolA, toolB].sort((a, b) => a.slug.localeCompare(b.slug));
+  const groupName = sorted[0].name;
+  const otherName = sorted[1].name;
+  const otherSlug = sorted[1].slug;
+  if (!groupedPairs[groupName]) groupedPairs[groupName] = [];
+  groupedPairs[groupName].push({ slug, otherName, otherSlug });
+}
+
+const sortedGroups = Object.entries(groupedPairs).sort(([a], [b]) => a.localeCompare(b));
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  name: "Veterinary Software Comparisons",
+  description: pairCount + " side-by-side veterinary practice management software comparisons.",
+  url: "https://vetsoftwares.com/compare",
+  breadcrumb: {
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://vetsoftwares.com" },
+      { "@type": "ListItem", position: 2, name: "Compare", item: "https://vetsoftwares.com/compare" },
+    ],
+  },
+};
+---
+
+<BaseLayout
+  title={"Veterinary Software Comparisons 2026 — " + pairCount + " Side-by-Side Reviews | VetSoftwares"}
+  description={"Browse " + pairCount + " veterinary practice management software comparisons. Side-by-side pricing, features, and honest recommendations for every major PIMS pairing."}
+  canonical="https://vetsoftwares.com/compare"
+  schema={schema}
+>
+
+  <!-- ═══ HERO ═══ -->
+  <section style="background:linear-gradient(135deg,#0a1628 0%,#162d54 60%,#0f2140 100%); margin:0 -1.5rem; padding:0 1.5rem;">
+    <div class="container-wide" style="padding-top:4rem; padding-bottom:4rem; text-align:center;">
+
+      <!-- Breadcrumb -->
+      <nav style="margin-bottom:1.5rem;">
+        <ol style="display:inline-flex; align-items:center; gap:0.5rem; list-style:none; padding:0; margin:0; font-family:var(--font-body); font-size:0.8rem; color:#6b90c8;">
+          <li><a href="/" style="color:#6b90c8; text-decoration:none;">Home</a></li>
+          <li style="opacity:0.5;">/</li>
+          <li style="color:#b9d0ef; font-weight:600;">Compare</li>
+        </ol>
+      </nav>
+
+      <!-- Badge -->
+      <div style="display:inline-flex; align-items:center; gap:0.5rem; background:rgba(45,212,191,0.12); border:1px solid rgba(45,212,191,0.3); border-radius:999px; padding:0.35rem 1rem; margin-bottom:1.5rem;">
+        <span style="font-family:var(--font-body); font-size:0.72rem; font-weight:700; letter-spacing:0.06em; color:#2dd4bf; text-transform:uppercase;">Updated February 2026</span>
+      </div>
+
+      <h1 style="font-family:var(--font-heading); font-size:clamp(1.75rem,4vw,3rem); font-weight:900; color:white; line-height:1.2; margin:0 auto 1rem; max-width:700px;">
+        Veterinary Software Comparisons
+      </h1>
+      <p style="font-family:var(--font-body); font-size:1.0625rem; color:#b9d0ef; line-height:1.7; max-width:560px; margin:0 auto 2.5rem;">
+        Every major PIMS paired against every other — with honest feature, pricing, and fit analysis. Zero vendor bias.
+      </p>
+
+      <!-- Stat cards -->
+      <div style="display:inline-flex; gap:1rem; flex-wrap:wrap; justify-content:center;">
+        {[
+          { stat: String(pairCount), label: "Comparisons" },
+          { stat: String(allTools.length), label: "Tools Covered" },
+          { stat: "2026", label: "Data Current" },
+        ].map((item) => (
+          <div style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12); border-radius:12px; padding:0.875rem 1.25rem; text-align:center; min-width:110px;">
+            <div style="font-family:var(--font-mono); font-size:1.5rem; font-weight:700; color:#2dd4bf; line-height:1;">{item.stat}</div>
+            <div style="font-family:var(--font-body); font-size:0.72rem; color:#96b8e7; margin-top:0.25rem; font-weight:500;">{item.label}</div>
+          </div>
+        ))}
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══ POPULAR COMPARISONS ═══ -->
+  <section class="container-wide" style="padding-top:4rem; padding-bottom:4rem;">
+
+    <SectionHeader
+      label="Most Viewed"
+      title="Popular Comparisons"
+      subtitle="The matchups vet practice managers search for most — broken down feature by feature."
+      align="center"
+    />
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1rem; margin-top:2.5rem;">
+      {popularCards.map(({ a, b, slug, priceA, priceB, label }) => (
+        <a
+          href={"/compare/" + slug}
+          style="display:block; background:white; border:1px solid #e7e5e4; border-radius:12px; padding:1.25rem 1.375rem; text-decoration:none; transition:box-shadow 0.2s, border-color 0.2s, transform 0.2s;"
+          onmouseover="this.style.boxShadow='0 8px 24px rgba(0,0,0,0.08)';this.style.borderColor='#b9d0ef';this.style.transform='translateY(-2px)';"
+          onmouseout="this.style.boxShadow='none';this.style.borderColor='#e7e5e4';this.style.transform='none';"
+        >
+          <!-- Tool A -->
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.5rem;">
+            <span style="font-family:var(--font-heading); font-size:0.9375rem; font-weight:700; color:#0a1628;">{a.name}</span>
+            <span style="font-family:var(--font-mono); font-size:0.775rem; color:#78716c;">{priceA}</span>
+          </div>
+          <!-- VS divider -->
+          <div style="font-family:var(--font-body); font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:#b0a99a; margin-bottom:0.5rem;">vs</div>
+          <!-- Tool B -->
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
+            <span style="font-family:var(--font-heading); font-size:0.9375rem; font-weight:700; color:#0a1628;">{b.name}</span>
+            <span style="font-family:var(--font-mono); font-size:0.775rem; color:#78716c;">{priceB}</span>
+          </div>
+          <div style="font-family:var(--font-body); font-size:0.8rem; font-weight:600; color:#0d9488;">Compare →</div>
+        </a>
+      ))}
+    </div>
+
+  </section>
+
+  <!-- ═══ BROWSE ALL ═══ -->
+  <section style="background:#f5f5f4; margin:0 -1.5rem; padding:0 1.5rem;">
+    <div class="container-wide" style="padding-top:4rem; padding-bottom:4.5rem;">
+
+      <SectionHeader
+        label="Full Index"
+        title={"All " + pairCount + " Comparisons"}
+        subtitle="Browse every pairing, grouped by tool."
+        align="center"
+      />
+
+      <div style="margin-top:2.5rem; display:flex; flex-direction:column; gap:2rem;">
+        {sortedGroups.map(([groupName, pairs]) => (
+          <div>
+            <h3 style="font-family:var(--font-heading); font-size:1rem; font-weight:700; color:#0a1628; margin:0 0 0.75rem; padding-bottom:0.5rem; border-bottom:1px solid #e7e5e4;">
+              {groupName} vs…
+            </h3>
+            <div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
+              {pairs.map(({ slug, otherName }) => (
+                <a
+                  href={"/compare/" + slug}
+                  style="font-family:var(--font-body); font-size:0.8rem; font-weight:600; color:#1e3d6f; background:#eef3fb; border:1px solid #b9d0ef; border-radius:999px; padding:0.3rem 0.85rem; text-decoration:none; transition:background 0.15s;"
+                  onmouseover="this.style.background='#dce8f7';"
+                  onmouseout="this.style.background='#eef3fb';"
+                >
+                  {otherName}
+                </a>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══ NEWSLETTER ═══ -->
+  <section style="margin:0 -1.5rem; padding:0 1.5rem;">
+    <EmailCapture variant="dark" />
+  </section>
+
+</BaseLayout>

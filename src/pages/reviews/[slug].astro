@@ -10,9 +10,7 @@ import type { Tool } from "../../utils/tools";
 import { getReviewMeta } from "../../utils/seo";
 
 export function getStaticPaths() {
-  const reviewSlugs = ['digitail', 'ezyvet', 'shepherd', 'daysmart-vet', 'vetspire'];
-  const tools = getAllTools().filter(t => reviewSlugs.includes(t.slug));
-  return tools.map((tool) => ({
+  return getAllTools().map((tool) => ({
     params: { slug: tool.slug },
     props: { tool },
   }));
@@ -67,6 +65,71 @@ function getCompetitors(slug: string): Competitor[] {
       { name: "ezyVet", slug: "ezyvet", price: "From $250/mo", rating: "4.5", bestFor: "Large hospitals" },
       { name: "Digitail", slug: "digitail", price: "From $150/mo", rating: "4.8", bestFor: "Growing practices" },
       { name: "Shepherd", slug: "shepherd", price: "From $99/mo", rating: "4.9", bestFor: "Start-up practices" },
+    ],
+    "covetrus-ascend": [
+      { name: "ezyVet", slug: "ezyvet", price: "From $250/mo", rating: "4.5", bestFor: "Large hospitals" },
+      { name: "Digitail", slug: "digitail", price: "From $150/mo", rating: "4.8", bestFor: "AI-forward teams" },
+      { name: "Provet Cloud", slug: "provet-cloud", price: "From $169/mo", rating: "4.4", bestFor: "International clinics" },
+    ],
+    "hippo-manager": [
+      { name: "Shepherd", slug: "shepherd", price: "From $99/mo", rating: "4.9", bestFor: "Start-up practices" },
+      { name: "DaySmart Vet", slug: "daysmart-vet", price: "From $120/mo", rating: "4.3", bestFor: "Client communication" },
+      { name: "VetBadger", slug: "vetbadger", price: "From $99/mo", rating: "4.5", bestFor: "Work-life balance" },
+    ],
+    "provet-cloud": [
+      { name: "ezyVet", slug: "ezyvet", price: "From $250/mo", rating: "4.5", bestFor: "Large hospitals" },
+      { name: "Digitail", slug: "digitail", price: "From $150/mo", rating: "4.8", bestFor: "Growing practices" },
+      { name: "Covetrus Ascend", slug: "covetrus-ascend", price: "From $200/mo", rating: "3.9", bestFor: "Covetrus ecosystem" },
+    ],
+    avimark: [
+      { name: "Cornerstone", slug: "cornerstone", price: "Custom pricing", rating: "3.7", bestFor: "IDEXX practices" },
+      { name: "Neo (IDEXX)", slug: "neo", price: "From $200/mo", rating: "4.1", bestFor: "Cloud migration" },
+      { name: "ezyVet", slug: "ezyvet", price: "From $250/mo", rating: "4.5", bestFor: "Large hospitals" },
+    ],
+    cornerstone: [
+      { name: "AVImark", slug: "avimark", price: "One-time license", rating: "3.7", bestFor: "On-premise legacy" },
+      { name: "Neo (IDEXX)", slug: "neo", price: "From $200/mo", rating: "4.1", bestFor: "Cloud migration" },
+      { name: "ezyVet", slug: "ezyvet", price: "From $250/mo", rating: "4.5", bestFor: "Large hospitals" },
+    ],
+    neo: [
+      { name: "Cornerstone", slug: "cornerstone", price: "Custom pricing", rating: "3.7", bestFor: "On-premise legacy" },
+      { name: "ezyVet", slug: "ezyvet", price: "From $250/mo", rating: "4.5", bestFor: "Enterprise hospitals" },
+      { name: "Digitail", slug: "digitail", price: "From $150/mo", rating: "4.8", bestFor: "AI-forward teams" },
+    ],
+    vetport: [
+      { name: "Shepherd", slug: "shepherd", price: "From $99/mo", rating: "4.9", bestFor: "Start-up practices" },
+      { name: "Hippo Manager", slug: "hippo-manager", price: "From $120/mo", rating: "4.5", bestFor: "Simple interface" },
+      { name: "AcuroVet", slug: "acurovet", price: "Free plan", rating: "4.3", bestFor: "Mobile/ambulatory" },
+    ],
+    petdesk: [
+      { name: "Weave", slug: "weave", price: "From $399/mo", rating: "4.2", bestFor: "Phone + communication" },
+      { name: "DaySmart Vet", slug: "daysmart-vet", price: "From $120/mo", rating: "4.3", bestFor: "Full PIMS + comms" },
+      { name: "Digitail", slug: "digitail", price: "From $150/mo", rating: "4.8", bestFor: "All-in-one platform" },
+    ],
+    "onward-vet": [
+      { name: "Digitail", slug: "digitail", price: "From $150/mo", rating: "4.8", bestFor: "AI-forward teams" },
+      { name: "Shepherd", slug: "shepherd", price: "From $99/mo", rating: "4.9", bestFor: "Start-up practices" },
+      { name: "DaySmart Vet", slug: "daysmart-vet", price: "From $120/mo", rating: "4.3", bestFor: "Client communication" },
+    ],
+    panacea: [
+      { name: "Shepherd", slug: "shepherd", price: "From $99/mo", rating: "4.9", bestFor: "Start-up practices" },
+      { name: "Hippo Manager", slug: "hippo-manager", price: "From $120/mo", rating: "4.5", bestFor: "Simple interface" },
+      { name: "Digitail", slug: "digitail", price: "From $150/mo", rating: "4.8", bestFor: "Growing practices" },
+    ],
+    acurovet: [
+      { name: "VETport", slug: "vetport", price: "From $99/mo", rating: "4.1", bestFor: "Budget practices" },
+      { name: "Shepherd", slug: "shepherd", price: "From $99/mo", rating: "4.9", bestFor: "Start-up practices" },
+      { name: "Hippo Manager", slug: "hippo-manager", price: "From $120/mo", rating: "4.5", bestFor: "Simple interface" },
+    ],
+    vetbadger: [
+      { name: "Shepherd", slug: "shepherd", price: "From $99/mo", rating: "4.9", bestFor: "Start-up practices" },
+      { name: "Hippo Manager", slug: "hippo-manager", price: "From $120/mo", rating: "4.5", bestFor: "Small practices" },
+      { name: "DaySmart Vet", slug: "daysmart-vet", price: "From $120/mo", rating: "4.3", bestFor: "Client communication" },
+    ],
+    weave: [
+      { name: "PetDesk", slug: "petdesk", price: "From $200/mo", rating: "4.5", bestFor: "Client engagement" },
+      { name: "DaySmart Vet", slug: "daysmart-vet", price: "From $120/mo", rating: "4.3", bestFor: "Full PIMS + comms" },
+      { name: "Digitail", slug: "digitail", price: "From $150/mo", rating: "4.8", bestFor: "All-in-one platform" },
     ],
   };
   return competitorMap[slug] || [];
@@ -201,6 +264,289 @@ function getToolContent(t: Tool): ToolContent {
         "Referral management": "Tools for managing incoming and outgoing referrals, a critical feature for specialty and teaching hospital environments.",
       },
       verdictSummary: `Vetspire is our top pick for specialty clinics, teaching hospitals, and data-driven practices that need clinical decision support and advanced analytics beyond what general-purpose PIMS can offer. At $${t.starting_price_monthly}/mo it is a premium investment, but the depth of clinical tooling makes it worthwhile for practices operating at a higher level of complexity.`,
+    },
+    "covetrus-ascend": {
+      whatIs: [
+        `${t.name} is a ${t.tagline.toLowerCase()} introduced in ${t.founded} by Covetrus, a global animal health technology company headquartered in ${t.hq}. It is designed for practices that are already embedded in the Covetrus ecosystem and want a cloud-based PIMS that integrates seamlessly with Covetrus supply ordering and distribution.`,
+        `The platform is ${t.deployment.toLowerCase()} and targets ${t.practice_types.join(", ").toLowerCase()} practice types. We found Covetrus Ascend to be most compelling for practices that are heavy Covetrus supply purchasers — the supply chain integration saves meaningful admin time on ordering and inventory reconciliation. However, practices without a Covetrus relationship get less from the platform.`,
+        `Pricing starts at approximately $${t.starting_price_monthly}/mo with a ${t.pricing_model.toLowerCase()} structure. No free trial is available, so we recommend requesting a demo before committing.`,
+      ],
+      lookElsewhere: [
+        "Practices not already in the Covetrus ecosystem will miss the platform's core differentiator — the supply chain integration. Standalone practices should consider more flexible options like Digitail or ezyVet.",
+        "Practices that want a free trial before committing should look elsewhere, as Covetrus Ascend does not offer one.",
+        "Clinics that value a large integration ecosystem with third-party tools may find Covetrus Ascend's connectivity more limited than competitors.",
+      ],
+      featureDescriptions: {
+        "EMR": "Electronic medical records with clinical note templates and treatment tracking for common practice workflows.",
+        "Inventory management": "Tight integration with Covetrus supply ordering, allowing practices to reorder products directly from the PIMS with streamlined fulfillment.",
+        "Supply ordering integration": "The platform's standout feature — direct connection to Covetrus distribution for seamless product ordering and cost management.",
+        "Client communication": "Automated appointment reminders and follow-up messaging to reduce no-shows and keep pet owners informed.",
+        "Reporting": "Practice-level reporting covering revenue, appointments, and inventory usage.",
+        "Prescription management": "Track and manage prescriptions within the platform with tie-ins to Covetrus pharmacy and supply services.",
+      },
+      verdictSummary: `Covetrus Ascend is the right choice for practices that are already Covetrus customers and want their PIMS and supply ordering to work together seamlessly. The supply chain integration is genuinely useful. However, practices without a Covetrus relationship, or those that want more flexibility, will find stronger options elsewhere. At approximately $${t.starting_price_monthly}/mo with custom quotes, we recommend getting a detailed demo before committing.`,
+    },
+    "hippo-manager": {
+      whatIs: [
+        `${t.name} is a ${t.tagline.toLowerCase()} that has been serving veterinary practices since ${t.founded}. Built and operated in the ${t.hq}, Hippo Manager is a cloud-based PIMS that prioritizes simplicity and ease of use above all else. Its target audience is the independent small animal practice that wants modern cloud software without enterprise complexity or price tags.`,
+        `We found Hippo Manager to be one of the cleanest, most approachable interfaces in the veterinary PIMS market. There is nothing superfluous. The platform is ${t.deployment.toLowerCase()} and designed for ${t.practice_types.join(", ").toLowerCase()} practice types. It covers the core workflows a general practice needs: scheduling, medical records, invoicing, inventory, and reminders.`,
+        `At $${t.starting_price_monthly}/mo per practice with a ${t.pricing_model.toLowerCase()} structure, Hippo Manager is among the more affordable cloud PIMS options. A free trial is available, which we strongly recommend taking advantage of.`,
+      ],
+      lookElsewhere: [
+        "Large hospitals and multi-location enterprises that need advanced customization, complex reporting, or multi-location management should consider ezyVet or Provet Cloud instead.",
+        "Practices that want AI-powered features like automated SOAP note generation should look at Digitail or Onward Vet. Hippo Manager does not offer AI clinical tools.",
+        "Clinics that depend on a wide ecosystem of third-party integrations beyond the major lab providers may find Hippo Manager's integration library limiting.",
+      ],
+      featureDescriptions: {
+        "Patient records": "Clean, straightforward patient medical records with SOAP note support and treatment history.",
+        "Scheduling": "An intuitive appointment calendar with support for multiple providers and appointment types.",
+        "Invoicing": "Integrated invoicing tied to patient records, with payment processing and client billing history.",
+        "Inventory": "Basic inventory tracking with stock level monitoring and reorder alerts.",
+        "Client portal": "A self-service portal where pet owners can view their pet's records and appointment history.",
+        "Reminders": "Automated appointment and wellness reminders sent via email and SMS to reduce no-shows.",
+        "Reporting": "Core financial and operational reports covering revenue, appointments, and client activity.",
+      },
+      verdictSummary: `Hippo Manager earns its reputation as one of the easiest-to-use veterinary PIMS on the market. For small practices that want a clean, reliable cloud system at a fair price ($${t.starting_price_monthly}/mo), it is an excellent choice. The interface is intuitive enough that staff can learn it in hours, not weeks. If you run a simple general practice and do not need enterprise features, Hippo Manager deserves a serious look.`,
+    },
+    "provet-cloud": {
+      whatIs: [
+        `${t.name} is a ${t.tagline.toLowerCase()} that was founded in ${t.founded} and headquartered in ${t.hq}. Originally developed for the European veterinary market, Provet Cloud has expanded globally and is now a strong option for practices in multiple countries that need a scalable, cloud-based PIMS with robust inventory and API capabilities.`,
+        `The platform is ${t.deployment.toLowerCase()} and supports ${t.practice_types.join(", ").toLowerCase()} practice types. We found Provet Cloud to be particularly strong in inventory management — its automatic reordering and multi-location inventory controls are among the best we have tested. The API access also makes it a solid choice for practices or hospital groups that want to build custom integrations.`,
+        `Provet Cloud starts at $${t.starting_price_monthly}/mo with a ${t.pricing_model.toLowerCase()} pricing model. A free trial is available. Practices can also opt for longer-term 60-month contracts for potential cost savings.`,
+      ],
+      lookElsewhere: [
+        "Practices that prioritize a modern, beautiful user interface may find Provet Cloud's design feels less polished than newer competitors like Shepherd or Panacea Vet. The interface is functional but dated.",
+        "Small practices in the US market may find the onboarding process longer than expected, as Provet Cloud was built for a European context and support hours may vary.",
+        "Solo veterinarians who need basic scheduling and records without inventory complexity may find Provet Cloud's feature depth unnecessary and better served by simpler alternatives.",
+      ],
+      featureDescriptions: {
+        "EMR": "A comprehensive electronic medical records system supporting SOAP notes and multi-species clinical templates.",
+        "Appointment scheduling": "Scheduling tools with provider management and appointment type customization for multi-doctor setups.",
+        "Inventory management": "One of the strongest inventory features in the market — automatic reordering, supplier management, and usage tracking.",
+        "Automatic reordering": "Set minimum stock thresholds and let the system generate purchase orders automatically when supplies run low.",
+        "Financial reporting": "Detailed financial reporting with revenue tracking, accounts receivable, and profitability analysis.",
+        "Multi-location support": "Manage multiple clinic locations with shared patient data and consolidated reporting.",
+        "API access": "Developer-friendly API that allows practices and hospital groups to build custom integrations and data workflows.",
+      },
+      verdictSummary: `Provet Cloud is our top recommendation for mid-to-large practices with complex inventory needs, international operations, or a desire for API-driven custom integrations. At $${t.starting_price_monthly}/mo with strong multi-location support, it offers genuine scalability. The interface is functional if not beautiful, but the feature depth justifies the trade-off for practices that need it.`,
+    },
+    avimark: {
+      whatIs: [
+        `${t.name} is one of the longest-established veterinary practice management systems in the market, with roots going back to ${t.founded}. Originally developed in ${t.hq}, AVImark has been part of the Covetrus family and has served as the backbone of thousands of veterinary practices across North America for decades. It is an on-premise, server-based system — meaning it runs on hardware in your clinic rather than in the cloud.`,
+        `We include AVImark here because many practices are still running it and need objective guidance on whether to stay or migrate. As an ${t.deployment.toLowerCase()} solution targeting ${t.practice_types.join(", ").toLowerCase()} practices, AVImark delivers deep, proven functionality that has been refined over 35+ years. The feature set is comprehensive: scheduling, records, invoicing, inventory, reminders, and lab integrations.`,
+        `Pricing is a one-time license plus annual support fees. There is no monthly subscription, which can appeal to practices that prefer to own their software outright rather than rent it.`,
+      ],
+      lookElsewhere: [
+        "Practices that want cloud access, remote work capabilities, or mobile access should not choose AVImark. It is strictly server-based and requires on-site access.",
+        "Practices worried about long-term viability should note that AVImark is a legacy product. Covetrus has been pushing users toward newer platforms, and long-term support is a legitimate concern.",
+        "Clinics that want regular feature updates, modern UI, or AI-powered tools should look at cloud-based alternatives. AVImark's development pace is slow compared to modern competitors.",
+      ],
+      featureDescriptions: {
+        "Patient records": "Comprehensive patient medical records built over decades of veterinary input, with deep SOAP note history.",
+        "Scheduling": "Robust appointment management with multi-doctor and multi-room support for established practices.",
+        "Invoicing": "Battle-tested invoicing and billing tied directly to patient records and treatment plans.",
+        "Inventory": "Full inventory management with reorder tracking and controlled substance logging.",
+        "Reminders": "Automated wellness and appointment reminders via mail and email.",
+        "Reporting": "Extensive reporting library covering financial, clinical, and operational metrics built up over decades.",
+        "Lab integrations": "Deep integration with IDEXX and Antech diagnostic services.",
+      },
+      verdictSummary: `AVImark is a proven workhorse that has earned its place in the veterinary industry. For established practices in rural areas with unreliable internet, or for those with significant existing investment in AVImark workflows and training, staying may be more cost-effective than migrating. However, for most practices, the lack of cloud access, mobile capabilities, and modern features means the time to migrate is now. Consider Neo (IDEXX's cloud successor) or ezyVet as your most natural migration paths.`,
+    },
+    cornerstone: {
+      whatIs: [
+        `${t.name} is ${t.tagline.toLowerCase()} and one of the most widely deployed veterinary practice management systems in North America. Developed by IDEXX and introduced in ${t.founded}, Cornerstone serves as the foundation for thousands of established practices, particularly larger hospitals committed to the IDEXX diagnostic ecosystem.`,
+        `As an ${t.deployment.toLowerCase()} system targeting ${t.practice_types.join(", ").toLowerCase()} practices, Cornerstone runs on in-clinic servers. The platform is best known for its unparalleled IDEXX integration — if your practice runs IDEXX analyzers, diagnostics, and lab services, no other software integrates as deeply as Cornerstone. It is a comprehensive system covering EMR, scheduling, inventory, controlled substance tracking, whiteboard, and reporting.`,
+        `Pricing is custom and typically involves a substantial upfront license cost in the range of $15,000-25,000, plus monthly support fees. This positions it firmly as an enterprise investment for established, larger practices.`,
+      ],
+      lookElsewhere: [
+        "Start-up practices, solo veterinarians, or small clinics should not choose Cornerstone. The upfront cost, server requirements, and complexity are designed for established multi-doctor hospitals.",
+        "Practices that want cloud access, remote work capabilities, or a modern interface should look at Neo (IDEXX's cloud replacement) or ezyVet instead.",
+        "Clinics that are not invested in the IDEXX ecosystem are paying for the platform's primary strength without using it. Non-IDEXX practices would get more value from cloud-based alternatives.",
+      ],
+      featureDescriptions: {
+        "Deep IDEXX lab integration": "The best IDEXX integration available — direct connection to VetConnect PLUS, diagnostic analyzers, and IDEXX reference labs without manual data entry.",
+        "EMR": "A comprehensive medical records system with decades of customization built in for complex multi-doctor practices.",
+        "Scheduling": "Advanced appointment management with multi-resource, multi-room, and multi-doctor scheduling.",
+        "Inventory": "Full inventory management with supplier integration and automated ordering.",
+        "Controlled substance tracking": "DEA-compliant controlled substance logging and reporting built into the core system.",
+        "Whiteboard": "A hospital whiteboard for real-time patient tracking and care status monitoring.",
+        "Reporting": "One of the most extensive reporting suites available, covering every financial and clinical metric in detail.",
+      },
+      verdictSummary: `Cornerstone remains the gold standard for large, IDEXX-committed practices that need the deepest possible diagnostic integration and a proven, battle-tested system. The upfront cost is significant, but for the right practice, the IDEXX ecosystem value justifies it. That said, IDEXX is clearly steering the market toward Neo, its cloud-based successor. Practices evaluating Cornerstone today should seriously consider starting on Neo instead to future-proof their investment.`,
+    },
+    neo: {
+      whatIs: [
+        `${t.name} is ${t.tagline.toLowerCase()}, introduced by IDEXX in ${t.founded}. Designed as the cloud successor to Cornerstone, Neo represents IDEXX's bet on the future of veterinary practice management — moving its massive Cornerstone install base from on-premise servers to the cloud while maintaining the IDEXX integration that practices depend on.`,
+        `The platform is ${t.deployment.toLowerCase()} and currently targets ${t.practice_types.join(", ").toLowerCase()} practice types. We found Neo to be a competent cloud PIMS that covers core workflows — EMR, scheduling, client communication, inventory, and reporting — with clean modern design. Its standout feature is seamless IDEXX integration, matching the depth Cornerstone users are accustomed to.`,
+        `Neo starts at $${t.starting_price_monthly}/mo with ${t.pricing_model.toLowerCase()}. No free trial is currently available — you will need to contact IDEXX for a demo and pricing quote tailored to your practice.`,
+      ],
+      lookElsewhere: [
+        "Practices that are not part of the IDEXX ecosystem should consider more neutral alternatives like Digitail, ezyVet, or Shepherd. Neo's primary advantage is IDEXX integration — without it, you are paying for a feature set you cannot fully use.",
+        "Practices that need specific Cornerstone features not yet migrated to Neo should evaluate carefully. Neo is still maturing, and some advanced Cornerstone functionality is not yet available in the cloud version.",
+        "Small practices and startups that want a free trial before committing should look elsewhere, as Neo does not currently offer one.",
+      ],
+      featureDescriptions: {
+        "Cloud-based EMR": "Modern cloud medical records accessible from any device, replacing the server-based Cornerstone experience.",
+        "IDEXX lab integration": "Seamless connection to IDEXX VetConnect PLUS and in-house analyzers, preserving the depth Cornerstone users are accustomed to.",
+        "Appointment scheduling": "A streamlined scheduling interface with multi-provider support for general practice environments.",
+        "Client communication": "Automated appointment reminders and client messaging to keep pet owners connected.",
+        "Inventory": "Cloud-based inventory management for product tracking and reordering.",
+        "Reporting": "Modern reporting dashboards covering key financial and operational metrics for the practice.",
+      },
+      verdictSummary: `Neo is the natural migration path for current Cornerstone users who want to move to the cloud without losing their IDEXX integration. If you are already an IDEXX customer and want a modern interface with future-proof architecture, Neo makes strong sense. If you are a new practice or not tied to IDEXX, the broader market offers more flexibility at comparable or lower prices.`,
+    },
+    vetport: {
+      whatIs: [
+        `${t.name} is a ${t.tagline.toLowerCase()} that has been building its user base since ${t.founded}. Developed by a team with roots in India and the USA, VETport has created a practical and affordable cloud PIMS that serves a remarkably diverse range of practice types — from small animal clinics to equine practices to university teaching hospitals to mobile veterinarians.`,
+        `The platform is ${t.deployment.toLowerCase()} and supports ${t.practice_types.join(", ").toLowerCase()} practice types. We found VETport to be the most versatile budget option in the market. With over 50 million patient records created on the platform and 12,500+ veterinarians in 20+ countries, it has substantial real-world validation.`,
+        `VETport starts at $${t.starting_price_monthly}/mo per practice with a ${t.pricing_model.toLowerCase()} structure. A free trial is available. For practices with limited budgets that need to support unusual practice types (equine, mobile, university), VETport is worth serious consideration.`,
+      ],
+      lookElsewhere: [
+        "Practices that prioritize a modern, polished user interface will find VETport's design feels dated compared to newer competitors. The UX has not kept pace with the market.",
+        "Clinics that need rapid customer support may encounter delays, as VETport's support operation spans time zones and response times can vary.",
+        "Large hospitals seeking enterprise-grade reporting, advanced customization, and a modern workflow engine should consider ezyVet or Provet Cloud instead.",
+      ],
+      featureDescriptions: {
+        "SOAP format EMR": "Medical records structured around the standard SOAP format, familiar to veterinarians across all practice types.",
+        "Appointment scheduling": "A functional scheduling system with support for multiple providers and appointment categories.",
+        "Inventory": "Inventory tracking with stock management and basic reordering capabilities.",
+        "Billing": "Invoicing and billing tied to patient records across all supported practice types.",
+        "Client portal": "A self-service portal where pet owners can access records and appointment history.",
+        "Lab integrations": "Integration with IDEXX, Antech, and various regional lab providers.",
+        "Telemedicine": "Built-in telemedicine support for remote consultations, particularly useful for mobile and ambulatory practices.",
+      },
+      verdictSummary: `VETport is one of the most underrated options in the veterinary software market. For equine practices, mobile vets, university clinics, and international operations looking for an affordable ($${t.starting_price_monthly}/mo) cloud platform with broad practice type support, it delivers genuine value. The interface is functional if not beautiful. If you can look past the dated UX, VETport's versatility and price point make it a strong contender.`,
+    },
+    petdesk: {
+      whatIs: [
+        `${t.name} is a ${t.tagline.toLowerCase()} founded in ${t.founded} and headquartered in ${t.hq}. Unlike the other tools in this review series, PetDesk is not a full practice management system — it is a client engagement and retention platform designed to work alongside your existing PIMS. It focuses exclusively on the client-facing side of practice operations: booking, reminders, messaging, payments, and reviews.`,
+        `The platform is ${t.deployment.toLowerCase()} and designed for ${t.practice_types.join(", ").toLowerCase()} practices. It integrates with most major PIMS including Cornerstone, AVImark, and eVetPractice. We found PetDesk to be genuinely excellent at what it does — reducing no-shows, increasing recheck compliance, and improving client satisfaction scores.`,
+        `PetDesk starts at approximately $${t.starting_price_monthly}/mo with a ${t.pricing_model.toLowerCase()} structure. Because it requires an existing PIMS, the total software cost for a practice using PetDesk is the sum of both tools. No free trial is currently available.`,
+      ],
+      lookElsewhere: [
+        "Practices looking for a single, all-in-one PIMS should look elsewhere. PetDesk is an add-on, not a standalone system. You will still need a full PIMS to run your practice.",
+        "Budget-conscious practices that cannot afford to pay for both a PIMS and a client engagement layer should evaluate PIMS with strong built-in client communication tools, like Digitail or DaySmart Vet.",
+        "Practices running PIMS that PetDesk does not integrate with should verify compatibility before purchasing. The platform's value depends entirely on integration with your existing software.",
+      ],
+      featureDescriptions: {
+        "Online booking": "A client-facing online booking portal that integrates with your existing PIMS, reducing phone call volume for front desk staff.",
+        "Automated reminders": "Highly customizable automated reminders for appointments, vaccinations, wellness visits, and follow-ups.",
+        "Two-way messaging": "Two-way text and in-app messaging that lets staff communicate with pet owners without giving out personal phone numbers.",
+        "Digital payment": "Online payment capabilities that allow pet owners to pay invoices from their phone or computer.",
+        "Client app": "A polished mobile app for pet owners to manage appointments, access records, receive reminders, and communicate with the practice.",
+        "Loyalty programs": "Built-in loyalty and rewards tools to increase client retention and visit frequency.",
+        "Review management": "Tools to proactively solicit and manage online reviews on Google and Facebook.",
+      },
+      verdictSummary: `PetDesk is the best pure-play client engagement platform for veterinary practices in the market. If your existing PIMS lacks a strong client-facing app, online booking, or automated retention tools, adding PetDesk can meaningfully increase revenue without switching software. At approximately $${t.starting_price_monthly}/mo as an add-on, it is most cost-effective for practices with higher patient volume where reducing no-shows has a clear financial ROI.`,
+    },
+    "onward-vet": {
+      whatIs: [
+        `${t.name} is an ${t.tagline.toLowerCase()} that entered the market in ${t.founded}. Based in the ${t.hq}, Onward Vet is one of the newest entrants in this review and represents the next generation of AI-powered veterinary software. Its core promise: use speech-to-text and AI to eliminate the documentation burden that burns out veterinarians.`,
+        `The platform is ${t.deployment.toLowerCase()} and targets ${t.practice_types.join(", ").toLowerCase()} practices. We found Onward Vet's AI capabilities impressive for such a young platform. The speech-to-text SOAP note generation works well in practice, and the overall workflow is designed to minimize time at the keyboard so veterinarians can spend more time with patients.`,
+        `Onward Vet starts at $${t.starting_price_monthly}/mo per veterinarian with a ${t.pricing_model.toLowerCase()} model. A free trial is available — we recommend trying it before committing given the platform's early-stage nature.`,
+      ],
+      lookElsewhere: [
+        "Practices that need a mature, proven platform with a large user base and extensive integration ecosystem should wait for Onward Vet to mature further, or choose Digitail which offers similar AI capabilities with more stability.",
+        "Multi-location hospital groups that need enterprise reporting, complex workflows, and dedicated account management should choose a more established platform like ezyVet or Vetspire.",
+        "Clinics that depend on a wide range of third-party integrations should verify current compatibility — Onward Vet is still building out its integration library.",
+      ],
+      featureDescriptions: {
+        "AI speech-to-text": "Speak naturally during appointments and let the AI transcribe and structure your notes in real time.",
+        "Automated SOAP notes": "The platform's flagship feature — AI that generates complete SOAP notes from the appointment conversation, dramatically reducing documentation time.",
+        "Scheduling": "An intuitive appointment scheduling interface with support for multiple providers.",
+        "Client communication": "Automated messaging for appointment reminders and follow-ups.",
+        "Invoicing": "Integrated invoicing tied to appointments and treatment records.",
+        "Inventory": "Basic inventory tracking for product and medication management.",
+        "Seamless workflows": "Purpose-built workflows designed to eliminate friction at every step of the clinical encounter.",
+      },
+      verdictSummary: `Onward Vet is the most exciting new entrant in the veterinary software market. For tech-forward practices and solo veterinarians who are drowning in documentation, the AI speech-to-text SOAP notes could be transformative. At $${t.starting_price_monthly}/mo, it is priced in the mid-range. The main risk is its newness — with fewer than 20 reviews and an early adopter user base, you are trading stability for innovation. That trade-off is worth it for the right practice.`,
+    },
+    panacea: {
+      whatIs: [
+        `${t.name} is described as "${t.tagline}" — an unusually bold claim in the veterinary software market. Founded in ${t.founded} and based in the ${t.hq}, Panacea Vet has built a loyal following among UK and European veterinary practices by prioritizing design and user experience above all else.`,
+        `The platform is ${t.deployment.toLowerCase()} and targets ${t.practice_types.join(", ").toLowerCase()} practices. We found Panacea Vet to live up to its aesthetic reputation — the interface is genuinely among the most polished and visually pleasing in the market. Automated workflows are thoughtfully designed to reduce manual administrative work throughout the day.`,
+        `Panacea Vet starts at $${t.starting_price_monthly}/mo per practice with a ${t.pricing_model.toLowerCase()} structure. A free trial is available. Note that the platform is primarily designed for the UK market and may have limited North American lab integrations.`,
+      ],
+      lookElsewhere: [
+        "US-based practices that depend heavily on IDEXX, Antech, and Zoetis integrations should verify compatibility carefully before committing. Panacea Vet's primary integration partnerships are with UK lab providers.",
+        "Large hospital groups and multi-location enterprises that need advanced reporting, complex workflow customization, and enterprise support should consider ezyVet or Provet Cloud.",
+        "Practices in North America looking for local customer support should note that Panacea Vet's team and primary support hours are UK-based.",
+      ],
+      featureDescriptions: {
+        "Clinical records": "Beautiful, easy-to-use medical records with customizable templates that feel modern rather than clinical.",
+        "Scheduling": "A clean scheduling interface designed for ease of use by all staff levels.",
+        "Invoicing": "Streamlined invoicing that automatically ties treatments to charges without complex navigation.",
+        "Inventory": "Core inventory management with stock level tracking and supplier management.",
+        "Client communication": "Automated appointment reminders and follow-up messaging.",
+        "Reporting": "Essential practice reporting covering financial and operational performance.",
+        "Automated workflows": "Smart automation that handles routine administrative tasks, reducing manual work throughout the day.",
+      },
+      verdictSummary: `Panacea Vet is our top pick for UK and European practices that want the most beautiful, intuitive cloud PIMS on the market. If design and ease of use are your top priorities, nothing else comes close. At $${t.starting_price_monthly}/mo, it is competitive in its market. For North American practices, we recommend verifying lab integration compatibility before committing — the platform's strengths are best realized in the UK context.`,
+    },
+    acurovet: {
+      whatIs: [
+        `${t.name} is a ${t.tagline.toLowerCase()} founded in ${t.founded} and based in the ${t.hq}. Uniquely among cloud PIMS providers, AcuroVet offers a free basic plan — making it the only option in this review that practices can start using without any monthly cost. The platform was built with mobile and ambulatory veterinarians in mind, with tablet optimization and dictation tools designed for on-the-go clinical work.`,
+        `The platform is ${t.deployment.toLowerCase()} and supports ${t.practice_types.join(", ").toLowerCase()} practice types. We found AcuroVet's tablet-first design to be genuinely thoughtful for mobile vets who work from a device rather than a desktop. The unique body point selection feature supports acupuncture and holistic practitioners in a way no other PIMS does.`,
+        `AcuroVet starts at $${t.starting_price_monthly}/mo with a ${t.pricing_model.toLowerCase()}. Paid plans with additional features are available for practices that outgrow the free tier. A free trial of paid features is also available.`,
+      ],
+      lookElsewhere: [
+        "Large hospitals and multi-doctor general practices with complex scheduling, inventory, and reporting needs will find AcuroVet's feature set insufficient. It is purpose-built for mobile and niche practitioners.",
+        "Practices that rely heavily on IDEXX or Antech lab workflows as central to daily operations should verify integration depth, as AcuroVet's lab integrations are basic compared to premium competitors.",
+        "High-volume practices that need enterprise-grade reliability and 24/7 support should choose a more established platform.",
+      ],
+      featureDescriptions: {
+        "Medical records": "Cloud-based medical records accessible from any device, with mobile-optimized data entry.",
+        "Appointments": "Basic appointment scheduling with calendar integration for Google and Apple Calendar.",
+        "Billing": "Essential billing and invoicing tools tied to patient appointments and treatments.",
+        "Tablet support": "The platform is optimized for tablet use, making it ideal for mobile and ambulatory practitioners.",
+        "Dictation": "Voice dictation for clinical notes, reducing typing in field settings.",
+        "Body point selection": "A unique feature that allows holistic and acupuncture practitioners to document treatment points on a body diagram.",
+        "Client portal": "A basic client portal for appointment history and communication.",
+      },
+      verdictSummary: `AcuroVet's free plan makes it the lowest-risk entry point into cloud-based veterinary software. For mobile and ambulatory vets, holistic practitioners, and budget-constrained solo vets just getting started, it offers genuine value at no cost. The tablet optimization and dictation tools are well-designed for field work. Its limitations are real but expected at this price point. Practices that grow beyond the free tier's capabilities can upgrade or migrate to a more full-featured platform.`,
+    },
+    vetbadger: {
+      whatIs: [
+        `${t.name} is an ${t.tagline.toLowerCase()} founded in ${t.founded} and based in the ${t.hq}. VetBadger has carved out an interesting position in the market by building its brand around veterinarian well-being and work-life balance — a meaningful differentiator in a profession with historically high burnout rates.`,
+        `The platform is ${t.deployment.toLowerCase()} and targets ${t.practice_types.join(", ").toLowerCase()} practices. We found VetBadger to be a solid, no-frills cloud PIMS that covers the essentials while genuinely thinking about how software design affects the daily stress level of veterinary teams. Automated reminders and smart communication tools are designed to reduce after-hours interruptions.`,
+        `VetBadger starts at $${t.starting_price_monthly}/mo per practice with a ${t.pricing_model.toLowerCase()} structure. A free trial is available. The pricing puts it in the same tier as Shepherd and Hippo Manager.`,
+      ],
+      lookElsewhere: [
+        "Large hospitals, multi-location enterprises, or specialty clinics that need advanced clinical features and complex workflow customization should look at ezyVet or Vetspire instead.",
+        "Practices that rely heavily on IDEXX or Antech lab integrations should verify connectivity, as VetBadger's lab integration library is more limited than competitors that have made those integrations a priority.",
+        "Practices that want AI-powered features like automated SOAP note generation will not find them here. VetBadger focuses on reducing burnout through workflow design rather than AI automation.",
+      ],
+      featureDescriptions: {
+        "EHR management": "Electronic health records with standard clinical documentation for small animal general practice.",
+        "Online scheduling": "Client-facing online scheduling that reduces front desk phone load.",
+        "Automated reminders": "Smart reminder system for appointments and wellness visits designed to reduce the manual follow-up burden on staff.",
+        "Client emails/SMS": "Two-way client communication via email and SMS messaging from within the platform.",
+        "Invoicing": "Integrated invoicing tied to patient records and treatment plans.",
+        "Financial integration": "Direct connections to accounting tools QuickBooks and Xero for streamlined financial management.",
+      },
+      verdictSummary: `VetBadger is worth considering for small practices and solo veterinarians who care deeply about sustainable work patterns and reducing burnout. At $${t.starting_price_monthly}/mo with a genuine philosophy behind the product design, it delivers on its promise of making daily practice management feel less exhausting. If Shepherd and Hippo Manager are your other finalists, try all three — VetBadger's differentiation is real even if it is harder to quantify in a feature list.`,
+    },
+    weave: {
+      whatIs: [
+        `${t.name} is a ${t.tagline.toLowerCase()} that has built a substantial business serving multiple healthcare verticals, including veterinary practices. Founded in ${t.founded} and headquartered in ${t.hq}, Weave bundles a VoIP phone system with a comprehensive client communication platform into a single, tightly integrated product.`,
+        `The platform is ${t.deployment.toLowerCase()} and serves ${t.practice_types.join(", ").toLowerCase()} environments. We found Weave to be the strongest dedicated communication and phone platform for veterinary practices. The missed-call text-back alone can recover meaningful revenue from callers who would otherwise go to a competitor. Weave integrates with most major PIMS via its sync technology, so it layers on top of your existing system.`,
+        `Weave starts at $${t.starting_price_monthly}/mo per location and bundles phone hardware with the software subscription. This is the highest starting price in our review, but it replaces both your phone system and any standalone communication tools you might otherwise pay for separately.`,
+      ],
+      lookElsewhere: [
+        "Practices that already have a modern all-in-one PIMS with strong communication features (like Digitail or DaySmart Vet) may find Weave redundant and expensive as an add-on.",
+        "Small practices on tight budgets will find $399/mo a significant commitment, especially as an add-on to an existing PIMS subscription. Evaluate ROI carefully.",
+        "Clinics that do not want to be locked into a phone hardware contract should note that Weave requires contract commitment and phone hardware, which limits flexibility.",
+      ],
+      featureDescriptions: {
+        "VoIP phone system": "A modern cloud-based phone system that replaces traditional phone hardware with a more flexible, integrated solution.",
+        "Two-way texting": "Text with clients directly from the Weave interface, keeping client communication organized and searchable.",
+        "Online scheduling": "Client-facing appointment booking that integrates with your existing PIMS scheduling data.",
+        "Automated reminders": "Multi-channel automated reminders via text, email, and phone for appointments and wellness visits.",
+        "Payment processing": "In-office and remote payment collection with digital invoicing capabilities.",
+        "Review management": "Automated review request workflows that help practices build their Google and Facebook review presence.",
+        "Team chat": "Internal team messaging for staff coordination throughout the clinic day.",
+      },
+      verdictSummary: `Weave is the best-in-class solution for practices that want to unify their phone system and client communication into one platform. At $${t.starting_price_monthly}/mo it is expensive, but for busy practices where the phone is mission-critical and missed calls directly cost revenue, the ROI can be compelling. It is also the strongest option for practices with older PIMS (like AVImark or Cornerstone) that lack modern client communication features — Weave fills that gap effectively.`,
     },
   };
   return contentMap[t.slug] || {

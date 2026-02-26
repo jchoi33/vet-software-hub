@@ -1,0 +1,1216 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ToolCard from "../../components/ToolCard.astro";
+import ComparisonTable from "../../components/ComparisonTable.astro";
+import AffiliateButton from "../../components/AffiliateButton.astro";
+import EmailCapture from "../../components/EmailCapture.astro";
+import { getAllTools, getToolBySlug, getAverageRating, getPricingDisplay, getAffiliateLink } from "../../utils/tools";
+import type { Tool } from "../../utils/tools";
+import { getBestForMeta } from "../../utils/seo";
+
+/* ============================================================
+   USECASE DEFINITIONS
+   Wrapped in a function so getStaticPaths can access the same
+   data at build time (Astro runs getStaticPaths in a different
+   module context so top-level variables are not visible there).
+   ============================================================ */
+
+interface UseCaseConfig {
+  displayName: string;
+  intro: string;
+  methodology: string;
+  picks: { slug: string; whyPick: string; rank: number }[];
+  howToChoose: string[];
+  faqs: { question: string; answer: string }[];
+}
+
+export function getStaticPaths() {
+  const usecaseConfigs: Record<string, UseCaseConfig> = {
+  "best-veterinary-software-for-small-practices": {
+    displayName: "Small Practices",
+    intro:
+      "Small veterinary practices — solo vets, single-doctor clinics, and practices with one or two doctors — have unique software needs. You need a system that is easy to learn, affordable, and covers the essentials without overwhelming complexity. We evaluated every veterinary PIMS on the market to find the best options specifically for small practices.",
+    methodology:
+      "We prioritized ease of use, affordable starting prices, fast onboarding, and core feature coverage. Tools were scored on interface simplicity, per-practice pricing, free trial availability, and user ratings from small practice owners on G2 and Capterra.",
+    picks: [
+      {
+        slug: "shepherd",
+        rank: 1,
+        whyPick:
+          "Built by a practicing veterinarian who experienced firsthand the frustrations of clunky software. Shepherd's intuitive design means staff can learn it in hours. At $99/mo with a 50% discount for new practices, it is the best value for startup and small clinics.",
+      },
+      {
+        slug: "hippo-manager",
+        rank: 2,
+        whyPick:
+          "One of the cleanest interfaces in the market. Hippo Manager covers every essential workflow without unnecessary complexity. At $120/mo, it is affordable and offers a free trial so you can test before committing.",
+      },
+      {
+        slug: "vetbadger",
+        rank: 3,
+        whyPick:
+          "VetBadger was built with veterinarian well-being in mind. Its smart communication tools reduce after-hours burden. At $99/mo it is among the most affordable options, and its focus on work-life balance resonates strongly with solo veterinarians.",
+      },
+      {
+        slug: "daysmart-vet",
+        rank: 4,
+        whyPick:
+          "DaySmart Vet's two-way texting and automated waitlist features are genuinely useful for small practices that need strong client communication without enterprise complexity. At $120/mo it is competitively priced.",
+      },
+    ],
+    howToChoose: [
+      "Prioritize ease of use. Your entire team needs to learn the software quickly. Request a demo and pay attention to how intuitive the interface feels for non-technical staff.",
+      "Look for per-location pricing rather than per-veterinarian pricing, which is typically more cost-effective for small practices with one or two doctors.",
+      "Check whether a free trial is available. The best way to know if software fits your workflow is to use it live with your actual patient data.",
+      "Verify that the software covers your core needs: scheduling, EMR, invoicing, automated reminders, and at least basic lab integrations with IDEXX or Antech.",
+    ],
+    faqs: [
+      {
+        question: "What is the cheapest veterinary software for small practices?",
+        answer:
+          "Shepherd and VetBadger both start at $99/mo per practice, making them the most affordable paid cloud options. AcuroVet offers a free basic plan for practices on an extremely tight budget, though the feature set is limited. Shepherd also offers a 50% discount for new practices, bringing the cost to approximately $50/mo.",
+      },
+      {
+        question: "Do I need all the features of a large PIMS as a small practice?",
+        answer:
+          "No. Small practices typically do not need advanced multi-location management, complex workflow engines, or enterprise reporting. Focus on a system that handles scheduling, medical records, invoicing, reminders, and basic lab integrations well. Paying for features you will not use is money better spent elsewhere.",
+      },
+      {
+        question: "What veterinary software is easiest to learn?",
+        answer:
+          "Shepherd consistently receives the highest ratings for ease of use, in part because it was designed by a veterinarian. Hippo Manager is a close second. Both are known for interfaces that non-technical staff can learn within hours rather than weeks.",
+      },
+      {
+        question: "Should I start with a free trial?",
+        answer:
+          "Absolutely. Shepherd, Hippo Manager, DaySmart Vet, and VetBadger all offer free trials. Since switching software later is disruptive and costly, taking the time to trial two or three options before committing is always worth the effort.",
+      },
+    ],
+  },
+
+  "best-veterinary-software-for-large-hospitals": {
+    displayName: "Large Hospitals",
+    intro:
+      "Large veterinary hospitals — multi-doctor practices, high-volume general practices, and hospital groups — require software that can handle complexity at scale. You need advanced scheduling, powerful reporting, deep lab integrations, and a system that can support multiple departments and providers without breaking down under volume.",
+    methodology:
+      "We evaluated tools on scalability, reporting depth, workflow customization, multi-provider scheduling, integration ecosystem, and enterprise support. User ratings from large hospital administrators on G2 and Capterra were weighted heavily.",
+    picks: [
+      {
+        slug: "ezyvet",
+        rank: 1,
+        whyPick:
+          "ezyVet is the gold standard for large hospitals. Its customizable workflow engine, powerful reporting suite, and deep IDEXX integration make it the most capable cloud PIMS for complex operations. Over 15,000 clinics worldwide trust it for high-volume, multi-location environments.",
+      },
+      {
+        slug: "vetspire",
+        rank: 2,
+        whyPick:
+          "Originally built for teaching hospitals, Vetspire handles clinical complexity better than any other platform. Clinical decision support, advanced analytics, and fast interface performance during high-patient-volume days set it apart for specialty and large general hospitals.",
+      },
+      {
+        slug: "cornerstone",
+        rank: 3,
+        whyPick:
+          "For IDEXX-committed large hospitals, Cornerstone's unmatched diagnostic integration and decades of proven reliability make it a defensible choice. The on-premise architecture is aging, but no system integrates with IDEXX more deeply.",
+      },
+      {
+        slug: "provet-cloud",
+        rank: 4,
+        whyPick:
+          "Provet Cloud's multi-location support, robust inventory management, and API access make it a strong cloud option for growing hospital groups that want scalability without the complexity of ezyVet's onboarding.",
+      },
+    ],
+    howToChoose: [
+      "Prioritize reporting and analytics. Large hospitals need detailed financial and clinical reporting. Ask each vendor for sample reports and verify they match your management needs.",
+      "Evaluate the workflow customization engine. Large hospitals have non-standard processes — admissions, discharges, referrals, multiple departments. Your PIMS needs to adapt to your workflows, not the reverse.",
+      "Assess IDEXX integration depth if you use IDEXX diagnostics. For large hospitals, the difference between a native IDEXX integration and a third-party connector is hours of staff time each week.",
+      "Request references from other large hospitals using the software. Implementation complexity and ongoing support quality matter far more at this scale.",
+    ],
+    faqs: [
+      {
+        question: "Can ezyVet handle a 10+ doctor practice?",
+        answer:
+          "Yes. ezyVet is specifically designed for large, multi-doctor, and multi-location practices. Over 15,000 clinics globally use it, including many large hospital groups. Its custom pricing model means it scales to fit the size and complexity of your operation.",
+      },
+      {
+        question: "Is Cornerstone still a good choice in 2026?",
+        answer:
+          "Cornerstone remains viable for IDEXX-committed large hospitals that are not ready to migrate. However, IDEXX is actively steering users toward Neo, its cloud successor. New large practices should strongly consider starting on a cloud platform rather than Cornerstone, which carries long-term support uncertainty.",
+      },
+      {
+        question: "What is the best PIMS for a multi-location veterinary group?",
+        answer:
+          "ezyVet is our top recommendation for multi-location groups. Its multi-location management, consolidated reporting, and workflow engine are purpose-built for this use case. Provet Cloud is a strong alternative with excellent multi-location inventory controls and API access.",
+      },
+      {
+        question: "Do large hospitals need a dedicated implementation team?",
+        answer:
+          "Yes, for enterprise platforms like ezyVet and Cornerstone, plan for a structured implementation with dedicated vendor support. Budget 3-6 months for full implementation and staff training. Choosing a vendor with a proven implementation track record for large hospitals is critical.",
+      },
+    ],
+  },
+
+  "best-free-veterinary-software": {
+    displayName: "Free Veterinary Software",
+    intro:
+      "Very few veterinary practice management systems offer a genuinely free plan — most require a paid subscription from day one. However, for mobile veterinarians, holistic practitioners, or practices just getting started with an extremely limited budget, there are options worth exploring. We evaluated every free or near-free option in the market.",
+    methodology:
+      "We focused exclusively on tools with a true free plan (not just a free trial) or a starting price of $0/mo. We evaluated feature coverage, limitations of the free tier, and the path to paid plans as practices grow.",
+    picks: [
+      {
+        slug: "acurovet",
+        rank: 1,
+        whyPick:
+          "AcuroVet is the only cloud-based veterinary PIMS we found with a genuinely free basic plan. It is well-suited for mobile and ambulatory vets, holistic practitioners, and practices just getting started. Tablet optimization and dictation tools make it practical for field use.",
+      },
+      {
+        slug: "vetport",
+        rank: 2,
+        whyPick:
+          "VETport starts at $99/mo — not free, but it is the most affordable full-featured cloud PIMS that supports a wide range of practice types including equine, mobile, and university clinics. For practices that need more than AcuroVet's free tier, it is the logical next step.",
+      },
+      {
+        slug: "shepherd",
+        rank: 3,
+        whyPick:
+          "Shepherd is not free, but its 50% discount for new practices brings the cost to approximately $50/mo — as close to free as a full-featured veterinary PIMS gets. If you can stretch the budget slightly, Shepherd's quality justifies the investment.",
+      },
+    ],
+    howToChoose: [
+      "Understand the limitations of the free tier before committing. AcuroVet's free plan has feature restrictions that may become limiting as your practice grows. Know what those limits are and when you would need to upgrade.",
+      "Factor in the cost of migrating later. Starting on a free platform and migrating to a full PIMS in 12 months can be more disruptive than starting on an affordable paid plan from day one.",
+      "Look for free trials rather than free plans if budget allows. Most leading PIMS offer free trials (Shepherd, Hippo Manager, DaySmart Vet), letting you evaluate premium options before paying.",
+      "Consider the true cost of free software. Time spent working around feature limitations has a real cost. An affordable paid platform that actually fits your workflow may save more money than a free one that requires workarounds.",
+    ],
+    faqs: [
+      {
+        question: "Is there truly free veterinary practice management software?",
+        answer:
+          "AcuroVet is the only cloud-based PIMS we have found with a true free basic plan. Most veterinary software requires a paid subscription, though many offer free trials ranging from 14 to 30 days.",
+      },
+      {
+        question: "What are the limitations of free veterinary software?",
+        answer:
+          "Free tiers typically limit the number of patients, providers, or features available. AcuroVet's free plan covers core medical records and appointments but lacks the full feature set of premium plans. Expect to upgrade as your practice grows.",
+      },
+      {
+        question: "Can I use spreadsheets or general practice management software instead?",
+        answer:
+          "Technically yes, but veterinary-specific software is far more efficient. Veterinary PIMS handles SOAP notes, IDEXX lab integration, controlled substance tracking, automated reminders, and practice-specific invoicing in ways that generic software cannot match.",
+      },
+      {
+        question: "What is the most affordable paid veterinary software?",
+        answer:
+          "Shepherd and VetBadger both start at $99/mo. Shepherd offers a 50% startup discount, bringing the cost to approximately $50/mo for new practices. VETport also starts at $99/mo and supports a wider range of practice types.",
+      },
+    ],
+  },
+
+  "best-veterinary-software-with-ai": {
+    displayName: "AI Features",
+    intro:
+      "Artificial intelligence is reshaping veterinary practice management. AI-powered tools can now generate SOAP notes from speech, automate charge capture, surface clinical decision support, and analyze practice data in ways that were impossible just a few years ago. We evaluated which veterinary software platforms are leading the AI revolution in 2026.",
+    methodology:
+      "We evaluated platforms on the depth, maturity, and practical usefulness of their AI features. We specifically looked at AI-powered clinical documentation, speech-to-text, automated charge capture, clinical decision support, and predictive analytics.",
+    picks: [
+      {
+        slug: "digitail",
+        rank: 1,
+        whyPick:
+          "Digitail's Tails AI is the most mature and widely adopted AI feature in veterinary software. It generates complete SOAP notes automatically, saving veterinarians meaningful documentation time every day. The AI is trained on veterinary-specific data, which makes a real difference in output quality.",
+      },
+      {
+        slug: "onward-vet",
+        rank: 2,
+        whyPick:
+          "Onward Vet was built from the ground up around AI speech-to-text SOAP note generation. The newest entrant in the AI space, it is designed specifically to eliminate documentation burden — the leading cause of veterinarian burnout. An impressive offering for such a young platform.",
+      },
+      {
+        slug: "vetspire",
+        rank: 3,
+        whyPick:
+          "Vetspire's clinical decision support tools use AI to guide veterinarians through diagnostic protocols during patient encounters. This is a different category of AI — less about documentation and more about improving clinical outcomes.",
+      },
+    ],
+    howToChoose: [
+      "Decide whether you want AI for documentation or clinical decision-making. Digitail and Onward Vet focus on reducing note-taking burden. Vetspire focuses on AI that improves clinical decisions during patient encounters.",
+      "Evaluate AI accuracy with a trial. AI note generation quality varies significantly between platforms. Run the same appointment through multiple platforms during a trial period and compare output quality.",
+      "Ask about AI training data. Veterinary-specific AI models trained on clinical data perform significantly better than general-purpose AI adapted for veterinary use.",
+      "Consider the maturity of the platform. Onward Vet is newer with fewer reviews. Digitail is more established with thousands of users validating its AI in real clinical settings.",
+    ],
+    faqs: [
+      {
+        question: "Can AI really generate good veterinary SOAP notes?",
+        answer:
+          "Yes, with caveats. Digitail's Tails AI and Onward Vet's speech-to-text produce surprisingly accurate SOAP notes that need only minor editing in most cases. The AI performs best for routine consultations and gets less accurate for complex or unusual cases. Most veterinarians find the time savings worthwhile even when light editing is required.",
+      },
+      {
+        question: "How much time does AI note generation actually save?",
+        answer:
+          "Digitail reports that veterinarians save an average of 30-60 minutes per day on documentation. For a 10-appointment day, that represents meaningful time that can be redirected to seeing more patients, reducing overtime, or improving work-life balance.",
+      },
+      {
+        question: "Is AI veterinary software more expensive?",
+        answer:
+          "Not necessarily. Digitail starts at $150/mo per veterinarian, which is mid-range. Onward Vet starts at $175/mo. The AI features are included in the base subscription, not an add-on. Given the time savings, the ROI calculation typically favors AI-powered platforms for practices with multiple veterinarians.",
+      },
+      {
+        question: "Is AI clinical decision support the same as AI documentation?",
+        answer:
+          "No — these are distinct AI applications. Documentation AI (Digitail, Onward Vet) uses speech recognition and language models to automate clinical notes. Clinical decision support AI (Vetspire) uses pattern recognition to suggest diagnoses, flag abnormal values, or recommend treatment protocols. Many practices benefit from both.",
+      },
+    ],
+  },
+
+  "best-cloud-based-veterinary-software": {
+    displayName: "Cloud-Based Solutions",
+    intro:
+      "Cloud-based veterinary software has largely replaced on-premise, server-based systems for good reason: it eliminates IT maintenance, enables remote access, and allows practices to work from any device anywhere. We evaluated the best cloud-based PIMS options for veterinary practices of every size in 2026.",
+    methodology:
+      "All tools in our database that are cloud-native were eligible. We evaluated uptime reliability, remote access quality, mobile accessibility, integration depth, and user satisfaction scores from cloud-specific reviewers.",
+    picks: [
+      {
+        slug: "digitail",
+        rank: 1,
+        whyPick:
+          "Digitail is cloud-native from the ground up, with a modern architecture built for reliability and remote access. Its mobile app for pet owners adds a client-facing cloud layer that few competitors match. The best cloud experience for growing general practices.",
+      },
+      {
+        slug: "ezyvet",
+        rank: 2,
+        whyPick:
+          "ezyVet is the most powerful cloud PIMS for large, complex operations. Fully cloud-based with no server requirements, it supports multi-location management, advanced reporting, and deep integrations from any browser.",
+      },
+      {
+        slug: "shepherd",
+        rank: 3,
+        whyPick:
+          "Shepherd is 100% cloud-based and can be accessed from any device with a browser. Its simple, clean design makes remote access straightforward even for non-technical staff. Ideal for small practices that want cloud flexibility without complexity.",
+      },
+      {
+        slug: "provet-cloud",
+        rank: 4,
+        whyPick:
+          "Provet Cloud lives up to its name with a reliable, globally accessible cloud platform. API access makes it particularly suitable for practices that want to build custom cloud integrations.",
+      },
+    ],
+    howToChoose: [
+      "Verify it is truly cloud-native, not just a cloud-connected version of an on-premise system. Cloud-native software (built from scratch for the cloud) is more reliable and better maintained than retrofitted cloud connectors.",
+      "Test remote access from multiple devices. A genuine cloud PIMS should work equally well on a desktop, tablet, and smartphone without needing special software or VPN.",
+      "Ask about uptime guarantees and disaster recovery. Cloud software should provide SLA commitments for uptime (typically 99.9%+) and clear data backup and recovery policies.",
+      "Evaluate data export options. Ensure you can export your complete patient data if you ever need to switch platforms. Vendor lock-in is a real risk even in the cloud.",
+    ],
+    faqs: [
+      {
+        question: "What is the difference between cloud-based and on-premise veterinary software?",
+        answer:
+          "Cloud-based software runs on remote servers maintained by the vendor, accessed via a web browser. On-premise software runs on servers in your clinic. Cloud software requires no hardware investment or IT maintenance, allows remote access, and receives automatic updates. On-premise software works without internet but requires local IT support.",
+      },
+      {
+        question: "Is cloud veterinary software safe and secure?",
+        answer:
+          "Reputable cloud PIMS providers use enterprise-grade security including data encryption, regular backups, and HIPAA-compliant infrastructure. In practice, cloud systems are typically more secure than on-premise servers maintained by practices without dedicated IT staff.",
+      },
+      {
+        question: "What happens if the internet goes down at my clinic?",
+        answer:
+          "Most cloud PIMS require an active internet connection to function. Some offer limited offline capability. For practices in areas with unreliable internet, maintaining a backup connection (4G LTE router) is recommended. AVImark or Cornerstone remain the only viable options for practices without reliable internet.",
+      },
+      {
+        question: "Can I access cloud veterinary software from home?",
+        answer:
+          "Yes. Cloud-based PIMS can be accessed from any device with a web browser and internet connection. This is one of the primary advantages of cloud software — veterinarians can review patient records, approve invoices, and check the schedule from anywhere.",
+      },
+    ],
+  },
+
+  "best-veterinary-software-for-multi-location": {
+    displayName: "Multi-Location Practices",
+    intro:
+      "Managing multiple veterinary clinic locations from a single software platform requires features that most small-practice tools simply do not offer: consolidated reporting across locations, centralized patient records, location-level access controls, and inventory management that accounts for multiple sites. We evaluated which PIMS handle multi-location operations best.",
+    methodology:
+      "We evaluated tools specifically on multi-location management features: consolidated financial reporting, shared patient records across locations, location-level staff access controls, inter-location inventory transfers, and scalability testing from current multi-location users.",
+    picks: [
+      {
+        slug: "ezyvet",
+        rank: 1,
+        whyPick:
+          "ezyVet is the leading choice for multi-location veterinary groups. Its enterprise workflow engine, consolidated reporting, and location-level management features have been battle-tested by large hospital groups globally. Over 15,000 clinics trust it, including many multi-location enterprises.",
+      },
+      {
+        slug: "digitail",
+        rank: 2,
+        whyPick:
+          "Digitail was built with multi-location clinics as a core use case. Centralized patient data, consolidated reporting, and a shared management dashboard make it an excellent choice for growing clinic groups that want AI capabilities alongside multi-location management.",
+      },
+      {
+        slug: "provet-cloud",
+        rank: 3,
+        whyPick:
+          "Provet Cloud's multi-location support and API access make it a strong choice for hospital groups that want to build custom reporting or integration workflows across locations. Particularly strong for international groups with clinics in multiple countries.",
+      },
+      {
+        slug: "covetrus-ascend",
+        rank: 4,
+        whyPick:
+          "For practices already in the Covetrus ecosystem, Ascend's multi-location capabilities and supply chain integration create meaningful operational efficiencies when ordering and managing inventory across multiple sites.",
+      },
+    ],
+    howToChoose: [
+      "Verify the reporting is truly consolidated. Some PIMS claim multi-location support but require running separate reports per location and manually combining data. Ask for a demo of the consolidated dashboard.",
+      "Evaluate patient record sharing. Patients who visit multiple locations in your group should have their full record accessible at any location without staff manually transferring data.",
+      "Test location-level access controls. Staff at Location A should not necessarily see revenue data for Location B. Granular access controls are critical for multi-location operations.",
+      "Ask about pricing scalability. Many PIMS charge per location. Get a clear total cost projection for your current locations and your expected growth trajectory.",
+    ],
+    faqs: [
+      {
+        question: "Can one software system manage multiple veterinary locations?",
+        answer:
+          "Yes. ezyVet, Digitail, and Provet Cloud are all specifically designed for multi-location management with shared patient records, consolidated reporting, and location-level controls. Not all PIMS support this natively — verify multi-location capabilities before choosing.",
+      },
+      {
+        question: "How does pricing work for multi-location practices?",
+        answer:
+          "Most PIMS charge either per location (Shepherd, Hippo Manager) or per veterinarian across all locations (Digitail, Vetspire). Enterprise platforms like ezyVet use custom quotes. For multi-location groups, per-veterinarian pricing is often more predictable than per-location pricing.",
+      },
+      {
+        question: "Can patients be seen at multiple locations in our group?",
+        answer:
+          "In a properly configured multi-location PIMS, yes. Patient records should be accessible at any location within your group. This is a critical feature to verify — some systems keep records siloed by location unless configured otherwise.",
+      },
+      {
+        question: "What is the best software for a growing veterinary group?",
+        answer:
+          "ezyVet is our top recommendation for established, growing groups with 3+ locations. Digitail is the best choice for groups that want to scale with AI capabilities. For groups just adding a second location, Shepherd or DaySmart Vet can bridge the gap affordably.",
+      },
+    ],
+  },
+
+  "best-veterinary-software-for-startups": {
+    displayName: "Start-Up Practices",
+    intro:
+      "Opening a new veterinary practice is exciting and financially demanding. Every dollar matters. The right PIMS for a start-up practice needs to be affordable, fast to implement, easy for new staff to learn, and capable enough to handle growth. We evaluated which veterinary software gives new practices the best foundation.",
+    methodology:
+      "We weighted affordable starting prices, startup-specific discounts, fast setup times, ease of learning for new teams, and free trial availability. User reviews specifically from practices in their first two years of operation were prioritized.",
+    picks: [
+      {
+        slug: "shepherd",
+        rank: 1,
+        whyPick:
+          "Shepherd was designed with start-up practices in mind and offers a 50% discount for new practices — bringing the cost to approximately $50/mo. Built by a veterinarian who opened his own practice, it understands exactly what new practices need. The fastest to learn of any PIMS we tested.",
+      },
+      {
+        slug: "hippo-manager",
+        rank: 2,
+        whyPick:
+          "Hippo Manager's simplicity makes it ideal for brand-new practices without dedicated admin staff. At $120/mo with a free trial, new practice owners can validate it before spending anything. The clean interface means less time training staff on software.",
+      },
+      {
+        slug: "acurovet",
+        rank: 3,
+        whyPick:
+          "For practices on an extremely tight startup budget, AcuroVet's free basic plan lets you start managing patient records and appointments at zero cost. Upgrade to a paid plan as revenue allows.",
+      },
+      {
+        slug: "daysmart-vet",
+        rank: 4,
+        whyPick:
+          "DaySmart Vet's strong client communication tools — particularly two-way texting — help new practices build client relationships from day one. Good onboarding support also helps new practice owners get up and running quickly.",
+      },
+    ],
+    howToChoose: [
+      "Ask about startup discounts explicitly. Shepherd's 50% startup discount is not always prominently advertised. Other vendors may offer similar programs to new practices — always ask.",
+      "Choose per-location pricing over per-veterinarian pricing as a start-up. Most new practices start with one veterinarian. Per-location pricing means your costs stay fixed even as you hire additional vets.",
+      "Prioritize the free trial. As a new practice, you want to be completely confident before committing. Take advantage of every free trial available.",
+      "Think about growth. Choose software you can stay on for at least 3-5 years. Migrating software is disruptive and expensive — the cheapest option today may cost more if you have to switch in 18 months.",
+    ],
+    faqs: [
+      {
+        question: "What is the best veterinary software for a new practice opening?",
+        answer:
+          "Shepherd is our top pick for new practices thanks to its 50% startup discount, vet-designed workflows, and fast learning curve. At approximately $50/mo for a new practice, it is exceptional value. Hippo Manager is a close second for practices that want maximum simplicity.",
+      },
+      {
+        question: "How quickly can I set up veterinary practice management software?",
+        answer:
+          "Simple cloud platforms like Shepherd and Hippo Manager can be set up in 1-3 days. Enterprise platforms like ezyVet may take months. For a startup, choose a platform that offers rapid implementation so you can start seeing patients as soon as possible.",
+      },
+      {
+        question: "Do I need practice management software before I open?",
+        answer:
+          "Yes. Trying to manage appointments, medical records, and invoicing without dedicated software from day one creates administrative chaos that is very hard to unwind. Sign up for your chosen platform 4-6 weeks before opening to complete setup and train staff.",
+      },
+      {
+        question: "Can I switch software after I open if it does not work?",
+        answer:
+          "Yes, but it is disruptive. Data migration between platforms can take weeks and requires careful validation. It is far better to choose the right platform from the start. This is why we strongly recommend trialing two or three options before committing.",
+      },
+    ],
+  },
+
+  "best-veterinary-software-for-equine-practices": {
+    displayName: "Equine Practices",
+    intro:
+      "Equine veterinary practices have distinct needs that most small animal PIMS are not built for: mobile field work, large animal patient records, farm-level location tracking, and workflows that assume the vet is going to the patient rather than the other way around. We evaluated which PIMS platforms serve equine practices best.",
+    methodology:
+      "We filtered for platforms that explicitly support equine or large animal practice types, mobile/field work capabilities, and tablet optimization. User reviews from equine practitioners on G2, Capterra, and veterinary forums were given significant weight.",
+    picks: [
+      {
+        slug: "vetport",
+        rank: 1,
+        whyPick:
+          "VETport is the most versatile affordable platform for equine practices. It explicitly supports equine, large animal, and mobile/ambulatory practice types and includes telemedicine for remote consultations. With 12,500+ vets using it across 20+ countries, it has real equine-specific validation.",
+      },
+      {
+        slug: "acurovet",
+        rank: 2,
+        whyPick:
+          "AcuroVet's tablet optimization and mobile-first design make it practical for field work. The dictation feature is genuinely useful when your hands are otherwise occupied in the field. The free basic plan is appealing for solo equine vets on a tight budget.",
+      },
+      {
+        slug: "ezyvet",
+        rank: 3,
+        whyPick:
+          "ezyVet supports large animal and mixed practice types with its flexible workflow engine. For larger equine practices with multiple vets and complex scheduling, ezyVet's power is justified despite the higher price point.",
+      },
+    ],
+    howToChoose: [
+      "Verify large animal and equine support explicitly. Many PIMS claim to support equine but only do so through workarounds. Ask to see the species and breed selector, large animal-specific templates, and farm/property location tracking in the demo.",
+      "Evaluate mobile and tablet usability. Equine vets work in the field. A PIMS that requires a desktop to function effectively is not practical. Test the mobile interface thoroughly.",
+      "Check whether the software supports farm or property records. Equine practices often need to manage location records for farms, stables, and properties alongside individual animal records.",
+      "Ask about offline functionality. Field work sometimes happens in areas with limited connectivity. Some platforms offer offline mode that syncs when reconnected.",
+    ],
+    faqs: [
+      {
+        question: "What veterinary software is best for equine practices?",
+        answer:
+          "VETport is our top recommendation for equine practices, as it explicitly supports equine and large animal practice types and was built with versatile species support from the start. AcuroVet is a strong option for mobile equine vets on a budget.",
+      },
+      {
+        question: "Can I use a small animal PIMS for equine patients?",
+        answer:
+          "Some practices do, but it requires workarounds. Small animal PIMS typically do not include equine-specific templates, large animal examination fields, or farm/property location records. Purpose-built or multi-species PIMS are significantly more efficient for equine work.",
+      },
+      {
+        question: "Does equine veterinary software work in the field without internet?",
+        answer:
+          "This depends on the platform. VETport and AcuroVet both have mobile capabilities, though full offline functionality varies. We recommend bringing a mobile hotspot or 4G-enabled tablet as a backup for field use.",
+      },
+      {
+        question: "Is there equine-specific veterinary software?",
+        answer:
+          "Yes — there are a few equine-only platforms beyond the scope of this review (such as EqWinTech and Equine Genie). However, VETport and AcuroVet serve equine practices well within a general PIMS framework at more competitive price points.",
+      },
+    ],
+  },
+
+  "best-veterinary-software-for-mobile-vets": {
+    displayName: "Mobile & Ambulatory Vets",
+    intro:
+      "Mobile and ambulatory veterinarians face a unique set of software challenges: they need access to patient records in the field, often without reliable internet, working from a tablet or phone rather than a desktop. Most veterinary PIMS are designed for clinic environments. We evaluated which platforms actually work for vets on the move.",
+    methodology:
+      "We weighted mobile interface quality, tablet optimization, offline or low-connectivity capabilities, field-friendly data entry, and explicit support for mobile/ambulatory practice types. GPS or location-based features were considered a bonus.",
+    picks: [
+      {
+        slug: "acurovet",
+        rank: 1,
+        whyPick:
+          "AcuroVet was built specifically with mobile and ambulatory vets in mind. Tablet-optimized interface, dictation for hands-free note entry, and a free basic plan make it the obvious starting point for mobile practitioners.",
+      },
+      {
+        slug: "vetport",
+        rank: 2,
+        whyPick:
+          "VETport supports mobile and ambulatory practice types with telemedicine built in. At $99/mo, it offers a full-featured cloud PIMS that works well on tablets. 12,500+ vets globally including many mobile practitioners trust the platform.",
+      },
+      {
+        slug: "daysmart-vet",
+        rank: 3,
+        whyPick:
+          "DaySmart Vet's strong client communication tools — particularly two-way texting — are valuable for mobile vets who need to coordinate with clients in the field. The cloud-based platform is accessible from any device.",
+      },
+    ],
+    howToChoose: [
+      "Test the mobile interface before committing. Open the vendor's demo environment on your actual field tablet or phone. If it is not usable in that context, no amount of desktop features will help you.",
+      "Ask about offline mode. For rural or farm calls where connectivity is unreliable, even basic offline functionality — viewing patient records, entering notes — is a significant advantage.",
+      "Consider a tablet-specific case and stylus. Mobile vet work is physically demanding. A rugged tablet case and stylus for quick note entry can make a big difference in how practical a cloud PIMS is in the field.",
+      "Evaluate dictation features. Hands-free data entry via voice dictation is genuinely valuable when your hands are occupied with a patient. Platforms that support good dictation save time in field settings.",
+    ],
+    faqs: [
+      {
+        question: "What is the best veterinary software for a mobile vet?",
+        answer:
+          "AcuroVet is our top recommendation for mobile and ambulatory vets, specifically because it was designed with this use case in mind — tablet optimization, dictation, and a free basic plan. VETport is the best full-featured alternative.",
+      },
+      {
+        question: "Can I use veterinary software on a tablet in the field?",
+        answer:
+          "Yes, though platform quality varies significantly on mobile devices. AcuroVet and VETport are both tablet-optimized. Always test on your actual device before committing — many PIMS that claim mobile support are actually poor experiences on tablets.",
+      },
+      {
+        question: "What if I do not have internet connectivity in the field?",
+        answer:
+          "A mobile hotspot or 4G LTE tablet with a data plan is the most practical solution. A dedicated hotspot device or tablet with cellular capability maintains connectivity in most rural areas. True offline software is rare in the cloud PIMS market.",
+      },
+      {
+        question: "Do mobile vets need a full practice management system?",
+        answer:
+          "At minimum, yes — patient records, invoicing, and appointment scheduling. Many mobile vets also benefit from telemedicine capabilities for remote triage and follow-ups. AcuroVet and VETport both include these features.",
+      },
+    ],
+  },
+
+  "best-veterinary-software-for-emergency-clinics": {
+    displayName: "Emergency & Critical Care Clinics",
+    intro:
+      "Emergency veterinary clinics have demanding software requirements: rapid patient intake, real-time hospital whiteboard, multi-doctor and multi-department coordination, and clinical tools that support high-acuity decision-making under pressure. Delays caused by slow software directly harm patients. We evaluated which PIMS perform best in emergency settings.",
+    methodology:
+      "We evaluated on speed and responsiveness of the interface, whiteboard and patient tracking capabilities, multi-doctor scheduling, emergency triage workflows, and user reviews from emergency practitioners specifically.",
+    picks: [
+      {
+        slug: "vetspire",
+        rank: 1,
+        whyPick:
+          "Originally built for teaching hospitals, Vetspire handles emergency and high-acuity environments better than any other platform. Clinical decision support, referral management, and a notoriously fast interface make it purpose-fit for emergency clinics.",
+      },
+      {
+        slug: "ezyvet",
+        rank: 2,
+        whyPick:
+          "ezyVet supports emergency practice types with customizable emergency intake workflows, whiteboard functionality, and powerful scheduling for multi-doctor emergency departments. The SmartFlow integration (ICU care plan software) is a major advantage.",
+      },
+      {
+        slug: "digitail",
+        rank: 3,
+        whyPick:
+          "Digitail's whiteboard and real-time hospital view help emergency teams track patient status at a glance. The AI charge capture is valuable in emergency settings where billing can be complex and charges are easily missed.",
+      },
+    ],
+    howToChoose: [
+      "Interface speed is non-negotiable. Test the platform under realistic emergency conditions — multiple windows open, multiple users logged in simultaneously. A slow PIMS in an emergency setting is a patient safety concern.",
+      "Evaluate the whiteboard capability. Emergency clinics depend on a real-time whiteboard to track all patients in-house. Ensure the whiteboard updates in real time across all workstations and is easy to read at a glance.",
+      "Ask about emergency-specific intake workflows. Rapid triage intake, abbreviated check-in, and fast medical record creation are essential for emergency departments. Generic intake workflows designed for scheduled appointments will slow your team down.",
+      "Consider the SmartFlow integration. For intensive care units within emergency clinics, SmartFlow (integrated with ezyVet) provides specialized ICU care plan management that standard PIMS cannot match.",
+    ],
+    faqs: [
+      {
+        question: "What veterinary software is best for an emergency clinic?",
+        answer:
+          "Vetspire is our top recommendation for emergency and critical care clinics, given its origins in teaching hospitals and clinical decision support capabilities. ezyVet is the best alternative for large emergency departments that need maximum workflow customization.",
+      },
+      {
+        question: "Do emergency clinics need different software than general practices?",
+        answer:
+          "Emergency clinics benefit from software specifically optimized for high-acuity workflows — rapid intake, real-time whiteboards, multi-department coordination, and clinical decision support. While general practice PIMS can technically work in emergency settings, purpose-built options significantly improve efficiency.",
+      },
+      {
+        question: "What is SmartFlow and do emergency clinics need it?",
+        answer:
+          "SmartFlow is a specialized ICU care plan management system that integrates with ezyVet. It helps emergency and critical care teams manage fluid rates, medication administration, and nursing care plans for hospitalized patients. For clinics with an ICU, SmartFlow integration is a significant advantage.",
+      },
+      {
+        question: "How important is uptime for emergency clinic software?",
+        answer:
+          "Uptime is critical for emergency clinics. A software outage at 2 AM during an emergency is catastrophic. Verify your chosen vendor's uptime SLA, support availability (ideally 24/7), and contingency plans for outages. Cloud platforms from established vendors generally offer 99.9%+ uptime.",
+      },
+    ],
+  },
+
+  "best-veterinary-software-for-specialty-clinics": {
+    displayName: "Specialty & Referral Clinics",
+    intro:
+      "Specialty veterinary clinics — cardiology, oncology, orthopedics, neurology, ophthalmology, and referral hospitals — require clinical tools that go well beyond what general practice PIMS provide. They need complex EMR templates, referral management, clinical decision support, and reporting at a level of detail that reflects their sophisticated case mix.",
+    methodology:
+      "We evaluated platforms on clinical decision support capabilities, EMR template customization, referral management, specialty-specific workflow support, and user reviews from specialty practitioners.",
+    picks: [
+      {
+        slug: "vetspire",
+        rank: 1,
+        whyPick:
+          "Vetspire was built for teaching hospitals and specialty clinics. Clinical decision support, powerful EMR templating, and referral management are native features rather than workarounds. It is purpose-built for exactly this use case.",
+      },
+      {
+        slug: "ezyvet",
+        rank: 2,
+        whyPick:
+          "ezyVet's flexible workflow engine can be configured to handle specialty workflows with significant customization. The IDEXX integration, advanced reporting, and multi-department support make it viable for large specialty hospitals.",
+      },
+    ],
+    howToChoose: [
+      "Evaluate specialty-specific clinical templates. Ask to see actual templates for your specialty (cardiology ECG interpretation, oncology treatment protocols, orthopedic surgical planning) in the demo. Generic SOAP templates are insufficient for specialty work.",
+      "Test referral management workflows. Specialty clinics depend on receiving referrals from general practices and sending case summaries back. Verify that this workflow is streamlined and professional-quality in the PIMS.",
+      "Ask about clinical decision support depth. Decision support in specialty contexts means flagging drug interactions, suggesting differential diagnoses, and supporting complex protocol management — not just reminders.",
+      "Evaluate imaging integration. Specialty clinics often use advanced imaging (CT, MRI, digital radiography). Integration with DICOM imaging systems is frequently critical.",
+    ],
+    faqs: [
+      {
+        question: "What is the best PIMS for a specialty veterinary clinic?",
+        answer:
+          "Vetspire is our top recommendation for specialty clinics, as it was originally built for teaching hospitals and specialty referral practice. ezyVet is the best alternative for large specialty groups that need maximum workflow customization.",
+      },
+      {
+        question: "Can a general practice PIMS work for a specialty clinic?",
+        answer:
+          "General practice PIMS can technically be used in specialty settings but typically require significant workarounds for specialty-specific workflows. Clinical templates, referral management, and clinical decision support are usually inadequate without purpose-built specialty features.",
+      },
+      {
+        question: "Do specialty clinics need special integrations?",
+        answer:
+          "Yes. Specialty clinics typically need DICOM imaging integration (radiology, CT, MRI), specialized lab integrations beyond the standard IDEXX/Antech panel, and often referral-specific communication tools. Verify each integration before committing.",
+      },
+      {
+        question: "Is Vetspire only for teaching hospitals?",
+        answer:
+          "No. Vetspire started in teaching hospitals but serves all specialty and data-driven practices. Many private specialty referral clinics use it. The clinical depth and fast interface are valuable in any high-acuity specialty setting.",
+      },
+    ],
+  },
+
+  "best-veterinary-software-for-client-communication": {
+    displayName: "Client Communication",
+    intro:
+      "Strong client communication is directly correlated with practice revenue: practices with effective reminder systems see higher vaccination compliance, more recheck appointments, and fewer no-shows. We evaluated which veterinary software and add-on tools deliver the best client engagement capabilities in 2026.",
+    methodology:
+      "We evaluated on two-way messaging, automated reminder sophistication, online booking quality, mobile app experience for pet owners, review management, and user ratings specifically for communication features.",
+    picks: [
+      {
+        slug: "digitail",
+        rank: 1,
+        whyPick:
+          "Digitail's dedicated pet parent app is the most complete client-facing mobile experience in the market. Clients can book appointments, message the clinic, view records, and access telemedicine — all from a single app. This drives the highest client engagement of any platform we tested.",
+      },
+      {
+        slug: "petdesk",
+        rank: 2,
+        whyPick:
+          "PetDesk is the gold standard dedicated client engagement platform. If your current PIMS lacks client communication, PetDesk adds a best-in-class layer. Automated reminders, loyalty programs, and review management are exceptional.",
+      },
+      {
+        slug: "weave",
+        rank: 3,
+        whyPick:
+          "Weave combines a full VoIP phone system with client communication in one platform. The missed-call text-back feature alone recovers significant revenue. For practices where the phone is the primary client communication channel, Weave is transformative.",
+      },
+      {
+        slug: "daysmart-vet",
+        rank: 4,
+        whyPick:
+          "DaySmart Vet's two-way texting and automated waitlist are practical, high-impact client communication tools at a fraction of the cost of dedicated add-on platforms.",
+      },
+    ],
+    howToChoose: [
+      "Decide whether you need an all-in-one PIMS with communication built in, or a communication add-on to your existing system. If communication is your primary gap, PetDesk or Weave can upgrade any PIMS. If you are switching systems, Digitail or DaySmart Vet include it natively.",
+      "Evaluate two-way texting specifically. Clients overwhelmingly prefer texting to phone calls. Two-way texting from within the PIMS is one of the highest-ROI communication upgrades a practice can make.",
+      "Assess automated reminder sophistication. Beyond basic appointment reminders, look for wellness reminders, recheck reminders, and the ability to create custom reminder sequences triggered by patient record events.",
+      "Test the client-facing experience yourself. Download the practice app, book a test appointment, and experience the reminder flow as a client. The client experience is what drives engagement.",
+    ],
+    faqs: [
+      {
+        question: "What veterinary software has the best client communication features?",
+        answer:
+          "Digitail has the most complete native client communication suite, including a dedicated pet parent app and telemedicine. For practices that want to add communication to an existing PIMS, PetDesk is the best dedicated add-on.",
+      },
+      {
+        question: "How much does improving client communication actually help practice revenue?",
+        answer:
+          "Practices that implement automated reminders and online booking typically see 10-20% reductions in no-shows and meaningful increases in compliance appointment bookings. At average transaction values of $150-300, even modest improvements in these metrics pay for communication software many times over.",
+      },
+      {
+        question: "Is two-way texting really important?",
+        answer:
+          "Yes. Studies show that 90%+ of text messages are read within 3 minutes. Compare this to email open rates of 20-30%. Two-way texting reduces phone call volume for front desk staff while creating faster, more convenient client communication. DaySmart Vet and Weave both offer this natively.",
+      },
+      {
+        question: "Do I need a separate client communication platform if my PIMS has reminders?",
+        answer:
+          "It depends on the sophistication of your current reminder system. Basic appointment reminders are table stakes. If you want a dedicated client app, two-way texting, loyalty programs, and review management, a dedicated platform like PetDesk adds significant value even alongside a capable PIMS.",
+      },
+    ],
+  },
+
+  "best-veterinary-software-for-inventory-management": {
+    displayName: "Inventory Management",
+    intro:
+      "Inventory management is one of the highest-impact areas of practice management. Poor inventory control leads to stockouts, overstocking, missed charges, and medication errors. We evaluated which veterinary PIMS deliver the strongest inventory management capabilities, from basic stock tracking to advanced automatic reordering.",
+    methodology:
+      "We evaluated on inventory tracking accuracy, automatic reordering capabilities, controlled substance management, supplier integration, multi-location inventory support, and user reviews specifically mentioning inventory management quality.",
+    picks: [
+      {
+        slug: "provet-cloud",
+        rank: 1,
+        whyPick:
+          "Provet Cloud has the strongest inventory management of any platform we tested. Automatic reordering, supplier management, multi-location inventory transfers, and detailed usage reports make it the best choice for practices where inventory control is a priority.",
+      },
+      {
+        slug: "ezyvet",
+        rank: 2,
+        whyPick:
+          "ezyVet's inventory module is one of the most comprehensive available, with advanced reporting, controlled substance tracking, and deep integration with supply ordering. The SmartFlow connection further enhances ICU supply management.",
+      },
+      {
+        slug: "covetrus-ascend",
+        rank: 3,
+        whyPick:
+          "For practices already using Covetrus supply services, Ascend's direct supply chain integration makes inventory management and reordering dramatically more efficient. Orders flow directly from PIMS to fulfillment.",
+      },
+      {
+        slug: "digitail",
+        rank: 4,
+        whyPick:
+          "Digitail's automated charge capture significantly reduces missed inventory charges. When a product or medication is administered, it is automatically added to the invoice — reducing inventory shrinkage caused by billing gaps.",
+      },
+    ],
+    howToChoose: [
+      "Map your inventory workflow before evaluating software. Understand how products move from order to shelf to patient to invoice. Then verify each step is handled in the PIMS — receiving, dispensing, charge capture, reordering.",
+      "Ask about controlled substance tracking specifically. If you use Schedule II-V controlled substances, DEA-compliant tracking is mandatory. Verify the software handles this with the level of logging your compliance requirements demand.",
+      "Evaluate automatic reordering setup. A system that can automatically generate purchase orders when stock hits a minimum level saves significant staff time. Ask how the reorder thresholds are configured and whether they can be set per-item.",
+      "Test inventory reporting. You should be able to see stock levels in real time, identify items approaching reorder thresholds, and report on usage by category, provider, or time period.",
+    ],
+    faqs: [
+      {
+        question: "What veterinary software has the best inventory management?",
+        answer:
+          "Provet Cloud has the strongest dedicated inventory management of any cloud PIMS we evaluated, with automatic reordering, supplier management, and multi-location inventory support. ezyVet is the best alternative for large hospitals that need enterprise-grade inventory controls.",
+      },
+      {
+        question: "Can veterinary software track controlled substances?",
+        answer:
+          "Yes. Most comprehensive PIMS include controlled substance tracking with dispensing logs, usage audits, and reconciliation reports required for DEA compliance. ezyVet and Cornerstone are particularly strong in this area. Verify DEA compliance features explicitly before committing.",
+      },
+      {
+        question: "How much revenue do practices lose to missed charges?",
+        answer:
+          "Studies suggest veterinary practices lose 1-3% of revenue to missed charges, primarily on medications and supplies administered during appointments. For a practice doing $1M annually, that is $10,000-30,000/year. Automated charge capture (Digitail, ezyVet) directly addresses this.",
+      },
+      {
+        question: "Can veterinary software integrate with supply ordering?",
+        answer:
+          "Covetrus Ascend integrates directly with Covetrus supply ordering. ezyVet integrates with multiple supply chains. Some PIMS offer EDI integrations with major veterinary distributors. For practices with high supply volume, this integration can save hours of administrative work per week.",
+      },
+    ],
+  },
+
+  "best-veterinary-software-for-telemedicine": {
+    displayName: "Telemedicine",
+    intro:
+      "Veterinary telemedicine has grown substantially since 2020 and is now a meaningful revenue stream for forward-thinking practices. Whether for triage consultations, post-surgical follow-ups, chronic disease management, or specialist referrals, telemedicine capabilities are increasingly expected by pet owners. We evaluated which PIMS include or integrate well with telemedicine.",
+    methodology:
+      "We evaluated platforms on native telemedicine capabilities, video consultation quality, documentation integration (notes created during telehealth visits should enter the patient record), and billing for telemedicine appointments.",
+    picks: [
+      {
+        slug: "digitail",
+        rank: 1,
+        whyPick:
+          "Digitail includes native telemedicine as part of its core platform. Video consultations are initiated through the pet parent app, keeping the entire telehealth experience within the Digitail ecosystem. Notes from virtual visits flow directly into the patient record.",
+      },
+      {
+        slug: "vetport",
+        rank: 2,
+        whyPick:
+          "VETport includes built-in telemedicine at $99/mo, making it the most affordable platform with native telehealth capabilities. This is particularly valuable for mobile and ambulatory vets who need to offer remote consultations.",
+      },
+      {
+        slug: "petdesk",
+        rank: 3,
+        whyPick:
+          "PetDesk's client app supports telemedicine integrations and online booking for telehealth appointments. As a client engagement platform layered on top of your existing PIMS, it can add telemedicine visibility without replacing your entire system.",
+      },
+    ],
+    howToChoose: [
+      "Verify documentation integration. The key differentiator for native telemedicine vs. a standalone tool is whether the consultation notes flow into the patient's medical record automatically. Verify this in the demo.",
+      "Evaluate the client experience. Pet owners should be able to join a telehealth visit from a link or app without downloading special software. A friction-free experience increases adoption.",
+      "Understand billing for telehealth. Verify the PIMS can generate invoices for telemedicine appointments at appropriate fees, and that these are tracked separately for reporting purposes.",
+      "Consider state regulations. Veterinary telemedicine regulations vary by state, including requirements for an established VCPR. Verify your telehealth workflows are compliant with state-specific rules before launching telemedicine services.",
+    ],
+    faqs: [
+      {
+        question: "Which veterinary software includes built-in telemedicine?",
+        answer:
+          "Digitail and VETport both include native telemedicine capabilities. Digitail's integration with its pet parent app provides the most seamless experience. VETport is the most affordable option with built-in telehealth at $99/mo.",
+      },
+      {
+        question: "Can I add telemedicine to my existing veterinary software?",
+        answer:
+          "Yes. Several standalone telemedicine platforms (such as Anipanion and Airvet) integrate with major PIMS. PetDesk also supports telemedicine integrations as part of its client engagement platform. The trade-off is that standalone tools require separate billing and may not automatically document into the patient record.",
+      },
+      {
+        question: "Is veterinary telemedicine profitable?",
+        answer:
+          "For the right practice and service type, yes. Telemedicine is most profitable for practices that use it for follow-ups, triage calls that replace free phone consultations, and chronic disease monitoring. Charging $25-75 per telehealth visit for services previously given free over the phone is pure new revenue.",
+      },
+      {
+        question: "Do I need a special license to offer veterinary telemedicine?",
+        answer:
+          "Requirements vary by state. Most states require an established veterinarian-client-patient relationship (VCPR) before offering telemedicine. Some states have specific telemedicine practice standards. Consult the AVMA's state-by-state telemedicine guide and your state veterinary medical board before launching.",
+      },
+    ],
+  },
+
+  "best-veterinary-software-for-mixed-practice": {
+    displayName: "Mixed Practice",
+    intro:
+      "Mixed veterinary practices — those serving both large and small animals — face a software challenge most PIMS are not designed for. You need a single system that can handle the clinical workflows of both worlds: small animal SOAP notes and invoicing alongside equine, bovine, and other large animal records, farm tracking, and field visit management.",
+    methodology:
+      "We filtered for platforms that explicitly support mixed practice types and verified multi-species clinical template support, mobile field capabilities, and farm/property record management.",
+    picks: [
+      {
+        slug: "vetport",
+        rank: 1,
+        whyPick:
+          "VETport is the most versatile PIMS for mixed practices. It explicitly supports small animal, large animal, equine, and mobile/ambulatory practice types in one platform. At $99/mo, it is also one of the most affordable multi-species options.",
+      },
+      {
+        slug: "provet-cloud",
+        rank: 2,
+        whyPick:
+          "Provet Cloud supports small animal, large animal, and mixed practice types with multi-location support for practices that operate out of multiple sites. Its API access allows custom workflows for farm-visit scheduling and management.",
+      },
+      {
+        slug: "ezyvet",
+        rank: 3,
+        whyPick:
+          "ezyVet's flexible workflow engine can be configured for large animal and mixed practice workflows, and it supports multiple species. For larger mixed practices with complex scheduling and reporting needs, ezyVet's power is justified.",
+      },
+    ],
+    howToChoose: [
+      "Verify species support explicitly. Ask the vendor to demonstrate large animal and equine patient record creation, including species-specific physical examination fields, weight recording, and farm/property location assignment.",
+      "Test mobile field functionality. Large animal work happens in the field. A PIMS that only works well at a desktop workstation is impractical for the farm call side of a mixed practice.",
+      "Evaluate the scheduling system for both clinic and farm calls. Mixed practices need to schedule in-clinic small animal appointments alongside farm visits with drive time built in. Verify the system handles both appointment types gracefully.",
+      "Ask about farm and herd record management. For practices serving cattle producers, sheep farms, or swine operations, the ability to maintain herd records alongside individual patient records is often important.",
+    ],
+    faqs: [
+      {
+        question: "What is the best software for a mixed large and small animal practice?",
+        answer:
+          "VETport is our top recommendation for mixed practices, as it explicitly supports small animal, large animal, equine, and ambulatory practice types within a single platform. Provet Cloud is a strong alternative with better multi-location support.",
+      },
+      {
+        question: "Can I use a small animal PIMS for large animal patients?",
+        answer:
+          "You can, but it requires workarounds. Small animal PIMS lack species-specific templates, weight field scaling, farm/property records, and field visit scheduling for large animals. The administrative overhead of workarounds typically outweighs the cost of a purpose-built multi-species platform.",
+      },
+      {
+        question: "Does mixed practice software work for beef and dairy producers?",
+        answer:
+          "The best mixed practice PIMS (VETport, Provet Cloud) support herd-level records alongside individual animal records, which is important for cattle and dairy clients. Verify herd management capabilities in the demo if you serve large producer clients.",
+      },
+      {
+        question: "Do mixed practice vets need different mobile tools than small animal vets?",
+        answer:
+          "Yes. Mixed practice vets typically need more robust mobile functionality, offline capability for areas with poor connectivity, and tablet optimization for field data entry. AcuroVet and VETport are the most mobile-friendly options for field work.",
+      },
+    ],
+  },
+  };
+  return Object.keys(usecaseConfigs).map((usecase) => ({
+    params: { usecase },
+    props: { config: usecaseConfigs[usecase] },
+  }));
+}
+
+interface Props {
+  config: UseCaseConfig;
+}
+
+const { usecase } = Astro.params;
+const { config } = Astro.props;
+
+const meta = getBestForMeta(usecase, config.displayName);
+
+// Resolve tool objects for each pick
+const picks = config.picks
+  .map((p) => {
+    const tool = getToolBySlug(p.slug);
+    return tool ? { tool, whyPick: p.whyPick, rank: p.rank } : null;
+  })
+  .filter((p): p is { tool: Tool; whyPick: string; rank: number } => p !== null)
+  .sort((a, b) => a.rank - b.rank);
+
+// Build comparison table from top picks (first 2)
+const comparisonPair = picks.length >= 2 ? [picks[0].tool, picks[1].tool] : null;
+
+// Pre-build FAQ schema JSON
+const faqSchemaJson = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: config.faqs.map((faq) => ({
+    "@type": "Question",
+    name: faq.question,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: faq.answer,
+    },
+  })),
+});
+---
+
+<BaseLayout
+  title={meta.title}
+  description={meta.description}
+  canonical={meta.canonical}
+  ogTitle={meta.ogTitle}
+  ogDescription={meta.ogDescription}
+  ogType="article"
+  schema={meta.schema}
+>
+  <article class="mx-auto max-w-5xl px-4 py-8 sm:py-12">
+    <!-- Breadcrumbs -->
+    <nav class="mb-6 text-sm text-navy-400" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="/" class="hover:text-accent-500 transition-colors">Home</a></li>
+        <li class="before:mr-2 before:content-['/']">
+          <a href="/best/best-veterinary-software-for-small-practices" class="hover:text-accent-500 transition-colors">Best For</a>
+        </li>
+        <li class="before:mr-2 before:content-['/'] text-navy-700 font-medium">
+          {config.displayName}
+        </li>
+      </ol>
+    </nav>
+
+    <!-- Affiliate Disclosure -->
+    <div class="mb-8 rounded-lg border border-navy-100 bg-navy-50/50 px-4 py-3 text-xs text-navy-500">
+      <strong>Disclosure:</strong> VetSoftwareHub is reader-supported. When you click our affiliate links and make a purchase, we may earn a commission at no extra cost to you. Our rankings are based on independent evaluation — we only recommend products we genuinely believe in.
+    </div>
+
+    <p class="mb-2 text-xs text-navy-400">
+      Last updated: <time>February 25, 2026</time>
+    </p>
+
+    <!-- H1 -->
+    <h1 class="font-heading text-3xl font-bold text-navy-900 sm:text-4xl">
+      Best Veterinary Software for {config.displayName} in 2026
+    </h1>
+    <p class="mt-4 text-lg leading-relaxed text-navy-600">
+      {config.intro}
+    </p>
+
+    <!-- Quick Picks Summary -->
+    <div class="mt-8 rounded-xl border border-accent-200 bg-accent-50/30 p-6">
+      <h2 class="font-heading text-lg font-bold text-navy-900">Our Top Picks at a Glance</h2>
+      <ol class="mt-4 space-y-3">
+        {picks.map((pick) => (
+          <li class="flex items-start gap-3">
+            <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent-500 text-sm font-bold text-white">
+              {pick.rank}
+            </span>
+            <div>
+              <a
+                href={`/reviews/${pick.tool.slug}`}
+                class="font-heading font-bold text-navy-900 hover:text-accent-600 transition-colors"
+              >
+                {pick.tool.name}
+              </a>
+              <span class="ml-2 text-sm text-navy-500">{getPricingDisplay(pick.tool)}</span>
+              {pick.tool.free_trial && (
+                <span class="ml-2 inline-block rounded-full bg-accent-100 px-2 py-0.5 text-xs font-semibold text-accent-700">
+                  Free Trial
+                </span>
+              )}
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+
+    <!-- Methodology -->
+    <section class="mt-12">
+      <h2 class="font-heading text-2xl font-bold text-navy-900">How We Evaluated</h2>
+      <p class="mt-3 leading-relaxed text-navy-600">{config.methodology}</p>
+    </section>
+
+    <!-- Detailed Reviews of Each Pick -->
+    <section class="mt-12">
+      <h2 class="font-heading text-2xl font-bold text-navy-900">
+        Top {picks.length} Veterinary Software for {config.displayName}
+      </h2>
+      <div class="mt-8 space-y-10">
+        {picks.map((pick) => (
+          <div class="rounded-xl border border-navy-100 bg-white p-6 shadow-sm sm:p-8">
+            <!-- Header -->
+            <div class="flex items-start justify-between gap-4 flex-col sm:flex-row">
+              <div>
+                <div class="flex items-center gap-3">
+                  <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-accent-100 text-sm font-bold text-accent-700">
+                    #{pick.rank}
+                  </span>
+                  <h3 class="font-heading text-2xl font-bold text-navy-900">
+                    {pick.tool.name}
+                  </h3>
+                </div>
+                <p class="mt-1 text-sm text-navy-500">{pick.tool.tagline}</p>
+              </div>
+              <div class="flex flex-col items-start gap-2 sm:items-end shrink-0">
+                <span class="font-heading text-xl font-bold text-navy-900">
+                  {getPricingDisplay(pick.tool)}
+                </span>
+                {pick.tool.free_trial && (
+                  <span class="text-xs font-medium text-accent-600">Free trial available</span>
+                )}
+              </div>
+            </div>
+
+            <!-- Why We Picked It -->
+            <div class="mt-5 rounded-lg border border-accent-100 bg-accent-50/30 px-5 py-4">
+              <p class="text-sm font-semibold uppercase tracking-wider text-accent-700">
+                Why it's our #{pick.rank} pick
+              </p>
+              <p class="mt-2 text-sm leading-relaxed text-navy-600">{pick.whyPick}</p>
+            </div>
+
+            <!-- Pros -->
+            <div class="mt-5">
+              <h4 class="mb-2 text-xs font-semibold uppercase tracking-wider text-navy-400">
+                Key Strengths
+              </h4>
+              <ul class="space-y-1">
+                {pick.tool.pros.slice(0, 3).map((pro) => (
+                  <li class="flex items-start gap-2 text-sm text-navy-700">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      class="mt-0.5 h-4 w-4 shrink-0 text-accent-500"
+                      aria-hidden="true"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                    <span>{pro}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <!-- CTAs -->
+            <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <AffiliateButton
+                href={getAffiliateLink(pick.tool, `best-${usecase}`, `pick-${pick.rank}`)}
+                label={`Visit ${pick.tool.name}`}
+                tool={pick.tool.name}
+                size="md"
+              />
+              <a
+                href={`/reviews/${pick.tool.slug}`}
+                class="text-sm font-medium text-accent-600 underline decoration-accent-200 underline-offset-2 hover:text-accent-700 transition-colors"
+              >
+                Read full {pick.tool.name} review →
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Comparison Table (top 2) -->
+    {comparisonPair && (
+      <section class="mt-14">
+        <h2 class="font-heading text-2xl font-bold text-navy-900">
+          {picks[0].tool.name} vs {picks[1].tool.name}: Quick Comparison
+        </h2>
+        <div class="mt-6">
+          <ComparisonTable toolA={comparisonPair[0]} toolB={comparisonPair[1]} />
+        </div>
+        <p class="mt-3 text-xs text-navy-400">
+          See our{" "}
+          <a
+            href={`/compare/${picks[0].tool.slug}-vs-${picks[1].tool.slug}`}
+            class="text-accent-600 underline decoration-accent-200 underline-offset-2 hover:text-accent-700"
+          >
+            full {picks[0].tool.name} vs {picks[1].tool.name} comparison
+          </a>{" "}
+          for a deeper breakdown.
+        </p>
+      </section>
+    )}
+
+    <!-- How to Choose -->
+    <section class="mt-14">
+      <h2 class="font-heading text-2xl font-bold text-navy-900">
+        How to Choose the Right Software for {config.displayName}
+      </h2>
+      <ul class="mt-6 space-y-4">
+        {config.howToChoose.map((tip, i) => (
+          <li class="flex items-start gap-4 rounded-lg border border-navy-100 bg-white p-5">
+            <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-navy-100 text-sm font-bold text-navy-700">
+              {i + 1}
+            </div>
+            <p class="text-sm leading-relaxed text-navy-600">{tip}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <!-- Email Capture -->
+    <section class="mt-14">
+      <EmailCapture
+        heading="Get Our Free Vet Software Buyer's Guide"
+        subheading={`Includes our full analysis of every tool on this list plus 15+ more. Join 1,000+ practice managers making smarter software decisions.`}
+      />
+    </section>
+
+    <!-- FAQ -->
+    <section class="mt-14">
+      <h2 class="font-heading text-2xl font-bold text-navy-900">
+        Frequently Asked Questions
+      </h2>
+      <div class="mt-6 space-y-3">
+        {config.faqs.map((faq) => (
+          <details class="group rounded-lg border border-navy-100 bg-white">
+            <summary class="flex cursor-pointer items-center justify-between p-5 font-heading font-semibold text-navy-800 transition-colors hover:text-accent-600">
+              <span>{faq.question}</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                class="h-5 w-5 shrink-0 text-navy-400 transition-transform group-open:rotate-180"
+                aria-hidden="true"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </summary>
+            <div class="border-t border-navy-100 px-5 py-4 text-sm leading-relaxed text-navy-600">
+              {faq.answer}
+            </div>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <!-- Related Links -->
+    <nav class="mt-14 rounded-xl border border-navy-100 bg-white p-6" aria-label="Related content">
+      <h3 class="font-heading text-lg font-bold text-navy-900">Related Pages</h3>
+      <ul class="mt-4 grid gap-2 sm:grid-cols-2">
+        {picks.slice(0, 4).map((pick) => (
+          <li>
+            <a
+              href={`/reviews/${pick.tool.slug}`}
+              class="text-sm text-accent-600 underline decoration-accent-200 underline-offset-2 transition-colors hover:text-accent-700 hover:decoration-accent-400"
+            >
+              {pick.tool.name} Full Review
+            </a>
+          </li>
+        ))}
+        {picks.length >= 2 && (
+          <li>
+            <a
+              href={`/compare/${picks[0].tool.slug}-vs-${picks[1].tool.slug}`}
+              class="text-sm text-accent-600 underline decoration-accent-200 underline-offset-2 transition-colors hover:text-accent-700 hover:decoration-accent-400"
+            >
+              {picks[0].tool.name} vs {picks[1].tool.name}
+            </a>
+          </li>
+        )}
+      </ul>
+    </nav>
+
+    <!-- FAQ Schema -->
+    <script type="application/ld+json" set:html={faqSchemaJson} />
+  </article>
+</BaseLayout>

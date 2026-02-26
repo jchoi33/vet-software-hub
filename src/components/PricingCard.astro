@@ -1,0 +1,123 @@
+---
+interface Tool {
+  name: string;
+  slug: string;
+  starting_price_monthly: number | null;
+  pricing_model: string;
+  free_trial: boolean;
+  free_plan: boolean;
+  key_features: string[];
+  website: string;
+  affiliate_program: boolean;
+}
+
+interface Props {
+  tool: Tool;
+}
+
+const { tool } = Astro.props;
+
+function formatPriceDisplay(price: number | null): string {
+  if (price === null) return "Custom";
+  if (price === 0) return "Free";
+  return `$${price}`;
+}
+
+const priceDisplay = formatPriceDisplay(tool.starting_price_monthly);
+const showPerMonth = tool.starting_price_monthly !== null && tool.starting_price_monthly > 0;
+const displayFeatures = tool.key_features.slice(0, 5);
+
+const utm = `?utm_source=vetsoftwarehub&utm_medium=affiliate&utm_campaign=${encodeURIComponent(tool.slug)}`;
+const affiliateHref = tool.website.includes("?")
+  ? `${tool.website}&utm_source=vetsoftwarehub&utm_medium=affiliate&utm_campaign=${encodeURIComponent(tool.slug)}`
+  : `${tool.website}${utm}`;
+---
+
+<div class="flex flex-col rounded-xl border border-navy-100 bg-white p-6 shadow-sm transition-shadow duration-200 hover:shadow-md">
+  {/* Header */}
+  <div class="mb-4 border-b border-navy-100 pb-4">
+    <h3 class="font-heading text-xl font-bold text-navy-900">{tool.name}</h3>
+    <p class="mt-1 text-sm text-navy-500">{tool.pricing_model}</p>
+  </div>
+
+  {/* Price */}
+  <div class="mb-4">
+    <div class="flex items-baseline gap-1">
+      <span class="text-4xl font-bold text-navy-900">{priceDisplay}</span>
+      {showPerMonth && (
+        <span class="text-base text-navy-500">/month</span>
+      )}
+    </div>
+    {tool.starting_price_monthly !== null && tool.starting_price_monthly > 0 && (
+      <p class="mt-1 text-xs text-navy-400">Starting price. Contact vendor for exact quote.</p>
+    )}
+  </div>
+
+  {/* Badges */}
+  <div class="mb-5 flex flex-wrap gap-2">
+    {tool.free_trial && (
+      <span class="inline-flex items-center gap-1 rounded-full bg-accent-100 px-3 py-1 text-xs font-semibold text-accent-700">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5" aria-hidden="true">
+          <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+        </svg>
+        Free Trial
+      </span>
+    )}
+    {tool.free_plan && (
+      <span class="inline-flex items-center gap-1 rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5" aria-hidden="true">
+          <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+        </svg>
+        Free Plan
+      </span>
+    )}
+  </div>
+
+  {/* Features */}
+  <div class="mb-6 flex-1">
+    <h4 class="mb-3 text-xs font-semibold uppercase tracking-wider text-navy-400">Key features included</h4>
+    <ul class="space-y-2">
+      {displayFeatures.map((feature) => (
+        <li class="flex items-start gap-2.5 text-sm text-navy-700">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            class="mt-0.5 h-4 w-4 shrink-0 text-accent-500"
+            aria-hidden="true"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          <span>{feature}</span>
+        </li>
+      ))}
+      {tool.key_features.length > 5 && (
+        <li class="text-sm font-medium text-accent-600">
+          +{tool.key_features.length - 5} more features
+        </li>
+      )}
+    </ul>
+  </div>
+
+  {/* CTA */}
+  <div class="flex flex-col items-center gap-1">
+    <a
+      href={affiliateHref}
+      target="_blank"
+      rel="nofollow noopener sponsored"
+      class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-accent-500 to-accent-600 px-6 py-3 text-sm font-semibold text-white transition-all duration-200 hover:from-accent-400 hover:to-accent-500 hover:shadow-lg hover:shadow-accent-500/25 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:ring-offset-2 active:scale-[0.98]"
+    >
+      Visit {tool.name}
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4" aria-hidden="true">
+        <path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L11.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 11-1.04-1.08l3.158-2.96H3.75A.75.75 0 013 10z" clip-rule="evenodd" />
+      </svg>
+    </a>
+    {tool.affiliate_program && (
+      <span class="text-xs text-navy-400">Affiliate link</span>
+    )}
+  </div>
+</div>

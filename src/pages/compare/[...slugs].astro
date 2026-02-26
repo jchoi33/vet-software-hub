@@ -1,0 +1,741 @@
+---
+import ComparisonLayout from "../../layouts/ComparisonLayout.astro";
+import ComparisonTable from "../../components/ComparisonTable.astro";
+import ProsCons from "../../components/ProsCons.astro";
+import AffiliateButton from "../../components/AffiliateButton.astro";
+import RatingStars from "../../components/RatingStars.astro";
+import EmailCapture from "../../components/EmailCapture.astro";
+import { getToolBySlug, getAverageRating, getAffiliateLink, getPricingDisplay } from "../../utils/tools";
+import type { Tool } from "../../utils/tools";
+import { getComparisonMeta } from "../../utils/seo";
+
+export function getStaticPaths() {
+  const pairs = [
+    ['digitail', 'ezyvet'],
+    ['digitail', 'shepherd'],
+    ['ezyvet', 'vetspire'],
+    ['daysmart-vet', 'hippo-manager'],
+    ['shepherd', 'vetbadger'],
+  ];
+
+  return pairs.map(([slugA, slugB]) => {
+    const toolA = getToolBySlug(slugA)!;
+    const toolB = getToolBySlug(slugB)!;
+    return {
+      params: { slugs: `${slugA}-vs-${slugB}` },
+      props: { toolA, toolB },
+    };
+  });
+}
+
+interface Props {
+  toolA: Tool;
+  toolB: Tool;
+}
+
+const { toolA, toolB } = Astro.props;
+const meta = getComparisonMeta(toolA, toolB);
+const ratingA = getAverageRating(toolA);
+const ratingB = getAverageRating(toolB);
+const priceA = getPricingDisplay(toolA);
+const priceB = getPricingDisplay(toolB);
+const linkA = getAffiliateLink(toolA, `compare-${toolA.slug}-vs-${toolB.slug}`, "recommendation");
+const linkB = getAffiliateLink(toolB, `compare-${toolA.slug}-vs-${toolB.slug}`, "recommendation");
+
+// --- Data-driven helpers for per-pair content ---
+
+function featureOverlap(a: Tool, b: Tool): string[] {
+  return a.key_features.filter((f) => b.key_features.includes(f));
+}
+
+function uniqueFeatures(tool: Tool, other: Tool): string[] {
+  return tool.key_features.filter((f) => !other.key_features.includes(f));
+}
+
+const sharedFeatures = featureOverlap(toolA, toolB);
+const uniqueA = uniqueFeatures(toolA, toolB);
+const uniqueB = uniqueFeatures(toolB, toolA);
+
+// Determine the winner based on data signals
+function pickWinner(a: Tool, b: Tool): "a" | "b" | "tie" {
+  let scoreA = 0;
+  let scoreB = 0;
+  // Rating advantage
+  const avgA = getAverageRating(a);
+  const avgB = getAverageRating(b);
+  if (avgA !== null && avgB !== null) {
+    if (avgA > avgB) scoreA += 2;
+    else if (avgB > avgA) scoreB += 2;
+  }
+  // Feature count
+  if (a.key_features.length > b.key_features.length) scoreA += 1;
+  else if (b.key_features.length > a.key_features.length) scoreB += 1;
+  // Pricing (lower is better for value)
+  if (a.starting_price_monthly !== null && b.starting_price_monthly !== null) {
+    if (a.starting_price_monthly < b.starting_price_monthly) scoreA += 1;
+    else if (b.starting_price_monthly < a.starting_price_monthly) scoreB += 1;
+  }
+  if (scoreA > scoreB) return "a";
+  if (scoreB > scoreA) return "b";
+  return "tie";
+}
+
+const winner = pickWinner(toolA, toolB);
+
+// Per-pair quick verdicts derived from data
+type PairKey = string;
+const quickVerdicts: Record<PairKey, string> = {
+  "digitail-vs-ezyvet": `${toolA.name} is the better fit for practices that want AI-powered note generation and a modern mobile experience at a lower price point. ${toolB.name} is the stronger choice for large, multi-location hospitals that need maximum customization and deep IDEXX integration.`,
+  "digitail-vs-shepherd": `${toolB.name} wins on affordability and simplicity for solo vets and startup practices, while ${toolA.name} offers a broader feature set with AI-driven clinical tools for growing, multi-location clinics.`,
+  "ezyvet-vs-vetspire": `Both are premium platforms, but ${toolA.name} edges ahead for large multi-location enterprises thanks to its customizable workflows. ${toolB.name} is the better pick for specialty and teaching hospitals that need clinical decision support.`,
+  "daysmart-vet-vs-hippo-manager": `These two compete head-to-head on price and simplicity. ${toolA.name} has stronger client communication tools (two-way texting, automated waitlists), while ${toolB.name} offers a cleaner, more streamlined interface for the most budget-conscious practices.`,
+  "shepherd-vs-vetbadger": `Both are affordable cloud platforms aimed at small practices. ${toolA.name} stands out with its vet-built workflow design and startup discounts, while ${toolB.name} differentiates with its focus on work-life balance and burnout reduction.`,
+};
+
+const pairKey = `${toolA.slug}-vs-${toolB.slug}`;
+const quickVerdict = quickVerdicts[pairKey] || `Both ${toolA.name} and ${toolB.name} are solid veterinary software options. Your choice depends on practice size, budget, and which feature priorities matter most to your team.`;
+
+// Per-pair feature-by-feature analysis
+interface FeatureArea {
+  title: string;
+  analysis: string;
+  edge: "a" | "b" | "tie";
+}
+
+const featureAnalyses: Record<PairKey, FeatureArea[]> = {
+  "digitail-vs-ezyvet": [
+    {
+      title: "Clinical Features / EMR",
+      analysis: `${toolA.name} leads with its AI SOAP notes powered by Tails AI, which can save veterinarians hours of documentation time each day. ${toolB.name} counters with a comprehensive, highly customizable EMR system that supports complex multi-species workflows. For practices that want cutting-edge AI assistance, ${toolA.name} has the edge. For those that need granular control over every clinical workflow, ${toolB.name} is stronger.`,
+      edge: "tie",
+    },
+    {
+      title: "Scheduling & Booking",
+      analysis: `Both platforms offer online booking, but ${toolA.name} includes a client-facing mobile app that makes appointment scheduling seamless for pet owners. ${toolB.name} provides more advanced scheduling tools for multi-doctor, multi-location setups with custom appointment types and resource management.`,
+      edge: "b",
+    },
+    {
+      title: "Client Communication",
+      analysis: `${toolA.name} offers a dedicated pet parent app with telemedicine capabilities, giving clients a modern, app-based experience. ${toolB.name} provides automated communications and a client portal, but lacks a standalone mobile app for pet owners.`,
+      edge: "a",
+    },
+    {
+      title: "Pricing & Value",
+      analysis: `${toolA.name} starts at $${toolA.starting_price_monthly}/mo per veterinarian, while ${toolB.name} starts at $${toolB.starting_price_monthly}/mo with custom quotes based on practice size. For smaller practices, ${toolA.name} is the more predictable and affordable option. Larger hospitals may find ${toolB.name}'s enterprise pricing competitive once negotiated.`,
+      edge: "a",
+    },
+    {
+      title: "Integrations",
+      analysis: `${toolB.name} has a significant advantage here thanks to its ownership by IDEXX, offering deep integration with IDEXX VetConnect PLUS, SmartFlow, and VetRadar. ${toolA.name} integrates with IDEXX, Antech, Zoetis, and Covetrus, but does not match the depth of ${toolB.name}'s IDEXX ecosystem.`,
+      edge: "b",
+    },
+    {
+      title: "Ease of Use",
+      analysis: `${toolA.name} is known for its modern, intuitive interface that teams can pick up quickly. ${toolB.name} is powerful but has a steep learning curve and can feel overwhelming to new users, especially during onboarding. If ease of adoption matters, ${toolA.name} wins this category.`,
+      edge: "a",
+    },
+  ],
+  "digitail-vs-shepherd": [
+    {
+      title: "Clinical Features / EMR",
+      analysis: `${toolA.name} offers AI-powered SOAP notes (Tails AI), automated charge capture, and telemedicine. ${toolB.name} provides an intuitive EMR with treatment plans and a whiteboard, built from the perspective of a practicing veterinarian. ${toolA.name} has the broader clinical feature set, but ${toolB.name}'s workflow design is praised for feeling natural to clinicians.`,
+      edge: "a",
+    },
+    {
+      title: "Scheduling & Booking",
+      analysis: `Both offer appointment scheduling, but ${toolA.name} adds online booking and a mobile app for pet parents. ${toolB.name} keeps scheduling simple and focused, which suits small teams that do not need complex booking workflows.`,
+      edge: "a",
+    },
+    {
+      title: "Client Communication",
+      analysis: `${toolA.name} provides a full client communication app with telemedicine, while ${toolB.name} offers client communication and automated reminders. For practices that want a consumer-grade pet owner experience, ${toolA.name} is ahead. For practices that just need reliable reminders and messaging, ${toolB.name} covers the basics well.`,
+      edge: "a",
+    },
+    {
+      title: "Pricing & Value",
+      analysis: `${toolB.name} starts at $${toolB.starting_price_monthly}/mo per location and offers a 50% discount for new practices, making it one of the most affordable options available. ${toolA.name} starts at $${toolA.starting_price_monthly}/mo per veterinarian. For startup and solo practices, ${toolB.name} delivers far better value per dollar.`,
+      edge: "b",
+    },
+    {
+      title: "Integrations",
+      analysis: `Both tools integrate with major lab providers (IDEXX, Antech, Zoetis) and Stripe for payments. ${toolA.name} adds Covetrus integration. ${toolB.name} offers QuickBooks integration for accounting. The integration ecosystems are comparable for small-practice needs.`,
+      edge: "tie",
+    },
+    {
+      title: "Ease of Use",
+      analysis: `Both platforms are praised for intuitive design. ${toolB.name} was built by a veterinarian specifically to match how vets actually work, and users consistently rate it among the easiest PIMS to learn. ${toolA.name} also has a modern interface but includes more features, which adds some complexity.`,
+      edge: "b",
+    },
+  ],
+  "ezyvet-vs-vetspire": [
+    {
+      title: "Clinical Features / EMR",
+      analysis: `${toolB.name} was originally built for teaching hospitals and includes clinical decision support tools that help veterinarians during the diagnostic process. ${toolA.name} provides a comprehensive EMR with highly customizable workflows. Both are powerful, but ${toolB.name}'s clinical decision support is a unique differentiator for specialty and academic settings.`,
+      edge: "b",
+    },
+    {
+      title: "Scheduling & Booking",
+      analysis: `${toolA.name} offers advanced scheduling with resource management suited for multi-doctor, multi-location hospitals. ${toolB.name} includes appointment scheduling but focuses more on clinical workflow efficiency. For complex scheduling needs, ${toolA.name} has the advantage.`,
+      edge: "a",
+    },
+    {
+      title: "Client Communication",
+      analysis: `${toolA.name} provides automated communications and a client portal. ${toolB.name} includes referral management, which is critical for specialty clinics that receive cases from general practitioners. Neither platform is a standout in client communication compared to dedicated tools like PetDesk.`,
+      edge: "tie",
+    },
+    {
+      title: "Pricing & Value",
+      analysis: `${toolA.name} starts at $${toolA.starting_price_monthly}/mo with custom pricing for larger setups. ${toolB.name} starts at $${toolB.starting_price_monthly}/mo per full-time veterinarian, making it the more expensive option. However, ${toolB.name} does not require per-location pricing, which may benefit single-location specialty clinics. Neither offers a free trial or free plan.`,
+      edge: "a",
+    },
+    {
+      title: "Integrations",
+      analysis: `${toolA.name} benefits from deep IDEXX ownership integration with VetConnect PLUS, SmartFlow, and VetRadar, plus QuickBooks and Xero support. ${toolB.name} integrates with IDEXX, Antech, and various imaging systems. ${toolA.name}'s integration ecosystem is broader and deeper.`,
+      edge: "a",
+    },
+    {
+      title: "Ease of Use",
+      analysis: `${toolB.name} is known for a fast, responsive interface that clinicians appreciate during busy shifts. ${toolA.name} is powerful but has a steep learning curve and complex onboarding process. For practices that value speed and simplicity in daily use, ${toolB.name} is the better experience.`,
+      edge: "b",
+    },
+  ],
+  "daysmart-vet-vs-hippo-manager": [
+    {
+      title: "Clinical Features / EMR",
+      analysis: `Both platforms offer medical records and basic clinical tools, but neither is as feature-rich as premium options like ezyVet or Digitail. ${toolA.name} includes medical notes and automated waitlists. ${toolB.name} provides patient records, scheduling, and invoicing. For basic clinical needs, they are comparable.`,
+      edge: "tie",
+    },
+    {
+      title: "Scheduling & Booking",
+      analysis: `${toolA.name} offers online booking and automated waitlists, which help fill cancellations efficiently. ${toolB.name} includes scheduling and reminders but lacks the automated waitlist feature. If managing no-shows and cancellations is a priority, ${toolA.name} has the edge.`,
+      edge: "a",
+    },
+    {
+      title: "Client Communication",
+      analysis: `${toolA.name} is particularly strong here with two-way text messaging, which allows real-time conversations with pet owners. ${toolB.name} offers a client portal and reminders but does not emphasize two-way texting. For practices that want to communicate with clients the way people prefer today (via text), ${toolA.name} is the clear winner.`,
+      edge: "a",
+    },
+    {
+      title: "Pricing & Value",
+      analysis: `Both start at $${toolA.starting_price_monthly}/mo, making them equally accessible. ${toolA.name} uses per-practice pricing, and ${toolB.name} does as well. Both offer free trials, and neither has a free plan. The value proposition comes down to which features matter more to your practice.`,
+      edge: "tie",
+    },
+    {
+      title: "Integrations",
+      analysis: `${toolB.name} integrates with IDEXX, Antech, and Zoetis for lab work. ${toolA.name} integrates with ALLYDVM, QuickBooks, and various payment processors. ${toolB.name} has the stronger lab integration story, while ${toolA.name} offers better accounting connectivity.`,
+      edge: "tie",
+    },
+    {
+      title: "Ease of Use",
+      analysis: `Both platforms are designed for simplicity. ${toolB.name} is frequently praised for its clean, uncluttered interface and good customer support. ${toolA.name} offers good onboarding support and a user-friendly interface. Both are suitable for non-technical staff, but ${toolB.name}'s simplicity gives it a slight edge for the least tech-savvy teams.`,
+      edge: "b",
+    },
+  ],
+  "shepherd-vs-vetbadger": [
+    {
+      title: "Clinical Features / EMR",
+      analysis: `${toolA.name} provides an intuitive EMR with treatment plans, a whiteboard, and inventory tracking. ${toolB.name} focuses on EHR management with financial integration. ${toolA.name} offers a somewhat broader clinical toolkit, including its whiteboard feature for patient tracking.`,
+      edge: "a",
+    },
+    {
+      title: "Scheduling & Booking",
+      analysis: `Both platforms include appointment scheduling. ${toolB.name} adds online scheduling that clients can access directly. ${toolA.name} provides standard appointment scheduling with automated reminders. The scheduling capabilities are comparable for small-practice needs.`,
+      edge: "tie",
+    },
+    {
+      title: "Client Communication",
+      analysis: `${toolA.name} includes client communication and automated reminders. ${toolB.name} offers client emails, SMS messaging, and automated reminders with an emphasis on reducing after-hours communication burden. ${toolB.name}'s focus on work-life balance and reducing burnout through smarter communication boundaries is a meaningful differentiator.`,
+      edge: "b",
+    },
+    {
+      title: "Pricing & Value",
+      analysis: `Both start at $${toolA.starting_price_monthly}/mo, putting them among the most affordable cloud-based PIMS options. ${toolA.name} offers a 50% discount for new practices, which makes it especially attractive for veterinarians opening their first clinic. Both offer free trials.`,
+      edge: "a",
+    },
+    {
+      title: "Integrations",
+      analysis: `${toolA.name} integrates with IDEXX, Antech, Zoetis, Stripe, and QuickBooks. ${toolB.name} connects with QuickBooks, Xero, and various payment processors but has fewer lab integrations. For practices that rely heavily on in-house diagnostics, ${toolA.name} has the stronger integration set.`,
+      edge: "a",
+    },
+    {
+      title: "Ease of Use",
+      analysis: `Both are praised for ease of use. ${toolA.name} was designed by a practicing veterinarian to mirror actual clinical workflows, which gives it a natural feel for vet teams. ${toolB.name} emphasizes reducing burnout and creating sustainable work patterns. Both score well in user satisfaction, with ${toolA.name} holding a slight edge in review ratings.`,
+      edge: "a",
+    },
+  ],
+};
+
+const currentFeatureAreas = featureAnalyses[pairKey] || [];
+
+// Per-pair recommendation text
+const recommendations: Record<PairKey, string> = {
+  "digitail-vs-ezyvet": `For most small-to-mid-size practices looking for a modern, AI-enhanced experience, we recommend ${toolA.name}. Its lower starting price ($${toolA.starting_price_monthly}/mo vs $${toolB.starting_price_monthly}/mo), intuitive interface, and AI SOAP notes make it the smarter choice for the majority of general practices. However, if you run a large multi-location hospital, a specialty referral center, or you are already deep in the IDEXX ecosystem, ${toolB.name}'s customization power and integration depth are hard to beat.`,
+  "digitail-vs-shepherd": `The right choice here depends almost entirely on your practice size and budget. If you are a solo vet or opening a new practice, ${toolB.name} at $${toolB.starting_price_monthly}/mo (with a 50% startup discount) is exceptional value. It does what a small practice needs without complexity you will not use. If you are a growing multi-location clinic that wants AI-powered notes and a full client app ecosystem, ${toolA.name} is worth the premium at $${toolA.starting_price_monthly}/mo.`,
+  "ezyvet-vs-vetspire": `We recommend ${toolA.name} for large, multi-location enterprise practices that need maximum workflow customization and the deepest IDEXX integration available. We recommend ${toolB.name} for specialty clinics, emergency hospitals, and teaching institutions where clinical decision support and fast charting during high-pressure cases are top priorities. Both are premium-priced platforms. If budget is a concern, consider alternatives like Digitail or Shepherd.`,
+  "daysmart-vet-vs-hippo-manager": `If client communication is your top priority, especially two-way texting and automated waitlists, ${toolA.name} is the better fit. If you want the simplest, cleanest interface with solid customer support and a focus on core practice management, ${toolB.name} is an excellent choice. Both are priced identically at $${toolA.starting_price_monthly}/mo and offer free trials, so we recommend trying both before committing.`,
+  "shepherd-vs-vetbadger": `For startup practices and solo veterinarians, we give the edge to ${toolA.name}. Its 50% discount for new practices, vet-designed workflows, and stronger lab integrations (IDEXX, Antech, Zoetis) make it the more complete package at this price point. ${toolB.name} is a worthy alternative if work-life balance features and burnout-prevention tools resonate with your team's priorities. Both offer free trials at $${toolA.starting_price_monthly}/mo, so test each to see which fits your workflow.`,
+};
+
+const recommendation = recommendations[pairKey] || `Both ${toolA.name} and ${toolB.name} are capable veterinary software platforms. We recommend evaluating both with their free trials to determine which best fits your practice's specific needs.`;
+
+// Per-pair FAQ content
+interface FAQItem {
+  question: string;
+  answer: string;
+}
+
+const faqs: Record<PairKey, FAQItem[]> = {
+  "digitail-vs-ezyvet": [
+    {
+      question: `Is ${toolA.name} or ${toolB.name} cheaper?`,
+      answer: `${toolA.name} starts at $${toolA.starting_price_monthly}/mo per veterinarian with transparent pricing. ${toolB.name} starts at $${toolB.starting_price_monthly}/mo but uses custom quotes based on practice size, so final pricing varies. For most small-to-mid-size practices, ${toolA.name} will be the more affordable option.`,
+    },
+    {
+      question: `Which is better for small practices?`,
+      answer: `${toolA.name} is generally the better choice for small practices. It is more affordable, easier to learn, and the AI-powered SOAP notes help solo vets and small teams save significant documentation time. ${toolB.name} is designed for the complexity of larger operations.`,
+    },
+    {
+      question: `Do both offer free trials?`,
+      answer: `Yes, both ${toolA.name} and ${toolB.name} offer free trials. We recommend testing both to see which interface and workflow your team prefers before committing.`,
+    },
+    {
+      question: `Which has better IDEXX integration?`,
+      answer: `${toolB.name} has deeper IDEXX integration because it is owned by IDEXX. It connects directly with VetConnect PLUS, SmartFlow, and VetRadar. ${toolA.name} integrates with IDEXX as well, but the connection is not as tightly coupled.`,
+    },
+  ],
+  "digitail-vs-shepherd": [
+    {
+      question: `Is ${toolA.name} or ${toolB.name} cheaper?`,
+      answer: `${toolB.name} is significantly cheaper at $${toolB.starting_price_monthly}/mo per location, with an additional 50% discount for new practices. ${toolA.name} starts at $${toolA.starting_price_monthly}/mo per veterinarian. For a startup practice, ${toolB.name} could cost less than half of what ${toolA.name} charges.`,
+    },
+    {
+      question: `Which is better for a new veterinary practice?`,
+      answer: `${toolB.name} was purpose-built for startup and small practices, with per-location pricing and a 50% startup discount. It covers all the essentials without overwhelming new teams. ${toolA.name} is better suited for practices that plan to scale quickly and want AI tools from day one.`,
+    },
+    {
+      question: `Do both offer free trials?`,
+      answer: `Yes, both ${toolA.name} and ${toolB.name} offer free trials. Given their different price points and target audiences, trialing both is a good way to determine which complexity level your team actually needs.`,
+    },
+    {
+      question: `Does ${toolB.name} have AI features like ${toolA.name}?`,
+      answer: `Not currently. ${toolA.name}'s standout feature is its AI-powered SOAP note generation (Tails AI), which ${toolB.name} does not offer. If AI-driven documentation is a priority, ${toolA.name} is the clear choice. ${toolB.name} focuses on intuitive manual workflows designed by a practicing vet.`,
+    },
+  ],
+  "ezyvet-vs-vetspire": [
+    {
+      question: `Is ${toolA.name} or ${toolB.name} cheaper?`,
+      answer: `${toolA.name} starts at $${toolA.starting_price_monthly}/mo with custom quotes for larger practices. ${toolB.name} starts at $${toolB.starting_price_monthly}/mo per full-time veterinarian. Both are premium-priced platforms. Neither offers a free plan, and only ${toolA.name} offers a free trial.`,
+    },
+    {
+      question: `Which is better for specialty clinics?`,
+      answer: `${toolB.name} was originally built for teaching hospitals and includes clinical decision support tools specifically designed for specialty and referral practices. ${toolA.name} handles specialty workflows well through customization but was not purpose-built for that use case.`,
+    },
+    {
+      question: `Do they offer free trials?`,
+      answer: `${toolA.name} offers a free trial. ${toolB.name} does not currently offer a free trial. You will need to request a demo from the ${toolB.name} team to evaluate the platform.`,
+    },
+    {
+      question: `Which has better reporting and analytics?`,
+      answer: `Both offer strong reporting. ${toolA.name} is known for its powerful, highly customizable reporting suite with detailed financial reports. ${toolB.name} offers advanced analytics with a focus on clinical data insights. The choice depends on whether you prioritize financial reporting (${toolA.name}) or clinical analytics (${toolB.name}).`,
+    },
+  ],
+  "daysmart-vet-vs-hippo-manager": [
+    {
+      question: `Is ${toolA.name} or ${toolB.name} cheaper?`,
+      answer: `Both start at $${toolA.starting_price_monthly}/mo with per-practice pricing, making them equally accessible. The total cost will depend on any add-on features or modules you choose. Both offer free trials so you can evaluate before purchasing.`,
+    },
+    {
+      question: `Which is better for small practices?`,
+      answer: `Both are well-suited for small practices. ${toolB.name} is slightly simpler and often praised for its clean interface, making it ideal for the least tech-savvy teams. ${toolA.name} offers stronger client communication tools that more tech-comfortable practices will appreciate.`,
+    },
+    {
+      question: `Do both offer free trials?`,
+      answer: `Yes, both ${toolA.name} and ${toolB.name} offer free trials. Since they are priced identically, we strongly recommend testing both to see which interface your team prefers.`,
+    },
+    {
+      question: `Which has better client communication features?`,
+      answer: `${toolA.name} has the edge here with two-way text messaging, automated waitlists, and online booking. ${toolB.name} offers a client portal and reminders but does not match ${toolA.name}'s real-time texting capabilities.`,
+    },
+  ],
+  "shepherd-vs-vetbadger": [
+    {
+      question: `Is ${toolA.name} or ${toolB.name} cheaper?`,
+      answer: `Both start at $${toolA.starting_price_monthly}/mo. However, ${toolA.name} offers a 50% discount for new practices, which could bring your cost down to approximately $50/mo. This makes ${toolA.name} the cheaper option for startup clinics.`,
+    },
+    {
+      question: `Which is better for solo veterinarians?`,
+      answer: `Both are strong options for solo vets. ${toolA.name} was built by a veterinarian and mirrors how solo practitioners actually work. ${toolB.name} focuses on reducing burnout and supporting work-life balance. If you want the most clinical workflow-aligned tool, choose ${toolA.name}. If managing your energy and boundaries matters most, consider ${toolB.name}.`,
+    },
+    {
+      question: `Do both offer free trials?`,
+      answer: `Yes, both ${toolA.name} and ${toolB.name} offer free trials. At the same price point, trying both is the best way to determine which platform matches your team's workflow.`,
+    },
+    {
+      question: `Which has better lab integrations?`,
+      answer: `${toolA.name} integrates with IDEXX, Antech, and Zoetis, covering the three major veterinary lab networks. ${toolB.name} does not currently list direct lab integrations, connecting instead with accounting tools like QuickBooks and Xero. If in-house diagnostics are important, ${toolA.name} is the stronger choice.`,
+    },
+  ],
+};
+
+const currentFAQs = faqs[pairKey] || [];
+---
+
+<ComparisonLayout
+  title={meta.title}
+  description={meta.description}
+  canonical={meta.canonical}
+  ogTitle={meta.ogTitle}
+  ogDescription={meta.ogDescription}
+  schema={meta.schema}
+  toolAName={toolA.name}
+  toolBName={toolB.name}
+  lastUpdated="February 25, 2026"
+>
+  <!-- Affiliate Disclosure -->
+  <div class="mb-8 rounded-lg border border-navy-100 bg-navy-50/50 px-4 py-3 text-xs text-navy-500">
+    <strong>Disclosure:</strong> VetSoftwareHub is reader-supported. When you click our affiliate links and make a purchase, we may earn a commission at no extra cost to you. We independently evaluate every product. Our opinions are our own.
+  </div>
+
+  <!-- H1 Title -->
+  <h1 class="font-heading text-3xl font-bold text-navy-900 sm:text-4xl">
+    {toolA.name} vs {toolB.name}: Which Veterinary Software Is Better in 2026?
+  </h1>
+  <p class="mt-4 text-lg text-navy-500">
+    We compared {toolA.name} and {toolB.name} across pricing, features, ratings, and real-world fit to help you make the right choice for your veterinary practice.
+  </p>
+
+  <!-- ============================================================ -->
+  <!-- Section 1: Quick Comparison Summary                          -->
+  <!-- ============================================================ -->
+  <div class="mt-10 rounded-xl border border-navy-100 bg-white shadow-sm">
+    <div class="grid grid-cols-1 divide-y divide-navy-100 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+      <!-- Tool A Summary -->
+      <div class="flex flex-col items-center p-6 text-center">
+        <h3 class="font-heading text-lg font-bold text-navy-900">{toolA.name}</h3>
+        <div class="mt-3">
+          <RatingStars rating={ratingA} />
+        </div>
+        <p class="mt-2 text-sm font-semibold text-navy-700">{priceA}</p>
+        <p class="mt-1 text-xs text-navy-400">{toolA.deployment}</p>
+      </div>
+
+      <!-- VS Badge -->
+      <div class="flex flex-col items-center justify-center p-6 text-center">
+        <span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-navy-900 font-heading text-sm font-bold text-white">
+          VS
+        </span>
+      </div>
+
+      <!-- Tool B Summary -->
+      <div class="flex flex-col items-center p-6 text-center">
+        <h3 class="font-heading text-lg font-bold text-navy-900">{toolB.name}</h3>
+        <div class="mt-3">
+          <RatingStars rating={ratingB} />
+        </div>
+        <p class="mt-2 text-sm font-semibold text-navy-700">{priceB}</p>
+        <p class="mt-1 text-xs text-navy-400">{toolB.deployment}</p>
+      </div>
+    </div>
+
+    <!-- Quick Verdict -->
+    <div class="border-t border-navy-100 px-6 py-5">
+      <h4 class="font-heading text-sm font-bold uppercase tracking-wide text-navy-400">Quick Verdict</h4>
+      <p class="mt-2 text-sm leading-relaxed text-navy-700">{quickVerdict}</p>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- Section 2: Comparison Table                                   -->
+  <!-- ============================================================ -->
+  <section class="mt-14">
+    <h2 class="font-heading text-2xl font-bold text-navy-900">{toolA.name} vs {toolB.name} at a Glance</h2>
+    <div class="mt-6">
+      <ComparisonTable toolA={toolA} toolB={toolB} />
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- Section 3: Overview of Both Tools                             -->
+  <!-- ============================================================ -->
+  <section class="mt-14">
+    <h2 class="font-heading text-2xl font-bold text-navy-900">Overview of Both Tools</h2>
+
+    <div class="mt-6 space-y-6">
+      <div>
+        <h3 class="font-heading text-xl font-semibold text-navy-800">{toolA.name}</h3>
+        <p class="mt-2 text-navy-500 leading-relaxed">
+          {toolA.name} is a {toolA.deployment.toLowerCase()} veterinary practice management platform founded in {toolA.founded} and headquartered in {toolA.hq}. Marketed as "{toolA.tagline.toLowerCase()}", it serves {toolA.users_approx.toLowerCase()} and is best suited for {toolA.best_for.map((b) => b.toLowerCase()).join(", ")}. The platform supports {toolA.practice_types.join(", ")} practice types.
+        </p>
+      </div>
+
+      <div>
+        <h3 class="font-heading text-xl font-semibold text-navy-800">{toolB.name}</h3>
+        <p class="mt-2 text-navy-500 leading-relaxed">
+          {toolB.name} is a {toolB.deployment.toLowerCase()} veterinary software solution founded in {toolB.founded} and headquartered in {toolB.hq}. Described as "{toolB.tagline.toLowerCase()}", it serves {toolB.users_approx.toLowerCase()} and is best suited for {toolB.best_for.map((b) => b.toLowerCase()).join(", ")}. It supports {toolB.practice_types.join(", ")} practice types.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- Section 4: Feature-by-Feature Comparison                      -->
+  <!-- ============================================================ -->
+  <section class="mt-14">
+    <h2 class="font-heading text-2xl font-bold text-navy-900">Feature-by-Feature Comparison</h2>
+    <p class="mt-2 text-navy-500">
+      We evaluated {toolA.name} and {toolB.name} across six key areas that matter most to veterinary practices.
+    </p>
+
+    <div class="mt-8 space-y-8">
+      {currentFeatureAreas.map((area) => (
+        <div class="rounded-lg border border-navy-100 bg-white p-6">
+          <div class="flex items-center justify-between">
+            <h3 class="font-heading text-lg font-semibold text-navy-800">{area.title}</h3>
+            <span
+              class:list={[
+                "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold",
+                area.edge === "a" && "bg-accent-50 text-accent-700",
+                area.edge === "b" && "bg-blue-50 text-blue-700",
+                area.edge === "tie" && "bg-navy-50 text-navy-600",
+              ]}
+            >
+              {area.edge === "a" ? `${toolA.name} wins` : area.edge === "b" ? `${toolB.name} wins` : "Tie"}
+            </span>
+          </div>
+          <p class="mt-3 text-sm leading-relaxed text-navy-500">{area.analysis}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- Section 5: Pricing Comparison                                 -->
+  <!-- ============================================================ -->
+  <section class="mt-14">
+    <h2 class="font-heading text-2xl font-bold text-navy-900">Pricing Comparison</h2>
+
+    <div class="mt-6 grid gap-6 sm:grid-cols-2">
+      {[toolA, toolB].map((tool) => (
+        <div class="rounded-xl border border-navy-100 bg-white p-6 shadow-sm">
+          <h3 class="font-heading text-lg font-bold text-navy-900">{tool.name}</h3>
+          <dl class="mt-4 space-y-3">
+            <div class="flex justify-between border-b border-navy-50 pb-2">
+              <dt class="text-sm text-navy-500">Starting Price</dt>
+              <dd class="text-sm font-semibold text-navy-800">{getPricingDisplay(tool)}</dd>
+            </div>
+            <div class="flex justify-between border-b border-navy-50 pb-2">
+              <dt class="text-sm text-navy-500">Pricing Model</dt>
+              <dd class="text-sm text-navy-800">{tool.pricing_model}</dd>
+            </div>
+            <div class="flex justify-between border-b border-navy-50 pb-2">
+              <dt class="text-sm text-navy-500">Free Trial</dt>
+              <dd class:list={["text-sm font-semibold", tool.free_trial ? "text-accent-600" : "text-navy-400"]}>
+                {tool.free_trial ? "Yes" : "No"}
+              </dd>
+            </div>
+            <div class="flex justify-between">
+              <dt class="text-sm text-navy-500">Free Plan</dt>
+              <dd class:list={["text-sm font-semibold", tool.free_plan ? "text-accent-600" : "text-navy-400"]}>
+                {tool.free_plan ? "Yes" : "No"}
+              </dd>
+            </div>
+          </dl>
+        </div>
+      ))}
+    </div>
+
+    <p class="mt-4 text-sm text-navy-400">
+      Prices shown are published starting rates. Actual pricing may vary based on practice size, contract length, and negotiation. Contact each vendor for a personalized quote.
+    </p>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- Section 6: User Ratings Comparison                            -->
+  <!-- ============================================================ -->
+  <section class="mt-14">
+    <h2 class="font-heading text-2xl font-bold text-navy-900">User Ratings Comparison</h2>
+    <p class="mt-2 text-sm text-navy-500">
+      Aggregate ratings from G2 and Capterra, the two leading B2B software review platforms.
+    </p>
+
+    <div class="mt-6 grid gap-6 sm:grid-cols-2">
+      {[toolA, toolB].map((tool) => (
+        <div class="rounded-xl border border-navy-100 bg-white p-6 shadow-sm">
+          <h3 class="font-heading text-lg font-bold text-navy-900">{tool.name}</h3>
+          <div class="mt-4 space-y-4">
+            <div>
+              <p class="mb-1 text-xs font-medium uppercase tracking-wide text-navy-400">G2 Rating</p>
+              <RatingStars rating={tool.rating_g2} />
+            </div>
+            <div>
+              <p class="mb-1 text-xs font-medium uppercase tracking-wide text-navy-400">Capterra Rating</p>
+              <RatingStars rating={tool.rating_capterra} />
+            </div>
+            <p class="text-xs text-navy-400">Based on approximately {tool.review_count_approx} reviews</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- Section 7: Who Should Choose Tool A?                          -->
+  <!-- ============================================================ -->
+  <section class="mt-14">
+    <h2 class="font-heading text-2xl font-bold text-navy-900">Who Should Choose {toolA.name}?</h2>
+    <div class="mt-4">
+      <p class="text-navy-500 leading-relaxed">
+        Based on our analysis, {toolA.name} is the right choice if your practice matches any of the following profiles:
+      </p>
+      <ul class="mt-4 space-y-2">
+        {toolA.best_for.map((useCase) => (
+          <li class="flex items-start gap-2 text-sm text-navy-700">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="mt-0.5 h-4 w-4 shrink-0 text-accent-500" aria-hidden="true">
+              <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+            </svg>
+            <span>{useCase}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <div class="mt-6">
+      <h3 class="font-heading text-lg font-semibold text-navy-800">{toolA.name} Strengths</h3>
+      <div class="mt-3">
+        <ProsCons pros={toolA.pros} cons={toolA.cons} />
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- Section 8: Who Should Choose Tool B?                          -->
+  <!-- ============================================================ -->
+  <section class="mt-14">
+    <h2 class="font-heading text-2xl font-bold text-navy-900">Who Should Choose {toolB.name}?</h2>
+    <div class="mt-4">
+      <p class="text-navy-500 leading-relaxed">
+        Based on our analysis, {toolB.name} is the right choice if your practice matches any of the following profiles:
+      </p>
+      <ul class="mt-4 space-y-2">
+        {toolB.best_for.map((useCase) => (
+          <li class="flex items-start gap-2 text-sm text-navy-700">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="mt-0.5 h-4 w-4 shrink-0 text-accent-500" aria-hidden="true">
+              <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+            </svg>
+            <span>{useCase}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <div class="mt-6">
+      <h3 class="font-heading text-lg font-semibold text-navy-800">{toolB.name} Strengths</h3>
+      <div class="mt-3">
+        <ProsCons pros={toolB.pros} cons={toolB.cons} />
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- Section 9: Our Recommendation                                 -->
+  <!-- ============================================================ -->
+  <section class="mt-14">
+    <h2 class="font-heading text-2xl font-bold text-navy-900">Our Recommendation</h2>
+    <div class="mt-4 rounded-xl border-2 border-accent-200 bg-accent-50/30 p-6 sm:p-8">
+      <p class="text-navy-700 leading-relaxed">{recommendation}</p>
+
+      <div class="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-6">
+        <AffiliateButton
+          href={toolA.website}
+          label={`Try ${toolA.name}`}
+          tool={toolA.name}
+          size="md"
+        />
+        <AffiliateButton
+          href={toolB.website}
+          label={`Try ${toolB.name}`}
+          tool={toolB.name}
+          size="md"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- Section 10: FAQ                                               -->
+  <!-- ============================================================ -->
+  <section class="mt-14">
+    <h2 class="font-heading text-2xl font-bold text-navy-900">Frequently Asked Questions</h2>
+
+    <div class="mt-6 space-y-3">
+      {currentFAQs.map((faq) => (
+        <details class="group rounded-lg border border-navy-100 bg-white">
+          <summary class="flex cursor-pointer items-center justify-between px-5 py-4 font-heading text-sm font-semibold text-navy-800 transition-colors hover:text-accent-600">
+            <span>{faq.question}</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              class="h-5 w-5 shrink-0 text-navy-400 transition-transform group-open:rotate-180"
+              aria-hidden="true"
+            >
+              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+            </svg>
+          </summary>
+          <div class="border-t border-navy-100 px-5 py-4">
+            <p class="text-sm leading-relaxed text-navy-500">{faq.answer}</p>
+          </div>
+        </details>
+      ))}
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- Email Capture                                                 -->
+  <!-- ============================================================ -->
+  <div class="mt-14">
+    <EmailCapture
+      heading="Get the Free Vet Software Buyer's Guide"
+      subheading={`Still deciding between ${toolA.name} and ${toolB.name}? Our buyer's guide covers all 20+ tools with pricing, feature comparisons, and our top picks.`}
+    />
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- Internal Links                                                -->
+  <!-- ============================================================ -->
+  <nav class="mt-14 rounded-xl border border-navy-100 bg-white p-6" aria-label="Related content">
+    <h3 class="font-heading text-lg font-bold text-navy-900">Related Comparisons & Reviews</h3>
+    <ul class="mt-4 grid gap-2 sm:grid-cols-2">
+      <li>
+        <a href={`/reviews/${toolA.slug}`} class="text-sm text-accent-600 underline decoration-accent-200 underline-offset-2 transition-colors hover:text-accent-700 hover:decoration-accent-400">
+          {toolA.name} Full Review
+        </a>
+      </li>
+      <li>
+        <a href={`/reviews/${toolB.slug}`} class="text-sm text-accent-600 underline decoration-accent-200 underline-offset-2 transition-colors hover:text-accent-700 hover:decoration-accent-400">
+          {toolB.name} Full Review
+        </a>
+      </li>
+      <li>
+        <a href={`/alternatives/${toolA.slug}`} class="text-sm text-accent-600 underline decoration-accent-200 underline-offset-2 transition-colors hover:text-accent-700 hover:decoration-accent-400">
+          {toolA.name} Alternatives
+        </a>
+      </li>
+      <li>
+        <a href={`/alternatives/${toolB.slug}`} class="text-sm text-accent-600 underline decoration-accent-200 underline-offset-2 transition-colors hover:text-accent-700 hover:decoration-accent-400">
+          {toolB.name} Alternatives
+        </a>
+      </li>
+      <li>
+        <a href={`/pricing/${toolA.slug}`} class="text-sm text-accent-600 underline decoration-accent-200 underline-offset-2 transition-colors hover:text-accent-700 hover:decoration-accent-400">
+          {toolA.name} Pricing Breakdown
+        </a>
+      </li>
+      <li>
+        <a href={`/pricing/${toolB.slug}`} class="text-sm text-accent-600 underline decoration-accent-200 underline-offset-2 transition-colors hover:text-accent-700 hover:decoration-accent-400">
+          {toolB.name} Pricing Breakdown
+        </a>
+      </li>
+    </ul>
+  </nav>
+</ComparisonLayout>

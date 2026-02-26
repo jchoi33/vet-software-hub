@@ -1,0 +1,51 @@
+---
+interface Props {
+  href: string;
+  label?: string;
+  tool: string;
+  size?: "sm" | "md" | "lg";
+}
+
+const { href, label = "Visit Website", tool, size = "md" } = Astro.props;
+
+const sizeClasses: Record<string, string> = {
+  sm: "px-4 py-2 text-sm",
+  md: "px-6 py-3 text-base",
+  lg: "px-8 py-4 text-lg",
+};
+
+const utm = `?utm_source=vetsoftwarehub&utm_medium=affiliate&utm_campaign=${encodeURIComponent(tool.toLowerCase().replace(/\s+/g, "-"))}`;
+const fullHref = href.includes("?") ? `${href}&utm_source=vetsoftwarehub&utm_medium=affiliate&utm_campaign=${encodeURIComponent(tool.toLowerCase().replace(/\s+/g, "-"))}` : `${href}${utm}`;
+---
+
+<div class="inline-flex flex-col items-center gap-1">
+  <a
+    href={fullHref}
+    target="_blank"
+    rel="nofollow noopener sponsored"
+    class:list={[
+      "inline-flex items-center gap-2 rounded-lg font-semibold text-white transition-all duration-200",
+      "bg-gradient-to-r from-accent-500 to-accent-600",
+      "hover:from-accent-400 hover:to-accent-500 hover:shadow-lg hover:shadow-accent-500/25",
+      "focus:outline-none focus:ring-2 focus:ring-accent-500 focus:ring-offset-2",
+      "active:scale-[0.98]",
+      sizeClasses[size],
+    ]}
+  >
+    <span>{label}</span>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      class="h-4 w-4"
+      aria-hidden="true"
+    >
+      <path
+        fill-rule="evenodd"
+        d="M3 10a.75.75 0 01.75-.75h10.638L11.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 11-1.04-1.08l3.158-2.96H3.75A.75.75 0 013 10z"
+        clip-rule="evenodd"
+      />
+    </svg>
+  </a>
+  <span class="text-xs text-navy-400">Affiliate link</span>
+</div>

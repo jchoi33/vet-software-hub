@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://vetsoftwarehub.com/sitemap-index.xml

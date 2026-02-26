@@ -1,0 +1,91 @@
+---
+interface Props {
+  rating: number | null;
+  maxRating?: number;
+}
+
+const { rating, maxRating = 5 } = Astro.props;
+
+function getStars(rating: number, max: number): Array<"full" | "half" | "empty"> {
+  const stars: Array<"full" | "half" | "empty"> = [];
+  for (let i = 1; i <= max; i++) {
+    if (rating >= i) {
+      stars.push("full");
+    } else if (rating >= i - 0.5) {
+      stars.push("half");
+    } else {
+      stars.push("empty");
+    }
+  }
+  return stars;
+}
+
+const stars = rating !== null ? getStars(rating, maxRating) : [];
+---
+
+{rating !== null ? (
+  <div class="flex items-center gap-1.5">
+    <div class="flex items-center gap-0.5" aria-label={`Rating: ${rating} out of ${maxRating}`}>
+      {stars.map((type) => (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          class="h-5 w-5"
+          aria-hidden="true"
+        >
+          {type === "full" && (
+            <path
+              d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+              fill="#10b981"
+              stroke="#10b981"
+              stroke-width="1"
+              stroke-linejoin="round"
+            />
+          )}
+          {type === "half" && (
+            <>
+              <defs>
+                <clipPath id="half-left">
+                  <rect x="0" y="0" width="12" height="24" />
+                </clipPath>
+                <clipPath id="half-right">
+                  <rect x="12" y="0" width="12" height="24" />
+                </clipPath>
+              </defs>
+              <path
+                d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                fill="#10b981"
+                stroke="#10b981"
+                stroke-width="1"
+                stroke-linejoin="round"
+                clip-path="url(#half-left)"
+              />
+              <path
+                d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                fill="none"
+                stroke="#10b981"
+                stroke-width="1"
+                stroke-linejoin="round"
+                clip-path="url(#half-right)"
+              />
+            </>
+          )}
+          {type === "empty" && (
+            <path
+              d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+              fill="none"
+              stroke="#10b981"
+              stroke-width="1.5"
+              stroke-linejoin="round"
+            />
+          )}
+        </svg>
+      ))}
+    </div>
+    <span class="text-sm font-semibold text-navy-800">
+      {rating.toFixed(1)}/{maxRating.toFixed(1)}
+    </span>
+  </div>
+) : (
+  <span class="text-sm text-navy-400 italic">No rating yet</span>
+)}

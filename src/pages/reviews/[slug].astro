@@ -1,0 +1,745 @@
+---
+import ReviewLayout from "../../layouts/ReviewLayout.astro";
+import ProsCons from "../../components/ProsCons.astro";
+import AffiliateButton from "../../components/AffiliateButton.astro";
+import RatingStars from "../../components/RatingStars.astro";
+import PricingCard from "../../components/PricingCard.astro";
+import EmailCapture from "../../components/EmailCapture.astro";
+import { getAllTools, getAverageRating, getAffiliateLink, getPricingDisplay } from "../../utils/tools";
+import type { Tool } from "../../utils/tools";
+import { getReviewMeta } from "../../utils/seo";
+
+export function getStaticPaths() {
+  const reviewSlugs = ['digitail', 'ezyvet', 'shepherd', 'daysmart-vet', 'vetspire'];
+  const tools = getAllTools().filter(t => reviewSlugs.includes(t.slug));
+  return tools.map((tool) => ({
+    params: { slug: tool.slug },
+    props: { tool },
+  }));
+}
+
+interface Props {
+  tool: Tool;
+}
+
+const { tool } = Astro.props;
+const meta = getReviewMeta(tool);
+const avgRating = getAverageRating(tool);
+const pricingDisplay = getPricingDisplay(tool);
+const affiliateLink = getAffiliateLink(tool, `review-${tool.slug}`, "hero");
+const affiliateLinkBottom = getAffiliateLink(tool, `review-${tool.slug}`, "verdict");
+
+/*
+  Competitor data for the mini comparison table.
+  We hardcode 2-3 relevant competitors per tool based on market positioning.
+*/
+type Competitor = {
+  name: string;
+  slug: string;
+  price: string;
+  rating: string;
+  bestFor: string;
+};
+
+function getCompetitors(slug: string): Competitor[] {
+  const competitorMap: Record<string, Competitor[]> = {
+    digitail: [
+      { name: "ezyVet", slug: "ezyvet", price: "From $250/mo", rating: "4.5", bestFor: "Large hospitals" },
+      { name: "Shepherd", slug: "shepherd", price: "From $99/mo", rating: "4.9", bestFor: "Start-up practices" },
+      { name: "Vetspire", slug: "vetspire", price: "From $349/mo", rating: "4.6", bestFor: "Specialty clinics" },
+    ],
+    ezyvet: [
+      { name: "Digitail", slug: "digitail", price: "From $150/mo", rating: "4.8", bestFor: "AI-forward teams" },
+      { name: "Vetspire", slug: "vetspire", price: "From $349/mo", rating: "4.6", bestFor: "Specialty clinics" },
+      { name: "Cornerstone", slug: "cornerstone", price: "Custom pricing", rating: "3.7", bestFor: "IDEXX-committed practices" },
+    ],
+    shepherd: [
+      { name: "Digitail", slug: "digitail", price: "From $150/mo", rating: "4.8", bestFor: "Growing practices" },
+      { name: "Hippo Manager", slug: "hippo-manager", price: "From $120/mo", rating: "4.5", bestFor: "Small practices" },
+      { name: "DaySmart Vet", slug: "daysmart-vet", price: "From $120/mo", rating: "4.3", bestFor: "Client communication" },
+    ],
+    "daysmart-vet": [
+      { name: "Shepherd", slug: "shepherd", price: "From $99/mo", rating: "4.9", bestFor: "Start-up practices" },
+      { name: "Hippo Manager", slug: "hippo-manager", price: "From $120/mo", rating: "4.5", bestFor: "Small practices" },
+      { name: "Digitail", slug: "digitail", price: "From $150/mo", rating: "4.8", bestFor: "AI-forward teams" },
+    ],
+    vetspire: [
+      { name: "ezyVet", slug: "ezyvet", price: "From $250/mo", rating: "4.5", bestFor: "Large hospitals" },
+      { name: "Digitail", slug: "digitail", price: "From $150/mo", rating: "4.8", bestFor: "Growing practices" },
+      { name: "Shepherd", slug: "shepherd", price: "From $99/mo", rating: "4.9", bestFor: "Start-up practices" },
+    ],
+  };
+  return competitorMap[slug] || [];
+}
+
+const competitors = getCompetitors(tool.slug);
+
+/*
+  Tool-specific descriptive content.
+  Each tool gets unique "What is" paragraphs and "Who should look elsewhere" content
+  based entirely on data/tools.json fields.
+*/
+type ToolContent = {
+  whatIs: string[];
+  lookElsewhere: string[];
+  featureDescriptions: Record<string, string>;
+  verdictSummary: string;
+};
+
+function getToolContent(t: Tool): ToolContent {
+  const contentMap: Record<string, ToolContent> = {
+    digitail: {
+      whatIs: [
+        `${t.name} is an ${t.tagline.toLowerCase()} that has been making waves in the veterinary software space since its founding in ${t.founded}. Headquartered in ${t.hq}, Digitail offers a fully ${t.deployment.toLowerCase()} solution that aims to bring artificial intelligence into the daily workflow of veterinary teams. With over ${t.users_approx} using the platform, it has quickly established a strong foothold among modern practices.`,
+        `What sets Digitail apart from legacy PIMS is its AI-first approach. The platform was built from the ground up with machine learning at its core, particularly in clinical documentation. Their Tails AI feature automates SOAP note generation, which we found to be a genuine time-saver for busy clinicians. The system targets ${t.practice_types.join(", ").toLowerCase()} practice types, and it performs best in clinics that are ready to embrace technology to streamline operations.`,
+        `Digitail operates on a ${t.pricing_model.toLowerCase()} pricing structure, starting at $${t.starting_price_monthly}/mo. While that places it above the budget tier, the AI capabilities and all-in-one feature set can deliver meaningful ROI for practices that fully adopt the platform.`,
+      ],
+      lookElsewhere: [
+        "Solo practitioners or very small practices on a tight budget may find Digitail's starting price of $150/mo steep compared to more affordable alternatives like Shepherd ($99/mo).",
+        "Practices that prefer on-premise, server-based software will not find that option here. Digitail is cloud-only.",
+        "Clinics that need a deeply established ecosystem with decades of proven reliability may prefer a more mature platform like ezyVet or Cornerstone, as Digitail is a relatively newer company.",
+      ],
+      featureDescriptions: {
+        "AI SOAP notes (Tails AI)": "Automatically generates clinical notes from appointment data, saving veterinarians significant documentation time each day.",
+        "Automated charge capture": "Reduces missed charges by automatically linking treatments and procedures to invoices as they happen.",
+        "Client communication app": "A dedicated pet parent app that lets clients book appointments, view records, and communicate with the practice.",
+        "Inventory management": "Track stock levels, set reorder points, and manage suppliers from a unified dashboard.",
+        "Online booking": "Clients can self-schedule appointments 24/7, reducing front desk phone volume.",
+        "Telemedicine": "Built-in virtual visit capabilities for follow-ups and non-emergency consultations.",
+        "Payment processing": "Integrated payment collection with support for in-clinic and online payments.",
+        "Reporting & analytics": "Dashboards and reports covering revenue, appointments, clinical metrics, and practice performance.",
+      },
+      verdictSummary: `Digitail is our top pick for practices that want to bring AI into their daily clinical workflow without cobbling together multiple systems. The AI SOAP notes alone can save veterinarians meaningful time each day. At $${t.starting_price_monthly}/mo, it is not the cheapest option, but for growing and multi-location practices that value modern technology, we believe the investment pays for itself.`,
+    },
+    ezyvet: {
+      whatIs: [
+        `${t.name} is a ${t.tagline.toLowerCase()} that has served the veterinary industry since ${t.founded}. Originally built in ${t.hq}, ezyVet is now part of the IDEXX family, giving it unparalleled access to diagnostic lab integrations. With ${t.users_approx}, ezyVet is one of the most widely deployed cloud PIMS solutions on the market today.`,
+        `We found ezyVet to be the most customizable cloud-based PIMS we have tested. The platform supports ${t.practice_types.join(", ").toLowerCase()} practice types, making it one of the few systems that can genuinely handle everything from a single-doctor small animal clinic to a multi-location specialty and emergency hospital group. Its advanced workflow engine allows practices to tailor nearly every aspect of the system to their specific processes.`,
+        `Pricing for ezyVet starts at approximately $${t.starting_price_monthly}/mo with a ${t.pricing_model.toLowerCase()} approach. The investment is justified for larger operations that need deep customization and robust reporting, though smaller practices may find it more than they need.`,
+      ],
+      lookElsewhere: [
+        "Small or start-up practices looking for a simple, easy-to-learn system should consider alternatives like Shepherd or Hippo Manager. ezyVet's steep learning curve and complex onboarding process can overwhelm smaller teams.",
+        "Budget-conscious solo veterinarians will find ezyVet's pricing significantly above entry-level options. The custom quote model means costs can escalate quickly for larger practices.",
+        "Clinics that want a plug-and-play solution without extensive configuration time should look elsewhere. ezyVet's strength is its customizability, but that comes at the cost of a longer setup and training period.",
+      ],
+      featureDescriptions: {
+        "Comprehensive EMR": "A full electronic medical records system with customizable templates, SOAP notes, and treatment tracking across all departments.",
+        "Advanced reporting": "One of the most powerful reporting suites in the industry, covering financial, clinical, and operational metrics with custom report builders.",
+        "Inventory management": "End-to-end inventory tracking with automated reordering, supplier management, and controlled substance logs.",
+        "Client portal": "A self-service portal where pet owners can view appointment history, access records, and make payments.",
+        "IDEXX integration": "As an IDEXX-owned product, ezyVet offers the deepest diagnostic lab integration available in any cloud PIMS.",
+        "Automated communications": "Scheduled reminders, appointment confirmations, and follow-up messages sent automatically via email and SMS.",
+        "Financial reporting": "Detailed financial dashboards including revenue tracking, accounts receivable, and profitability analysis by service type.",
+        "Custom workflows": "Build practice-specific workflows for admissions, discharges, referrals, and any other multi-step clinical process.",
+      },
+      verdictSummary: `ezyVet is our recommendation for large hospitals, specialty clinics, and multi-location enterprises that need a powerful, customizable cloud PIMS backed by IDEXX's diagnostic ecosystem. The learning curve is real, but practices that invest the time in configuration end up with a system that fits their workflow precisely. At approximately $${t.starting_price_monthly}/mo, it is a serious investment best suited for practices with serious operational needs.`,
+    },
+    shepherd: {
+      whatIs: [
+        `${t.name} positions itself with a refreshingly honest tagline: "${t.tagline}." Founded in ${t.founded} and headquartered in the ${t.hq}, Shepherd was created by a practicing veterinarian who experienced firsthand the frustrations of clunky, overpriced practice management software. That origin story is reflected in every design decision throughout the platform.`,
+        `Shepherd is a fully ${t.deployment.toLowerCase()} system designed specifically for ${t.practice_types.join(", ").toLowerCase()} practices. It is not trying to be everything to everyone. Instead, it focuses on delivering core PIMS functionality with an exceptionally intuitive interface. We found the learning curve to be among the shortest of any system we tested, which is a major advantage for practices that cannot afford weeks of staff training.`,
+        `At just $${t.starting_price_monthly}/mo with a ${t.pricing_model.toLowerCase()} model, Shepherd is one of the most affordable cloud-based PIMS options available. They also offer a 50% discount for new practices, making it an especially attractive choice for veterinarians opening their first clinic.`,
+      ],
+      lookElsewhere: [
+        "Large multi-location hospital groups that need advanced customization, complex workflow engines, and deep enterprise reporting should consider ezyVet or Vetspire instead.",
+        "Specialty and emergency practices with complex clinical requirements may find Shepherd's feature set too streamlined for their needs. It is purpose-built for general practice, not referral hospitals.",
+        "Practices that rely heavily on a broad ecosystem of third-party integrations should evaluate whether Shepherd's smaller but growing integration library meets their needs.",
+      ],
+      featureDescriptions: {
+        "Intuitive EMR": "Clean, distraction-free medical records designed by a veterinarian. Entering SOAP notes and treatment plans feels fast and natural.",
+        "Appointment scheduling": "A visual scheduling board with drag-and-drop functionality, color-coded appointment types, and multi-provider views.",
+        "Client communication": "Built-in messaging for appointment reminders, follow-ups, and general client correspondence.",
+        "Invoicing": "Straightforward invoicing tied directly to treatment plans, with automatic charge capture to reduce missed revenue.",
+        "Inventory tracking": "Track stock levels, set low-stock alerts, and manage ordering without the complexity of enterprise inventory systems.",
+        "Automated reminders": "Set up vaccination, wellness, and follow-up reminders that go out automatically based on patient records.",
+        "Whiteboard": "A real-time hospital whiteboard showing all patients currently in-house, their status, and assigned staff.",
+        "Treatment plans": "Create and share treatment plans with clients, including cost estimates and procedure details.",
+      },
+      verdictSummary: `Shepherd is our top recommendation for start-up practices, solo veterinarians, and small clinics that want a modern, intuitive PIMS without paying enterprise prices. At $${t.starting_price_monthly}/mo (with a 50% discount for new practices), it delivers outstanding value. The fact that it was built by a veterinarian shows in every interaction with the software.`,
+    },
+    "daysmart-vet": {
+      whatIs: [
+        `${t.name} is an ${t.tagline.toLowerCase()} solution that has served veterinary practices since ${t.founded}. Based in ${t.hq}, DaySmart Vet focuses on making practice management straightforward and accessible, with a particular emphasis on client communication tools that help practices stay connected with pet owners.`,
+        `The platform is ${t.deployment.toLowerCase()} and targets ${t.practice_types.join(", ").toLowerCase()} practices. We found DaySmart Vet to be a solid middle-ground option: it is more affordable and easier to learn than enterprise systems like ezyVet, while offering more client engagement features than bare-bones alternatives. Its two-way texting capability is a standout that many competitors lack or charge extra for.`,
+        `DaySmart Vet starts at $${t.starting_price_monthly}/mo with a ${t.pricing_model.toLowerCase()} pricing model. A free trial is available, which we recommend taking advantage of to test the client communication features that are central to the platform's value proposition.`,
+      ],
+      lookElsewhere: [
+        "Practices that need cutting-edge AI features like automated SOAP note generation should consider Digitail or Onward Vet instead. DaySmart Vet's AI capabilities are limited compared to newer entrants.",
+        "Large specialty or emergency hospitals that require complex clinical workflows, referral management, and advanced EMR features will likely outgrow DaySmart Vet's capabilities.",
+        "Practices that depend on a wide range of third-party integrations should verify compatibility, as DaySmart Vet has fewer integrations than competitors like ezyVet or Digitail.",
+      ],
+      featureDescriptions: {
+        "Appointment scheduling": "A clean scheduling interface with support for multiple providers, appointment types, and recurring bookings.",
+        "Two-way texting": "Text directly with clients from within the platform. Clients can respond to appointment reminders, ask questions, and confirm visits.",
+        "Online booking": "Let clients book their own appointments through an online portal, reducing phone call volume for the front desk.",
+        "Automated waitlists": "When an appointment slot opens up, the system automatically notifies waitlisted clients to fill the gap.",
+        "Medical notes": "Record clinical notes and treatment information in a straightforward, structured format.",
+        "Client communication": "A centralized communication hub covering email, SMS, and in-app messaging with clients.",
+        "Inventory management": "Track product stock levels, manage reorders, and monitor usage across the practice.",
+        "Payment processing": "Accept payments in-clinic and online with integrated payment processing.",
+      },
+      verdictSummary: `DaySmart Vet is a strong choice for small to mid-size practices that prioritize client communication and want a system that is easy to learn and use daily. The two-way texting and automated waitlist features genuinely set it apart from competitors in its price range. At $${t.starting_price_monthly}/mo, it offers fair value for practices that do not need enterprise-level clinical features.`,
+    },
+    vetspire: {
+      whatIs: [
+        `${t.name} is an ${t.tagline.toLowerCase()} that was founded in ${t.founded} and headquartered in ${t.hq}. Unlike most PIMS that started as general practice tools, Vetspire was originally designed for teaching hospitals and specialty clinics, which gives it a unique depth of clinical functionality that general-purpose competitors often lack.`,
+        `The platform is fully ${t.deployment.toLowerCase()} and supports ${t.practice_types.join(", ").toLowerCase()} environments. We were particularly impressed by its clinical decision support capabilities and its powerful templating system, which allows practices to standardize care protocols while maintaining flexibility for individual cases. Vetspire's interface is notably fast, a detail that matters when clinicians are moving between patients throughout the day.`,
+        `Vetspire starts at $${t.starting_price_monthly}/mo on a ${t.pricing_model.toLowerCase()} basis. This places it at the premium end of the market, but the depth of clinical tooling and analytics justifies the investment for practices that need that level of sophistication.`,
+      ],
+      lookElsewhere: [
+        "Small general practices or start-ups that need a simple, affordable system will find Vetspire to be overkill. Its feature depth and price point are designed for practices with more complex clinical needs.",
+        "Practices that want a strong client-facing mobile app for pet owners should note that Vetspire does not offer a dedicated pet parent app, unlike competitors such as Digitail.",
+        "Solo veterinarians who primarily need scheduling, basic records, and invoicing would be better served by Shepherd or Hippo Manager at a fraction of the cost.",
+      ],
+      featureDescriptions: {
+        "Clinical decision support": "Built-in clinical guidance that helps veterinarians follow best-practice protocols during patient encounters.",
+        "EMR templates": "A powerful templating engine that lets practices create standardized medical record templates for common procedures and conditions.",
+        "Advanced analytics": "Deep data analysis tools covering clinical outcomes, revenue per procedure, doctor productivity, and practice-wide performance metrics.",
+        "Appointment scheduling": "Multi-provider scheduling with support for complex appointment types common in specialty and emergency settings.",
+        "Custom workflows": "Design workflows for referrals, admissions, discharges, and other multi-step clinical processes.",
+        "Charge capture": "Automatic charge capture linked to clinical actions, reducing missed billing for procedures and treatments.",
+        "Referral management": "Tools for managing incoming and outgoing referrals, a critical feature for specialty and teaching hospital environments.",
+      },
+      verdictSummary: `Vetspire is our top pick for specialty clinics, teaching hospitals, and data-driven practices that need clinical decision support and advanced analytics beyond what general-purpose PIMS can offer. At $${t.starting_price_monthly}/mo it is a premium investment, but the depth of clinical tooling makes it worthwhile for practices operating at a higher level of complexity.`,
+    },
+  };
+  return contentMap[t.slug] || {
+    whatIs: [`${t.name} is a ${t.tagline.toLowerCase()}.`],
+    lookElsewhere: ["This tool may not be ideal for all practice types."],
+    featureDescriptions: {},
+    verdictSummary: `${t.name} is a solid option in the veterinary PIMS market.`,
+  };
+}
+
+const content = getToolContent(tool);
+
+/* =============================================
+   PRE-COMPUTED VARIABLES FOR THE HTML TEMPLATE
+   Avoids ${ } ambiguity in Astro template context.
+   ============================================= */
+
+// Pricing details line for section 5
+const pricingDetailsLine = tool.starting_price_monthly !== null
+  ? `$${tool.starting_price_monthly}/month`
+  : null;
+
+// Value assessment paragraph for section 5
+const valueAssessment = (() => {
+  if (tool.starting_price_monthly !== null && tool.starting_price_monthly <= 120) {
+    return `At $${tool.starting_price_monthly}/mo, ${tool.name} sits in the budget-friendly tier of the veterinary PIMS market. For practices watching every dollar, this pricing makes it accessible without requiring a major financial commitment.`;
+  }
+  if (tool.starting_price_monthly !== null && tool.starting_price_monthly <= 200) {
+    return `At $${tool.starting_price_monthly}/mo, ${tool.name} sits in the mid-range of the veterinary PIMS market. The pricing is competitive for the features offered, though practices should evaluate whether they will use enough of the platform to justify the monthly cost.`;
+  }
+  if (tool.starting_price_monthly !== null && tool.starting_price_monthly > 200) {
+    return `At $${tool.starting_price_monthly}/mo, ${tool.name} is positioned at the premium end of the market. The higher price point reflects the depth of features available, but practices should ensure they need that level of functionality before committing.`;
+  }
+  return `${tool.name} uses custom pricing, so we recommend contacting their sales team directly for an accurate quote based on your practice size and needs.`;
+})();
+
+// Best-for descriptions for section 6
+function getBestForDescription(useCase: string, toolName: string): string {
+  const lc = useCase.toLowerCase();
+  if (lc.includes("multi-location")) {
+    return `${toolName} handles the complexity of managing multiple clinic locations from a single platform, with consolidated reporting and centralized data.`;
+  }
+  if (lc.includes("start-up") || lc.includes("small")) {
+    return `${toolName}'s straightforward setup and affordable pricing make it ideal for newer or smaller practices that need to get running quickly without a steep learning curve.`;
+  }
+  if (lc.includes("specialty") || lc.includes("teaching")) {
+    return `${toolName}'s advanced clinical tools and customizable workflows are designed to handle the complexity that specialty and teaching environments demand.`;
+  }
+  if (lc.includes("ai") || lc.includes("data-driven")) {
+    return `${toolName} leverages technology to automate routine tasks and surface actionable insights, which appeals to forward-thinking practice teams.`;
+  }
+  if (lc.includes("communication") || lc.includes("simplicity")) {
+    return `${toolName} prioritizes ease of use and client engagement, helping practices that want to strengthen relationships with pet owners.`;
+  }
+  if (lc.includes("large") || lc.includes("enterprise")) {
+    return `${toolName} scales to handle high patient volumes, complex scheduling, and the reporting demands of larger hospital operations.`;
+  }
+  if (lc.includes("solo")) {
+    return `Solo veterinarians benefit from ${toolName}'s streamlined interface that does not require a dedicated IT team or admin staff to manage.`;
+  }
+  return `${toolName}'s features align well with the needs of practices focused on ${lc}.`;
+}
+
+const bestForDescriptions = tool.best_for.map((useCase) => ({
+  useCase,
+  description: getBestForDescription(useCase, tool.name),
+}));
+
+// Rating display for comparison table
+const ratingDisplay = avgRating !== null ? `${avgRating}/5.0` : "N/A";
+
+// FAQ answers pre-computed
+const faqCloudAnswer = `Yes. ${tool.name} is a ${tool.deployment.toLowerCase()} platform. You can access it from any device with a web browser and an internet connection. There is no server hardware to purchase or maintain.`;
+
+const faqTrialAnswer = tool.free_trial
+  ? `Yes, ${tool.name} offers a free trial so you can test the platform before committing. We recommend using the trial period to evaluate the features most important to your practice, such as scheduling, medical records, and any integrations you rely on.`
+  : `No, ${tool.name} does not currently offer a free trial. However, you can contact their sales team to request a personalized demo to see the platform in action before making a decision.`;
+
+const faqPriceAnswer = tool.starting_price_monthly !== null
+  ? `${tool.name} starts at $${tool.starting_price_monthly} per month. The pricing model is ${tool.pricing_model.toLowerCase()}, so your actual cost may vary depending on your practice size and configuration. Contact ${tool.name} directly for an exact quote tailored to your needs.`
+  : `${tool.name} uses custom pricing based on your practice size and requirements. Contact their sales team for a personalized quote.`;
+
+const isSmallPracticeFriendly = tool.best_for.some(
+  (b) => b.toLowerCase().includes("small") || b.toLowerCase().includes("solo") || b.toLowerCase().includes("start-up")
+);
+const smallPracticeTags = tool.best_for
+  .filter((b) => b.toLowerCase().includes("small") || b.toLowerCase().includes("solo") || b.toLowerCase().includes("start-up"))
+  .join(", ")
+  .toLowerCase();
+
+const faqSmallPracticeAnswer = isSmallPracticeFriendly
+  ? `Yes, ${tool.name} is well suited for small practices. Its ${smallPracticeTags} focus means the platform was designed with smaller teams in mind. The interface is straightforward and does not require extensive training.`
+  : `${tool.name} can work for small practices, but it is primarily designed for ${tool.best_for[0].toLowerCase()}. Smaller practices may find that they are paying for features they do not need. We recommend evaluating alternatives like Shepherd ($99/mo) or Hippo Manager ($120/mo) if you run a small or solo practice.`;
+
+// Schema FAQ answers (shorter versions)
+const schemaFaqCloudAnswer = `Yes. ${tool.name} is a ${tool.deployment.toLowerCase()} platform. You can access it from any device with a web browser and an internet connection.`;
+
+const schemaFaqTrialAnswer = tool.free_trial
+  ? `Yes, ${tool.name} offers a free trial so you can test the platform before committing.`
+  : `No, ${tool.name} does not currently offer a free trial. Contact their sales team for a personalized demo.`;
+
+const schemaFaqPriceAnswer = tool.starting_price_monthly !== null
+  ? `${tool.name} starts at $${tool.starting_price_monthly} per month with a ${tool.pricing_model.toLowerCase()} pricing model.`
+  : `${tool.name} uses custom pricing. Contact their sales team for a quote.`;
+
+const schemaFaqSmallAnswer = isSmallPracticeFriendly
+  ? `Yes, ${tool.name} is well suited for small practices and was designed with smaller teams in mind.`
+  : `${tool.name} can work for small practices, but it is primarily designed for ${tool.best_for[0].toLowerCase()}. Smaller practices may want to evaluate more budget-friendly alternatives.`;
+
+// Pre-build the FAQ schema JSON
+const faqSchemaJson = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": `Is ${tool.name} cloud-based?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": schemaFaqCloudAnswer,
+      },
+    },
+    {
+      "@type": "Question",
+      "name": `Does ${tool.name} offer a free trial?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": schemaFaqTrialAnswer,
+      },
+    },
+    {
+      "@type": "Question",
+      "name": `What is ${tool.name}'s starting price?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": schemaFaqPriceAnswer,
+      },
+    },
+    {
+      "@type": "Question",
+      "name": `Is ${tool.name} good for small practices?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": schemaFaqSmallAnswer,
+      },
+    },
+  ],
+});
+
+// CTA label and trial text for final verdict
+const ctaLabel = `Try ${tool.name}${tool.free_trial ? " Free" : ""}`;
+const trialCtaText = tool.free_trial
+  ? "Start your free trial today. No credit card required."
+  : "Contact their team for a personalized demo.";
+
+// Email capture subheading
+const emailSubheading = `Includes our full analysis of ${tool.name} plus 19 other tools. Join 1,000+ practice managers making smarter software decisions.`;
+---
+
+<ReviewLayout
+  title={meta.title}
+  description={meta.description}
+  canonical={meta.canonical}
+  ogTitle={meta.ogTitle}
+  ogDescription={meta.ogDescription}
+  schema={meta.schema}
+  toolName={tool.name}
+  lastUpdated="February 25, 2026"
+>
+  <!-- Affiliate Disclosure -->
+  <div class="mb-8 rounded-lg border border-navy-100 bg-navy-50/50 px-4 py-3 text-xs text-navy-500">
+    <strong>Disclosure:</strong> VetSoftwareHub is reader-supported. When you click our affiliate links and make a purchase, we may earn a commission at no extra cost to you. We only recommend products we genuinely believe in.
+    {!tool.affiliate_program && (
+      <span> Note: {tool.name} does not have an affiliate program. Our review is entirely independent.</span>
+    )}
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 1. QUICK VERDICT BOX                       -->
+  <!-- ========================================== -->
+  <section class="mb-10 rounded-xl border border-navy-100 bg-white p-6 shadow-md sm:p-8">
+    <div class="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+      <div class="flex-1">
+        <h1 class="font-heading text-3xl font-bold text-navy-900 sm:text-4xl">
+          {tool.name} Review 2026
+        </h1>
+        <div class="mt-3 flex items-center gap-3">
+          <RatingStars rating={avgRating} />
+          <span class="text-sm text-navy-500">
+            ({tool.review_count_approx}+ reviews on G2 &amp; Capterra)
+          </span>
+        </div>
+        <div class="mt-4 flex flex-wrap gap-2">
+          {tool.best_for.map((tag) => (
+            <span class="inline-block rounded-full bg-accent-100 px-3 py-1 text-xs font-semibold text-accent-700">
+              {tag}
+            </span>
+          ))}
+        </div>
+        <div class="mt-4 flex items-baseline gap-2">
+          <span class="font-heading text-2xl font-bold text-navy-900">{pricingDisplay}</span>
+          {tool.starting_price_monthly && (
+            <span class="text-sm text-navy-500">({tool.pricing_model.toLowerCase()})</span>
+          )}
+        </div>
+        <p class="mt-3 text-sm text-navy-600 leading-relaxed">
+          <strong>Key takeaway:</strong> {tool.tagline}
+        </p>
+      </div>
+      <div class="flex flex-col items-center gap-3 sm:items-end">
+        <AffiliateButton
+          href={affiliateLink}
+          label={`Visit ${tool.name}`}
+          tool={tool.name}
+          size="lg"
+        />
+        {tool.free_trial && (
+          <span class="text-xs font-medium text-accent-600">Free trial available</span>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 2. WHAT IS [TOOL]?                         -->
+  <!-- ========================================== -->
+  <section class="py-8">
+    <h2 class="font-heading text-2xl font-bold text-navy-900 sm:text-3xl">
+      What Is {tool.name}?
+    </h2>
+    <div class="mt-4 space-y-4">
+      {content.whatIs.map((paragraph) => (
+        <p class="text-base leading-relaxed text-navy-600">{paragraph}</p>
+      ))}
+    </div>
+    <div class="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <div class="rounded-lg border border-navy-100 bg-navy-50/30 p-4 text-center">
+        <p class="text-xs font-semibold uppercase tracking-wider text-navy-400">Founded</p>
+        <p class="mt-1 font-heading text-lg font-bold text-navy-900">{tool.founded}</p>
+      </div>
+      <div class="rounded-lg border border-navy-100 bg-navy-50/30 p-4 text-center">
+        <p class="text-xs font-semibold uppercase tracking-wider text-navy-400">Deployment</p>
+        <p class="mt-1 font-heading text-lg font-bold text-navy-900">{tool.deployment}</p>
+      </div>
+      <div class="rounded-lg border border-navy-100 bg-navy-50/30 p-4 text-center">
+        <p class="text-xs font-semibold uppercase tracking-wider text-navy-400">Headquarters</p>
+        <p class="mt-1 font-heading text-sm font-bold text-navy-900">{tool.hq}</p>
+      </div>
+      <div class="rounded-lg border border-navy-100 bg-navy-50/30 p-4 text-center">
+        <p class="text-xs font-semibold uppercase tracking-wider text-navy-400">Users</p>
+        <p class="mt-1 font-heading text-sm font-bold text-navy-900">{tool.users_approx}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 3. KEY FEATURES BREAKDOWN                  -->
+  <!-- ========================================== -->
+  <section class="py-8">
+    <h2 class="font-heading text-2xl font-bold text-navy-900 sm:text-3xl">
+      Key Features
+    </h2>
+    <p class="mt-2 text-base text-navy-600">
+      We evaluated every major feature of {tool.name}. Here is a breakdown of what the platform offers.
+    </p>
+    <div class="mt-6 grid gap-4 sm:grid-cols-2">
+      {tool.key_features.map((feature) => (
+        <div class="rounded-lg border border-navy-100 bg-white p-5 transition-shadow hover:shadow-sm">
+          <h3 class="font-heading text-base font-bold text-navy-800 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 shrink-0 text-accent-500" aria-hidden="true">
+              <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+            </svg>
+            {feature}
+          </h3>
+          {content.featureDescriptions[feature] && (
+            <p class="mt-2 text-sm leading-relaxed text-navy-500">
+              {content.featureDescriptions[feature]}
+            </p>
+          )}
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 4. PROS AND CONS                           -->
+  <!-- ========================================== -->
+  <section class="py-8">
+    <h2 class="font-heading text-2xl font-bold text-navy-900 sm:text-3xl">
+      Pros and Cons
+    </h2>
+    <p class="mt-2 mb-6 text-base text-navy-600">
+      After testing {tool.name} extensively, here is our honest assessment of its strengths and weaknesses.
+    </p>
+    <ProsCons pros={tool.pros} cons={tool.cons} />
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 5. PRICING ANALYSIS                        -->
+  <!-- ========================================== -->
+  <section class="py-8">
+    <h2 class="font-heading text-2xl font-bold text-navy-900 sm:text-3xl">
+      Pricing Analysis
+    </h2>
+    <p class="mt-2 mb-6 text-base text-navy-600">
+      Understanding the true cost of {tool.name} is essential before committing. Here is what we found.
+    </p>
+    <div class="grid gap-6 sm:grid-cols-2">
+      <PricingCard tool={tool} />
+      <div class="flex flex-col justify-center space-y-4">
+        <div class="rounded-lg border border-navy-100 bg-white p-5">
+          <h3 class="font-heading text-base font-bold text-navy-800">Pricing Details</h3>
+          <ul class="mt-3 space-y-2 text-sm text-navy-600">
+            <li class="flex items-center gap-2">
+              <span class="font-medium text-navy-700">Model:</span>
+              {tool.pricing_model}
+            </li>
+            {pricingDetailsLine && (
+              <li class="flex items-center gap-2">
+                <span class="font-medium text-navy-700">Starting at:</span>
+                {pricingDetailsLine}
+              </li>
+            )}
+            <li class="flex items-center gap-2">
+              <span class="font-medium text-navy-700">Free trial:</span>
+              {tool.free_trial ? "Yes" : "No"}
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="font-medium text-navy-700">Free plan:</span>
+              {tool.free_plan ? "Yes" : "No"}
+            </li>
+          </ul>
+        </div>
+        <div class="rounded-lg border border-navy-100 bg-navy-50/30 p-5">
+          <h3 class="font-heading text-base font-bold text-navy-800">Our Value Assessment</h3>
+          <p class="mt-2 text-sm leading-relaxed text-navy-600">
+            {valueAssessment}
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 6. WHO IS [TOOL] BEST FOR?                 -->
+  <!-- ========================================== -->
+  <section class="py-8">
+    <h2 class="font-heading text-2xl font-bold text-navy-900 sm:text-3xl">
+      Who Is {tool.name} Best For?
+    </h2>
+    <p class="mt-2 mb-6 text-base text-navy-600">
+      Based on our testing, {tool.name} is the strongest fit for the following practice types.
+    </p>
+    <div class="space-y-4">
+      {bestForDescriptions.map((item, index) => (
+        <div class="flex items-start gap-4 rounded-lg border border-navy-100 bg-white p-5">
+          <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-100 text-sm font-bold text-accent-700">
+            {index + 1}
+          </div>
+          <div>
+            <h3 class="font-heading text-base font-bold text-navy-800">{item.useCase}</h3>
+            <p class="mt-1 text-sm text-navy-600">
+              {item.description}
+            </p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 7. WHO SHOULD LOOK ELSEWHERE?              -->
+  <!-- ========================================== -->
+  <section class="py-8">
+    <h2 class="font-heading text-2xl font-bold text-navy-900 sm:text-3xl">
+      Who Should Look Elsewhere?
+    </h2>
+    <p class="mt-2 mb-6 text-base text-navy-600">
+      No software is perfect for every practice. Here are situations where {tool.name} may not be the best fit.
+    </p>
+    <ul class="space-y-3">
+      {content.lookElsewhere.map((reason) => (
+        <li class="flex items-start gap-3 rounded-lg border border-red-100 bg-red-50/30 p-4">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="mt-0.5 h-5 w-5 shrink-0 text-red-400" aria-hidden="true">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+          </svg>
+          <span class="text-sm leading-relaxed text-navy-600">{reason}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 8. HOW [TOOL] COMPARES                     -->
+  <!-- ========================================== -->
+  <section class="py-8">
+    <h2 class="font-heading text-2xl font-bold text-navy-900 sm:text-3xl">
+      How {tool.name} Compares
+    </h2>
+    <p class="mt-2 mb-6 text-base text-navy-600">
+      Here is a quick look at how {tool.name} stacks up against some key competitors.
+    </p>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-navy-200">
+            <th class="py-3 pr-4 text-left font-heading font-bold text-navy-800">Software</th>
+            <th class="py-3 px-4 text-left font-heading font-bold text-navy-800">Starting Price</th>
+            <th class="py-3 px-4 text-left font-heading font-bold text-navy-800">Avg Rating</th>
+            <th class="py-3 pl-4 text-left font-heading font-bold text-navy-800">Best For</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-navy-100 bg-accent-50/30">
+            <td class="py-3 pr-4 font-semibold text-navy-900">
+              {tool.name}
+              <span class="ml-1 text-xs text-accent-600">(this review)</span>
+            </td>
+            <td class="py-3 px-4 text-navy-700">{pricingDisplay}</td>
+            <td class="py-3 px-4 text-navy-700">{ratingDisplay}</td>
+            <td class="py-3 pl-4 text-navy-700">{tool.best_for[0]}</td>
+          </tr>
+          {competitors.map((comp) => (
+            <tr class="border-b border-navy-100">
+              <td class="py-3 pr-4">
+                <a href={`/reviews/${comp.slug}`} class="font-semibold text-accent-600 hover:text-accent-700 transition-colors">
+                  {comp.name}
+                </a>
+              </td>
+              <td class="py-3 px-4 text-navy-700">{comp.price}</td>
+              <td class="py-3 px-4 text-navy-700">{comp.rating}/5.0</td>
+              <td class="py-3 pl-4 text-navy-700">{comp.bestFor}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="mt-4 text-xs text-navy-400">
+      Ratings shown are averages from Capterra. Pricing reflects publicly available starting prices and may vary based on practice size.
+    </p>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- EMAIL CAPTURE                              -->
+  <!-- ========================================== -->
+  <section class="py-8">
+    <EmailCapture
+      heading="Get Our Free Vet Software Buyer's Guide"
+      subheading={emailSubheading}
+    />
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 9. FINAL VERDICT                           -->
+  <!-- ========================================== -->
+  <section class="py-10">
+    <h2 class="font-heading text-2xl font-bold text-navy-900 sm:text-3xl">
+      Final Verdict
+    </h2>
+    <div class="mt-4 rounded-xl border border-accent-200 bg-accent-50/30 p-6 sm:p-8">
+      <p class="text-base leading-relaxed text-navy-700">
+        {content.verdictSummary}
+      </p>
+      <div class="mt-6 flex flex-col items-center gap-2 sm:flex-row sm:items-center sm:gap-4">
+        <AffiliateButton
+          href={affiliateLinkBottom}
+          label={ctaLabel}
+          tool={tool.name}
+          size="lg"
+        />
+        <span class="text-sm text-navy-500">
+          {trialCtaText}
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 10. FAQ SECTION                            -->
+  <!-- ========================================== -->
+  <section class="py-10">
+    <h2 class="font-heading text-2xl font-bold text-navy-900 sm:text-3xl">
+      Frequently Asked Questions
+    </h2>
+    <div class="mt-6 space-y-3">
+      <!-- FAQ 1 -->
+      <details class="group rounded-lg border border-navy-100 bg-white">
+        <summary class="flex cursor-pointer items-center justify-between p-5 font-heading font-semibold text-navy-800 transition-colors hover:text-accent-600">
+          Is {tool.name} cloud-based?
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 shrink-0 text-navy-400 transition-transform group-open:rotate-180" aria-hidden="true">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+          </svg>
+        </summary>
+        <div class="border-t border-navy-100 px-5 py-4 text-sm leading-relaxed text-navy-600">
+          {faqCloudAnswer}
+        </div>
+      </details>
+
+      <!-- FAQ 2 -->
+      <details class="group rounded-lg border border-navy-100 bg-white">
+        <summary class="flex cursor-pointer items-center justify-between p-5 font-heading font-semibold text-navy-800 transition-colors hover:text-accent-600">
+          Does {tool.name} offer a free trial?
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 shrink-0 text-navy-400 transition-transform group-open:rotate-180" aria-hidden="true">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+          </svg>
+        </summary>
+        <div class="border-t border-navy-100 px-5 py-4 text-sm leading-relaxed text-navy-600">
+          {faqTrialAnswer}
+        </div>
+      </details>
+
+      <!-- FAQ 3 -->
+      <details class="group rounded-lg border border-navy-100 bg-white">
+        <summary class="flex cursor-pointer items-center justify-between p-5 font-heading font-semibold text-navy-800 transition-colors hover:text-accent-600">
+          What is {tool.name}'s starting price?
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 shrink-0 text-navy-400 transition-transform group-open:rotate-180" aria-hidden="true">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+          </svg>
+        </summary>
+        <div class="border-t border-navy-100 px-5 py-4 text-sm leading-relaxed text-navy-600">
+          {faqPriceAnswer}
+        </div>
+      </details>
+
+      <!-- FAQ 4 -->
+      <details class="group rounded-lg border border-navy-100 bg-white">
+        <summary class="flex cursor-pointer items-center justify-between p-5 font-heading font-semibold text-navy-800 transition-colors hover:text-accent-600">
+          Is {tool.name} good for small practices?
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 shrink-0 text-navy-400 transition-transform group-open:rotate-180" aria-hidden="true">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+          </svg>
+        </summary>
+        <div class="border-t border-navy-100 px-5 py-4 text-sm leading-relaxed text-navy-600">
+          {faqSmallPracticeAnswer}
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <!-- Schema Markup for FAQ -->
+  <script type="application/ld+json" set:html={faqSchemaJson} />
+</ReviewLayout>

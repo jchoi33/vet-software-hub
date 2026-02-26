@@ -1,0 +1,222 @@
+---
+interface Tool {
+  name: string;
+  slug: string;
+  tagline: string;
+  starting_price_monthly: number | null;
+  rating_g2: number | null;
+  rating_capterra: number | null;
+  best_for: string[];
+  free_trial: boolean;
+  free_plan: boolean;
+  founded: number;
+  deployment: string;
+  key_features: string[];
+  website: string;
+}
+
+interface Props {
+  toolA: Tool;
+  toolB: Tool;
+}
+
+const { toolA, toolB } = Astro.props;
+
+type RowDef = {
+  label: string;
+  valueA: string;
+  valueB: string;
+  winner: "a" | "b" | "tie";
+  type?: "list";
+};
+
+function formatPrice(price: number | null): string {
+  if (price === null) return "Custom";
+  if (price === 0) return "Free";
+  return `$${price}/mo`;
+}
+
+function formatRating(rating: number | null): string {
+  if (rating === null) return "N/A";
+  return `${rating.toFixed(1)}/5.0`;
+}
+
+function compareNumericHigherWins(a: number | null, b: number | null): "a" | "b" | "tie" {
+  if (a === null && b === null) return "tie";
+  if (a === null) return "b";
+  if (b === null) return "a";
+  if (a > b) return "a";
+  if (b > a) return "b";
+  return "tie";
+}
+
+function compareNumericLowerWins(a: number | null, b: number | null): "a" | "b" | "tie" {
+  if (a === null && b === null) return "tie";
+  if (a === null) return "b";
+  if (b === null) return "a";
+  if (a < b) return "a";
+  if (b < a) return "b";
+  return "tie";
+}
+
+function compareBooleanTrueWins(a: boolean, b: boolean): "a" | "b" | "tie" {
+  if (a === b) return "tie";
+  return a ? "a" : "b";
+}
+
+const rows: RowDef[] = [
+  {
+    label: "Starting Price",
+    valueA: formatPrice(toolA.starting_price_monthly),
+    valueB: formatPrice(toolB.starting_price_monthly),
+    winner: compareNumericLowerWins(toolA.starting_price_monthly, toolB.starting_price_monthly),
+  },
+  {
+    label: "Deployment",
+    valueA: toolA.deployment,
+    valueB: toolB.deployment,
+    winner: "tie",
+  },
+  {
+    label: "Rating (G2)",
+    valueA: formatRating(toolA.rating_g2),
+    valueB: formatRating(toolB.rating_g2),
+    winner: compareNumericHigherWins(toolA.rating_g2, toolB.rating_g2),
+  },
+  {
+    label: "Rating (Capterra)",
+    valueA: formatRating(toolA.rating_capterra),
+    valueB: formatRating(toolB.rating_capterra),
+    winner: compareNumericHigherWins(toolA.rating_capterra, toolB.rating_capterra),
+  },
+  {
+    label: "Free Trial",
+    valueA: toolA.free_trial ? "Yes" : "No",
+    valueB: toolB.free_trial ? "Yes" : "No",
+    winner: compareBooleanTrueWins(toolA.free_trial, toolB.free_trial),
+  },
+  {
+    label: "Free Plan",
+    valueA: toolA.free_plan ? "Yes" : "No",
+    valueB: toolB.free_plan ? "Yes" : "No",
+    winner: compareBooleanTrueWins(toolA.free_plan, toolB.free_plan),
+  },
+  {
+    label: "Founded",
+    valueA: String(toolA.founded),
+    valueB: String(toolB.founded),
+    winner: "tie",
+  },
+  {
+    label: "Best For",
+    valueA: toolA.best_for.join(", "),
+    valueB: toolB.best_for.join(", "),
+    winner: "tie",
+  },
+];
+---
+
+{/* Desktop Table */}
+<div class="hidden overflow-hidden rounded-xl border border-navy-100 sm:block">
+  <table class="w-full text-left text-sm">
+    <thead>
+      <tr class="bg-navy-900 text-white">
+        <th class="px-5 py-3 font-heading text-sm font-semibold">Feature</th>
+        <th class="px-5 py-3 font-heading text-sm font-semibold">{toolA.name}</th>
+        <th class="px-5 py-3 font-heading text-sm font-semibold">{toolB.name}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {rows.map((row, idx) => (
+        <tr class={idx % 2 === 0 ? "bg-white" : "bg-navy-50/50"}>
+          <td class="px-5 py-3 font-medium text-navy-700">{row.label}</td>
+          <td
+            class:list={[
+              "px-5 py-3 text-navy-800",
+              row.winner === "a" && "bg-accent-50 font-semibold text-accent-700",
+            ]}
+          >
+            {row.valueA}
+          </td>
+          <td
+            class:list={[
+              "px-5 py-3 text-navy-800",
+              row.winner === "b" && "bg-accent-50 font-semibold text-accent-700",
+            ]}
+          >
+            {row.valueB}
+          </td>
+        </tr>
+      ))}
+      {/* Key Features row */}
+      <tr class={rows.length % 2 === 0 ? "bg-white" : "bg-navy-50/50"}>
+        <td class="px-5 py-3 align-top font-medium text-navy-700">Key Features</td>
+        <td class="px-5 py-3 align-top text-navy-800">
+          <ul class="list-inside list-disc space-y-1">
+            {toolA.key_features.map((f) => <li>{f}</li>)}
+          </ul>
+        </td>
+        <td class="px-5 py-3 align-top text-navy-800">
+          <ul class="list-inside list-disc space-y-1">
+            {toolB.key_features.map((f) => <li>{f}</li>)}
+          </ul>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+{/* Mobile Stacked Cards */}
+<div class="flex flex-col gap-4 sm:hidden">
+  {[toolA, toolB].map((tool) => (
+    <div class="rounded-xl border border-navy-100 bg-white p-5 shadow-sm">
+      <h3 class="mb-3 font-heading text-lg font-bold text-navy-900">{tool.name}</h3>
+      <dl class="space-y-2.5">
+        <div class="flex justify-between border-b border-navy-50 pb-2">
+          <dt class="text-sm font-medium text-navy-500">Starting Price</dt>
+          <dd class="text-sm font-semibold text-navy-800">{formatPrice(tool.starting_price_monthly)}</dd>
+        </div>
+        <div class="flex justify-between border-b border-navy-50 pb-2">
+          <dt class="text-sm font-medium text-navy-500">Deployment</dt>
+          <dd class="text-sm text-navy-800">{tool.deployment}</dd>
+        </div>
+        <div class="flex justify-between border-b border-navy-50 pb-2">
+          <dt class="text-sm font-medium text-navy-500">Rating (G2)</dt>
+          <dd class="text-sm font-semibold text-navy-800">{formatRating(tool.rating_g2)}</dd>
+        </div>
+        <div class="flex justify-between border-b border-navy-50 pb-2">
+          <dt class="text-sm font-medium text-navy-500">Rating (Capterra)</dt>
+          <dd class="text-sm font-semibold text-navy-800">{formatRating(tool.rating_capterra)}</dd>
+        </div>
+        <div class="flex justify-between border-b border-navy-50 pb-2">
+          <dt class="text-sm font-medium text-navy-500">Free Trial</dt>
+          <dd class="text-sm text-navy-800">{tool.free_trial ? "Yes" : "No"}</dd>
+        </div>
+        <div class="flex justify-between border-b border-navy-50 pb-2">
+          <dt class="text-sm font-medium text-navy-500">Free Plan</dt>
+          <dd class="text-sm text-navy-800">{tool.free_plan ? "Yes" : "No"}</dd>
+        </div>
+        <div class="flex justify-between border-b border-navy-50 pb-2">
+          <dt class="text-sm font-medium text-navy-500">Founded</dt>
+          <dd class="text-sm text-navy-800">{tool.founded}</dd>
+        </div>
+        <div class="border-b border-navy-50 pb-2">
+          <dt class="mb-1 text-sm font-medium text-navy-500">Best For</dt>
+          <dd class="flex flex-wrap gap-1">
+            {tool.best_for.map((tag) => (
+              <span class="rounded-full bg-navy-50 px-2 py-0.5 text-xs font-medium text-navy-600">{tag}</span>
+            ))}
+          </dd>
+        </div>
+        <div>
+          <dt class="mb-1 text-sm font-medium text-navy-500">Key Features</dt>
+          <dd>
+            <ul class="list-inside list-disc space-y-1 text-sm text-navy-800">
+              {tool.key_features.map((f) => <li>{f}</li>)}
+            </ul>
+          </dd>
+        </div>
+      </dl>
+    </div>
+  ))}
+</div>

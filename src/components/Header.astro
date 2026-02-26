@@ -1,0 +1,107 @@
+---
+const navLinks = [
+  { label: "Reviews", href: "/reviews" },
+  { label: "Compare", href: "/compare" },
+  { label: "Best For", href: "/best" },
+  { label: "Pricing", href: "/pricing" },
+  { label: "Guides", href: "/guides" },
+  { label: "Tools", href: "/tools" },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<header class="sticky top-0 z-50 bg-navy-900 shadow-lg">
+  <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+    <!-- Logo -->
+    <a href="/" class="flex items-center gap-2 text-white no-underline">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 36 36"
+        class="h-8 w-8 shrink-0"
+        aria-hidden="true"
+      >
+        <!-- Paw pad (large center) -->
+        <ellipse cx="18" cy="22" rx="7" ry="6" fill="#10b981" />
+        <!-- Toe pads -->
+        <circle cx="10" cy="13" r="3.5" fill="#10b981" />
+        <circle cx="18" cy="9" r="3.5" fill="#10b981" />
+        <circle cx="26" cy="13" r="3.5" fill="#10b981" />
+        <!-- Stethoscope earpiece (small cross on the large pad) -->
+        <rect x="16.5" y="19" width="3" height="6" rx="1" fill="#1e3a5f" />
+        <rect x="15" y="21" width="6" height="2.5" rx="1" fill="#1e3a5f" />
+      </svg>
+      <span class="font-heading text-lg font-bold tracking-tight sm:text-xl">
+        Vet<span class="text-accent-400">Software</span>Hub
+      </span>
+    </a>
+
+    <!-- Desktop navigation -->
+    <ul class="hidden items-center gap-1 md:flex" role="list">
+      {navLinks.map((link) => (
+        <li>
+          <a
+            href={link.href}
+            class:list={[
+              "relative px-3 py-2 text-sm font-medium text-white/90 transition-colors hover:text-white",
+              "after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:origin-left after:scale-x-0 after:bg-accent-400 after:transition-transform hover:after:scale-x-100",
+              currentPath.startsWith(link.href) && "text-white after:scale-x-100",
+            ]}
+          >
+            {link.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <!-- Mobile hamburger menu (pure CSS, no JS) -->
+    <details class="group relative md:hidden">
+      <summary class="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-md text-white transition-colors hover:bg-navy-800 [&::-webkit-details-marker]:hidden">
+        <!-- Hamburger icon (visible when closed) -->
+        <svg
+          class="h-6 w-6 group-open:hidden"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+        <!-- Close icon (visible when open) -->
+        <svg
+          class="hidden h-6 w-6 group-open:block"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+        <span class="sr-only">Toggle navigation menu</span>
+      </summary>
+
+      <ul
+        class="absolute right-0 top-full mt-2 w-48 rounded-lg border border-navy-700 bg-navy-800 py-2 shadow-xl"
+        role="list"
+      >
+        {navLinks.map((link) => (
+          <li>
+            <a
+              href={link.href}
+              class:list={[
+                "block px-4 py-2.5 text-sm font-medium text-white/90 transition-colors hover:bg-navy-700 hover:text-accent-400",
+                currentPath.startsWith(link.href) && "text-accent-400",
+              ]}
+            >
+              {link.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </details>
+  </nav>
+</header>

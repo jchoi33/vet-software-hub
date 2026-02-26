@@ -1,0 +1,57 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+
+interface Props {
+  title: string;
+  description: string;
+  canonical: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  schema?: Record<string, unknown>;
+  toolName: string;
+  lastUpdated: string;
+}
+
+const {
+  title,
+  description,
+  canonical,
+  ogTitle,
+  ogDescription,
+  schema,
+  toolName,
+  lastUpdated,
+} = Astro.props;
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={canonical}
+  ogTitle={ogTitle}
+  ogDescription={ogDescription}
+  ogType="article"
+  schema={schema}
+>
+  <article class="mx-auto max-w-4xl px-4 py-8 sm:py-12">
+    <!-- Breadcrumbs -->
+    <nav class="mb-6 text-sm text-navy-400" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2">
+        <li><a href="/" class="hover:text-accent-500 transition-colors">Home</a></li>
+        <li class="before:mr-2 before:content-['/']">
+          <a href="/reviews/digitail" class="hover:text-accent-500 transition-colors">Reviews</a>
+        </li>
+        <li class="before:mr-2 before:content-['/'] text-navy-700 font-medium">
+          {toolName}
+        </li>
+      </ol>
+    </nav>
+
+    <!-- Last updated -->
+    <p class="mb-2 text-xs text-navy-400">
+      Last updated: <time>{lastUpdated}</time>
+    </p>
+
+    <slot />
+  </article>
+</BaseLayout>

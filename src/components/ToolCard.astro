@@ -1,0 +1,211 @@
+---
+interface Tool {
+  name: string;
+  slug: string;
+  tagline: string;
+  starting_price_monthly: number | null;
+  rating_g2: number | null;
+  rating_capterra: number | null;
+  best_for: string[];
+  free_trial: boolean;
+  deployment: string;
+  pros: string[];
+  cons: string[];
+  website: string;
+  affiliate_program: boolean;
+  key_features: string[];
+}
+
+interface Props {
+  tool: Tool;
+}
+
+const { tool } = Astro.props;
+
+// Calculate average rating from available sources
+function getAverageRating(g2: number | null, capterra: number | null): number | null {
+  if (g2 !== null && capterra !== null) return Math.round(((g2 + capterra) / 2) * 10) / 10;
+  if (g2 !== null) return g2;
+  if (capterra !== null) return capterra;
+  return null;
+}
+
+const avgRating = getAverageRating(tool.rating_g2, tool.rating_capterra);
+
+function getStars(rating: number): Array<"full" | "half" | "empty"> {
+  const stars: Array<"full" | "half" | "empty"> = [];
+  for (let i = 1; i <= 5; i++) {
+    if (rating >= i) stars.push("full");
+    else if (rating >= i - 0.5) stars.push("half");
+    else stars.push("empty");
+  }
+  return stars;
+}
+
+const stars = avgRating !== null ? getStars(avgRating) : [];
+const topFeatures = tool.key_features.slice(0, 3);
+const topPros = tool.pros.slice(0, 2);
+
+const utm = `?utm_source=vetsoftwarehub&utm_medium=affiliate&utm_campaign=${encodeURIComponent(tool.slug)}`;
+const affiliateHref = tool.website.includes("?")
+  ? `${tool.website}&utm_source=vetsoftwarehub&utm_medium=affiliate&utm_campaign=${encodeURIComponent(tool.slug)}`
+  : `${tool.website}${utm}`;
+---
+
+<div class="group relative flex flex-col rounded-xl border border-navy-100 bg-white p-6 shadow-sm transition-all duration-200 hover:border-navy-200 hover:shadow-md">
+  {/* Free Trial Badge */}
+  {tool.free_trial && (
+    <span class="absolute right-4 top-4 rounded-full bg-accent-100 px-3 py-1 text-xs font-semibold text-accent-700">
+      Free Trial
+    </span>
+  )}
+
+  {/* Header */}
+  <div class="mb-3">
+    <a href={`/reviews/${tool.slug}`} class="no-underline">
+      <h3 class="font-heading text-xl font-bold text-navy-900 transition-colors group-hover:text-accent-600">
+        {tool.name}
+      </h3>
+    </a>
+    <p class="mt-1 text-sm text-navy-500">{tool.tagline}</p>
+  </div>
+
+  {/* Rating */}
+  {avgRating !== null ? (
+    <div class="mb-3 flex items-center gap-1.5">
+      <div class="flex items-center gap-0.5">
+        {stars.map((type) => (
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-4 w-4" aria-hidden="true">
+            {type === "full" && (
+              <path
+                d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                fill="#10b981" stroke="#10b981" stroke-width="1" stroke-linejoin="round"
+              />
+            )}
+            {type === "half" && (
+              <>
+                <defs>
+                  <clipPath id={`half-left-${tool.slug}`}>
+                    <rect x="0" y="0" width="12" height="24" />
+                  </clipPath>
+                  <clipPath id={`half-right-${tool.slug}`}>
+                    <rect x="12" y="0" width="12" height="24" />
+                  </clipPath>
+                </defs>
+                <path
+                  d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                  fill="#10b981" stroke="#10b981" stroke-width="1" stroke-linejoin="round"
+                  clip-path={`url(#half-left-${tool.slug})`}
+                />
+                <path
+                  d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                  fill="none" stroke="#10b981" stroke-width="1" stroke-linejoin="round"
+                  clip-path={`url(#half-right-${tool.slug})`}
+                />
+              </>
+            )}
+            {type === "empty" && (
+              <path
+                d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                fill="none" stroke="#10b981" stroke-width="1.5" stroke-linejoin="round"
+              />
+            )}
+          </svg>
+        ))}
+      </div>
+      <span class="text-sm font-semibold text-navy-800">{avgRating.toFixed(1)}</span>
+    </div>
+  ) : (
+    <p class="mb-3 text-sm italic text-navy-400">No rating yet</p>
+  )}
+
+  {/* Price */}
+  <div class="mb-4">
+    {tool.starting_price_monthly !== null ? (
+      <div class="flex items-baseline gap-1">
+        <span class="text-2xl font-bold text-navy-900">${tool.starting_price_monthly}</span>
+        <span class="text-sm text-navy-500">/month</span>
+      </div>
+    ) : (
+      <span class="text-lg font-semibold text-navy-700">Custom Pricing</span>
+    )}
+  </div>
+
+  {/* Best For Tags */}
+  <div class="mb-4 flex flex-wrap gap-1.5">
+    {tool.best_for.map((tag) => (
+      <span class="rounded-full bg-navy-50 px-2.5 py-0.5 text-xs font-medium text-navy-600">
+        {tag}
+      </span>
+    ))}
+  </div>
+
+  {/* Key Features */}
+  <div class="mb-4">
+    <h4 class="mb-2 text-xs font-semibold uppercase tracking-wider text-navy-400">Key Features</h4>
+    <ul class="space-y-1.5">
+      {topFeatures.map((feature) => (
+        <li class="flex items-start gap-2 text-sm text-navy-700">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            class="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent-500"
+            aria-hidden="true"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          <span>{feature}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  {/* Top Pros */}
+  <div class="mb-5">
+    {topPros.map((pro) => (
+      <div class="flex items-start gap-2 text-sm text-accent-700">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          class="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent-500"
+          aria-hidden="true"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        <span>{pro}</span>
+      </div>
+    ))}
+  </div>
+
+  {/* CTA */}
+  <div class="mt-auto flex flex-col items-center gap-1">
+    <a
+      href={affiliateHref}
+      target="_blank"
+      rel="nofollow noopener sponsored"
+      class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-accent-500 to-accent-600 px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:from-accent-400 hover:to-accent-500 hover:shadow-lg hover:shadow-accent-500/25 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:ring-offset-2 active:scale-[0.98]"
+    >
+      Visit {tool.name}
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4" aria-hidden="true">
+        <path
+          fill-rule="evenodd"
+          d="M3 10a.75.75 0 01.75-.75h10.638L11.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 11-1.04-1.08l3.158-2.96H3.75A.75.75 0 013 10z"
+          clip-rule="evenodd"
+        />
+      </svg>
+    </a>
+    {tool.affiliate_program && (
+      <span class="text-xs text-navy-400">Affiliate link</span>
+    )}
+  </div>
+</div>

@@ -1,0 +1,125 @@
+---
+const currentYear = new Date().getFullYear();
+
+const resourceLinks = [
+  { label: "Reviews", href: "/reviews" },
+  { label: "Compare", href: "/compare" },
+  { label: "Best For", href: "/best" },
+  { label: "Guides", href: "/guides" },
+];
+
+const toolLinks = [
+  { label: "Revenue Calculator", href: "/tools/revenue-calculator" },
+  { label: "Comparison Tool", href: "/tools/compare" },
+  { label: "Switching Cost Calculator", href: "/tools/switching-cost" },
+];
+
+const companyLinks = [
+  { label: "About", href: "/about" },
+  { label: "Newsletter", href: "/newsletter" },
+  { label: "Contact", href: "/contact" },
+];
+---
+
+<footer class="bg-navy-950 text-navy-300">
+  <!-- Main footer grid -->
+  <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
+      <!-- Column 1: Brand -->
+      <div class="sm:col-span-2 lg:col-span-1">
+        <a href="/" class="mb-4 inline-flex items-center gap-2 text-white no-underline">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 36 36"
+            class="h-7 w-7 shrink-0"
+            aria-hidden="true"
+          >
+            <ellipse cx="18" cy="22" rx="7" ry="6" fill="#10b981" />
+            <circle cx="10" cy="13" r="3.5" fill="#10b981" />
+            <circle cx="18" cy="9" r="3.5" fill="#10b981" />
+            <circle cx="26" cy="13" r="3.5" fill="#10b981" />
+            <rect x="16.5" y="19" width="3" height="6" rx="1" fill="#102a43" />
+            <rect x="15" y="21" width="6" height="2.5" rx="1" fill="#102a43" />
+          </svg>
+          <span class="font-heading text-lg font-bold tracking-tight">
+            Vet<span class="text-accent-400">Software</span>Hub
+          </span>
+        </a>
+        <p class="mt-3 max-w-xs text-sm leading-relaxed">
+          Independent reviews and comparisons of veterinary practice management
+          software. Helping 33,000+ vet practices find the right PIMS.
+        </p>
+      </div>
+
+      <!-- Column 2: Resources -->
+      <div>
+        <h3 class="mb-4 text-sm font-semibold uppercase tracking-wider text-white">
+          Resources
+        </h3>
+        <ul class="space-y-2.5" role="list">
+          {resourceLinks.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class="text-sm text-navy-300 transition-colors hover:text-accent-400"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Column 3: Tools -->
+      <div>
+        <h3 class="mb-4 text-sm font-semibold uppercase tracking-wider text-white">
+          Tools
+        </h3>
+        <ul class="space-y-2.5" role="list">
+          {toolLinks.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class="text-sm text-navy-300 transition-colors hover:text-accent-400"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Column 4: Company -->
+      <div>
+        <h3 class="mb-4 text-sm font-semibold uppercase tracking-wider text-white">
+          Company
+        </h3>
+        <ul class="space-y-2.5" role="list">
+          {companyLinks.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class="text-sm text-navy-300 transition-colors hover:text-accent-400"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom bar -->
+  <div class="border-t border-navy-800">
+    <div class="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 py-5 text-xs text-navy-400 sm:flex-row sm:px-6 lg:px-8">
+      <p>&copy; {currentYear} VetSoftwareHub. All rights reserved.</p>
+      <p>
+        Some links on this site are affiliate links. See our
+        <a href="/about#affiliate-disclosure" class="underline transition-colors hover:text-accent-400">
+          affiliate disclosure
+        </a>.
+      </p>
+    </div>
+  </div>
+</footer>

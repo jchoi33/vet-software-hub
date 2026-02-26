@@ -1,85 +1,57 @@
 ---
 interface Props {
-  variant?: "inline" | "banner";
+  variant?: "dark" | "light" | "banner";
   heading?: string;
   subheading?: string;
 }
 
 const {
-  variant = "inline",
-  heading = "Get the Free Vet Software Buyer's Guide",
-  subheading = "Plus weekly tips on choosing and using practice management software. Join 1,000+ practice managers.",
+  variant = "dark",
+  heading = "The Vet Software Briefing",
+  subheading = "One email per week. The best deals, newest reviews, and unbiased picks — delivered to practice managers who care about making the right call.",
 } = Astro.props;
+
+const isDark = variant === "dark" || variant === "banner";
 ---
 
-{variant === "banner" ? (
-  <section class="bg-navy-900 py-12 sm:py-16">
-    <div class="mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
-      <h2 class="font-heading text-2xl font-bold text-white sm:text-3xl">
-        {heading}
-      </h2>
-      <p class="mx-auto mt-3 max-w-xl text-base text-navy-300">
-        {subheading}
-      </p>
-      <form action="#" method="POST" class="mx-auto mt-6 flex max-w-md flex-col gap-3 sm:flex-row">
-        <label for="email-banner" class="sr-only">Email address</label>
-        <input
-          id="email-banner"
-          name="email"
-          type="email"
-          required
-          placeholder="you@yourpractice.com"
-          autocomplete="email"
-          class="flex-1 rounded-lg border border-navy-700 bg-navy-800 px-4 py-3 text-sm text-white placeholder-navy-400 transition-colors focus:border-accent-500 focus:outline-none focus:ring-2 focus:ring-accent-500"
-        />
-        <button
-          type="submit"
-          class="inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-accent-500 to-accent-600 px-6 py-3 text-sm font-semibold text-white transition-all duration-200 hover:from-accent-400 hover:to-accent-500 hover:shadow-lg hover:shadow-accent-500/25 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:ring-offset-2 focus:ring-offset-navy-900 active:scale-[0.98]"
-        >
-          Get the Guide
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4" aria-hidden="true">
-            <path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L11.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 11-1.04-1.08l3.158-2.96H3.75A.75.75 0 013 10z" clip-rule="evenodd" />
-          </svg>
-        </button>
-      </form>
-      <p class="mt-3 text-xs text-navy-400">
-        No spam. Unsubscribe anytime.
-      </p>
-    </div>
-  </section>
-) : (
-  <div class="rounded-xl border border-navy-100 bg-white p-6 shadow-sm sm:p-8">
-    <div class="text-center">
-      <h3 class="font-heading text-xl font-bold text-navy-900 sm:text-2xl">
-        {heading}
-      </h3>
-      <p class="mx-auto mt-2 max-w-md text-sm text-navy-500">
-        {subheading}
-      </p>
-    </div>
-    <form action="#" method="POST" class="mx-auto mt-5 flex max-w-md flex-col gap-3 sm:flex-row">
-      <label for="email-inline" class="sr-only">Email address</label>
+<div style={isDark
+  ? "background:var(--navy-950); border-radius:var(--radius-lg); padding:3rem 2.5rem;"
+  : "background:white; border:1px solid var(--stone-200); border-radius:var(--radius-lg); padding:2.5rem; box-shadow:var(--shadow-rest);"
+}>
+  <div style="max-width:520px; margin:0 auto; text-align:center;">
+    <!-- Label -->
+    <p class="section-label" style={isDark ? "color:var(--teal-400);" : ""}>
+      Free Newsletter
+    </p>
+
+    <!-- Heading -->
+    <h2 style={`font-family:var(--font-heading); font-size:1.625rem; font-weight:700; margin:0.5rem 0 0.75rem; line-height:1.2; color:${isDark ? "white" : "var(--navy-950)"};`}>
+      {heading}
+    </h2>
+
+    <!-- Subheading -->
+    <p style={`font-family:var(--font-body); font-size:0.9375rem; line-height:1.6; margin:0 0 1.75rem; color:${isDark ? "var(--navy-200)" : "var(--stone-500)"};`}>
+      {subheading}
+    </p>
+
+    <!-- Form -->
+    <form
+      style="display:flex; gap:0.625rem; max-width:440px; margin:0 auto;"
+      onsubmit="event.preventDefault(); this.innerHTML = '<p style=\'font-family:var(--font-body);color:var(--teal-400);font-weight:600;\'>✓ You\'re in! Check your inbox.</p>';"
+    >
       <input
-        id="email-inline"
-        name="email"
         type="email"
         required
-        placeholder="you@yourpractice.com"
-        autocomplete="email"
-        class="flex-1 rounded-lg border border-navy-200 bg-white px-4 py-3 text-sm text-navy-800 placeholder-navy-400 transition-colors focus:border-accent-500 focus:outline-none focus:ring-2 focus:ring-accent-500"
+        placeholder="your@email.com"
+        style={`flex:1; font-family:var(--font-body); font-size:0.9375rem; padding:0.6875rem 1rem; border-radius:var(--radius-sm); border:1px solid ${isDark ? "var(--navy-700)" : "var(--stone-300)"}; background:${isDark ? "var(--navy-900)" : "white"}; color:${isDark ? "white" : "var(--stone-800)"}; outline:none;`}
       />
-      <button
-        type="submit"
-        class="inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-accent-500 to-accent-600 px-6 py-3 text-sm font-semibold text-white transition-all duration-200 hover:from-accent-400 hover:to-accent-500 hover:shadow-lg hover:shadow-accent-500/25 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:ring-offset-2 active:scale-[0.98]"
-      >
-        Get the Guide
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4" aria-hidden="true">
-          <path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L11.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 11-1.04-1.08l3.158-2.96H3.75A.75.75 0 013 10z" clip-rule="evenodd" />
-        </svg>
+      <button type="submit" class="btn-primary" style="white-space:nowrap; flex-shrink:0;">
+        Subscribe
       </button>
     </form>
-    <p class="mt-3 text-center text-xs text-navy-400">
-      No spam. Unsubscribe anytime.
+
+    <p style={`font-family:var(--font-body); font-size:0.75rem; margin:0.875rem 0 0; color:${isDark ? "var(--navy-500)" : "var(--stone-400)"};`}>
+      No spam. Unsubscribe anytime. ~5 minute read every week.
     </p>
   </div>
-)}
+</div>

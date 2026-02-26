@@ -1,0 +1,56 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  href: string;
+  emoji: string;
+  count?: string;
+}
+
+const { title, description, href, emoji, count } = Astro.props;
+---
+
+<a
+  href={href}
+  class="card"
+  style="display:flex; align-items:flex-start; gap:1rem; padding:1.25rem 1.375rem; text-decoration:none; border-radius:var(--radius-md);"
+>
+  <!-- Icon -->
+  <div style="width:44px; height:44px; background:var(--navy-50); border-radius:10px; border:1px solid var(--navy-100); display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:1.375rem; transition:background-color var(--transition-fast), border-color var(--transition-fast);" class="cat-icon">
+    {emoji}
+  </div>
+
+  <!-- Text -->
+  <div style="min-width:0;">
+    <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.3rem;">
+      <h3 style="font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--navy-950); margin:0; line-height:1.2;">
+        {title}
+      </h3>
+      {count && (
+        <span style="font-family:var(--font-body); font-size:0.7rem; background:var(--stone-100); color:var(--stone-500); padding:0.1rem 0.45rem; border-radius:999px; font-weight:600; flex-shrink:0;">{count}</span>
+      )}
+    </div>
+    <p style="font-family:var(--font-body); font-size:0.8125rem; color:var(--stone-500); margin:0; line-height:1.5;">
+      {description}
+    </p>
+  </div>
+
+  <!-- Arrow -->
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="width:16px;height:16px;color:var(--stone-300);flex-shrink:0;margin-top:2px;transition:color var(--transition-fast), transform var(--transition-fast);" class="cat-arrow" aria-hidden="true">
+    <path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L11.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 11-1.04-1.08l3.158-2.96H3.75A.75.75 0 013 10z" clip-rule="evenodd" />
+  </svg>
+</a>
+
+<style>
+  a.card:hover .cat-icon {
+    background-color: var(--teal-50) !important;
+    border-color: var(--teal-200) !important;
+  }
+  a.card:hover .cat-arrow {
+    color: var(--teal-500) !important;
+    transform: translateX(2px) !important;
+  }
+  a.card:hover {
+    border-color: var(--navy-200) !important;
+  }
+</style>

@@ -1,91 +1,49 @@
 ---
 interface Props {
   rating: number | null;
-  maxRating?: number;
+  reviewCount?: number;
+  source?: string;
 }
 
-const { rating, maxRating = 5 } = Astro.props;
+const { rating, reviewCount, source } = Astro.props;
 
-function getStars(rating: number, max: number): Array<"full" | "half" | "empty"> {
-  const stars: Array<"full" | "half" | "empty"> = [];
-  for (let i = 1; i <= max; i++) {
-    if (rating >= i) {
-      stars.push("full");
-    } else if (rating >= i - 0.5) {
-      stars.push("half");
-    } else {
-      stars.push("empty");
-    }
-  }
-  return stars;
+function renderStars(r: number): { full: number; half: boolean; empty: number } {
+  const full = Math.floor(r);
+  const half = r - full >= 0.5;
+  const empty = 5 - full - (half ? 1 : 0);
+  return { full, half, empty };
 }
-
-const stars = rating !== null ? getStars(rating, maxRating) : [];
 ---
 
-{rating !== null ? (
-  <div class="flex items-center gap-1.5">
-    <div class="flex items-center gap-0.5" aria-label={`Rating: ${rating} out of ${maxRating}`}>
-      {stars.map((type) => (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          class="h-5 w-5"
-          aria-hidden="true"
-        >
-          {type === "full" && (
-            <path
-              d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-              fill="#10b981"
-              stroke="#10b981"
-              stroke-width="1"
-              stroke-linejoin="round"
-            />
-          )}
-          {type === "half" && (
-            <>
-              <defs>
-                <clipPath id="half-left">
-                  <rect x="0" y="0" width="12" height="24" />
-                </clipPath>
-                <clipPath id="half-right">
-                  <rect x="12" y="0" width="12" height="24" />
-                </clipPath>
-              </defs>
-              <path
-                d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-                fill="#10b981"
-                stroke="#10b981"
-                stroke-width="1"
-                stroke-linejoin="round"
-                clip-path="url(#half-left)"
-              />
-              <path
-                d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-                fill="none"
-                stroke="#10b981"
-                stroke-width="1"
-                stroke-linejoin="round"
-                clip-path="url(#half-right)"
-              />
-            </>
-          )}
-          {type === "empty" && (
-            <path
-              d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-              fill="none"
-              stroke="#10b981"
-              stroke-width="1.5"
-              stroke-linejoin="round"
-            />
-          )}
+{rating !== null && rating !== undefined ? (
+  <span style="display:inline-flex; align-items:center; gap:0.375rem;">
+    <span aria-hidden="true" style="display:inline-flex; gap:1px;">
+      {Array.from({ length: renderStars(rating).full }).map(() => (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="width:14px;height:14px;color:var(--amber-500);">
+          <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd" />
         </svg>
       ))}
-    </div>
-    <span class="text-sm font-semibold text-navy-800">
-      {rating.toFixed(1)}/{maxRating.toFixed(1)}
+      {renderStars(rating).half && (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="width:14px;height:14px;color:var(--amber-400);">
+          <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd" />
+        </svg>
+      )}
+      {Array.from({ length: renderStars(rating).empty }).map(() => (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="width:14px;height:14px;color:var(--stone-300);">
+          <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd" />
+        </svg>
+      ))}
     </span>
-  </div>
+    <span style="font-family:var(--font-mono); font-size:0.8125rem; font-weight:600; color:var(--stone-700);">
+      {rating.toFixed(1)}
+    </span>
+    {(reviewCount || source) && (
+      <span style="font-family:var(--font-body); font-size:0.75rem; color:var(--stone-400);">
+        {source && `on ${source}`}
+        {reviewCount && ` (${reviewCount}+ reviews)`}
+      </span>
+    )}
+  </span>
 ) : (
-  <span class="text-sm text-navy-400 italic">No rating yet</span>
+  <span style="font-family:var(--font-body); font-size:0.75rem; color:var(--stone-400);">No ratings yet</span>
 )}

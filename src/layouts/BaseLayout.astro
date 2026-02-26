@@ -37,11 +37,11 @@ const {
 
     {noindex && <meta name="robots" content="noindex, nofollow" />}
 
-    <!-- Google Fonts -->
+    <!-- Google Fonts: Source Serif 4 + DM Sans + JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700;900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;0,8..60,900;1,8..60,400;1,8..60,700&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
 
@@ -50,42 +50,45 @@ const {
     <meta property="og:description" content={ogDescription || description} />
     <meta property="og:type" content={ogType} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:site_name" content="VetSoftwareHub" />
+    <meta property="og:site_name" content="VetSoftwares" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={ogTitle || title} />
     <meta name="twitter:description" content={ogDescription || description} />
 
-    <!-- JSON-LD Schema Markup -->
-    {
-      schema && (
-        <script
-          type="application/ld+json"
-          set:html={JSON.stringify(schema)}
-        />
-      )
-    }
+    <!-- JSON-LD Schema -->
+    {schema && (
+      <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+    )}
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
 
-  <body class="bg-white text-navy-950 antialiased">
-    <!-- Affiliate Disclosure Banner -->
-    <div class="bg-navy-50 border-b border-navy-100">
-      <div class="max-w-7xl mx-auto px-4 py-2 text-center text-xs text-navy-500">
-        VetSoftwareHub is reader-supported. When you buy through links on our
-        site, we may earn an affiliate commission.
-        <a
-          href="/about#affiliate-disclosure"
-          class="underline hover:text-accent-500 transition-colors"
-        >
-          Learn more.
-        </a>
+  <body class="bg-stone-50 text-stone-800 antialiased">
+
+    <!-- Trust Bar -->
+    <div style="background:#0a1628; border-bottom:1px solid #162d54;">
+      <div class="container-wide">
+        <p style="font-family:var(--font-body); font-size:0.75rem; color:#dce8f7; padding:0.5rem 0; text-align:center; margin:0;">
+          <strong style="color:#2dd4bf;">100% Independent</strong> —
+          We test and compare veterinary software so you don't have to.
+          No vendor owns or sponsors this site.
+        </p>
       </div>
     </div>
 
     <Header />
+
+    <!-- Affiliate Disclosure -->
+    <div style="background:#fef3c7; border-bottom:1px solid #fde68a;">
+      <div class="container-wide">
+        <p style="font-family:var(--font-body); font-size:0.78rem; color:#92400e; padding:0.4rem 0; margin:0;">
+          <strong>Disclosure:</strong> Some links on this site are affiliate links. If you click and purchase, we may earn a commission — at no extra cost to you. This never influences our rankings.
+          <a href="/about#methodology" style="color:#b45309; text-decoration:underline; margin-left:0.25rem;">Learn how we rate tools →</a>
+        </p>
+      </div>
+    </div>
 
     <main>
       <slot />

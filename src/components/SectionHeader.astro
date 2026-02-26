@@ -1,0 +1,24 @@
+---
+interface Props {
+  label?: string;
+  title: string;
+  subtitle?: string;
+  align?: "left" | "center";
+}
+
+const { label, title, subtitle, align = "center" } = Astro.props;
+---
+
+<div style={`text-align:${align}; margin-bottom:2.5rem;`}>
+  {label && (
+    <p class="section-label" style="margin-bottom:0.625rem;">{label}</p>
+  )}
+  <h2 style="font-family:var(--font-heading); font-size:clamp(1.625rem, 3vw, 2.25rem); font-weight:700; color:var(--navy-950); margin:0 0 0.75rem; line-height:1.15;">
+    {title}
+  </h2>
+  {subtitle && (
+    <p style={`font-family:var(--font-body); font-size:1.0625rem; color:var(--stone-500); margin:0; line-height:1.6; max-width:600px; ${align === "center" ? "margin-left:auto; margin-right:auto;" : ""}`}>
+      {subtitle}
+    </p>
+  )}
+</div>

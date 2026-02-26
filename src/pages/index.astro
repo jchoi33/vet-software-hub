@@ -57,37 +57,37 @@ const schema = {
   <!-- ═══════════════════════════════════════════════════════════
        HERO
   ═══════════════════════════════════════════════════════════ -->
-  <section style="background:linear-gradient(135deg,#0a1628 0%,#162d54 60%,#0f2140 100%); margin:0 -1.5rem; padding:0 1.5rem;">
+  <section style="background:linear-gradient(150deg,#263620 0%,#344a2b 40%,#446038 80%,#3a5828 100%); margin:0 -1.5rem; padding:0 1.5rem;">
     <div class="container-wide" style="padding-top:5rem; padding-bottom:5rem; text-align:center;">
 
       <!-- Badge -->
-      <div style="display:inline-flex; align-items:center; gap:0.5rem; background:rgba(45,212,191,0.12); border:1px solid rgba(45,212,191,0.3); border-radius:999px; padding:0.35rem 1rem; margin-bottom:1.75rem;">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="#2dd4bf" style="width:14px;height:14px;flex-shrink:0;">
+      <div style="display:inline-flex; align-items:center; gap:0.5rem; background:rgba(250,244,234,0.15); border:1px solid rgba(250,244,234,0.35); border-radius:999px; padding:0.35rem 1rem; margin-bottom:1.75rem;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="#fbbf24" style="width:14px;height:14px;flex-shrink:0;">
           <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
         </svg>
-        <span style="font-family:var(--font-body); font-size:0.75rem; font-weight:700; letter-spacing:0.06em; color:#2dd4bf; text-transform:uppercase;">Updated February 2026</span>
+        <span style="font-family:var(--font-body); font-size:0.75rem; font-weight:700; letter-spacing:0.06em; color:#faf4ea; text-transform:uppercase;">Updated February 2026</span>
       </div>
 
       <!-- H1 -->
       <h1 style="font-family:var(--font-heading); font-size:clamp(2rem,5vw,3.5rem); font-weight:900; color:white; line-height:1.15; margin:0 auto 1.25rem; max-width:780px;">
-        Find the <em style="font-style:italic; color:#2dd4bf;">right</em> software<br>for your vet practice
+        Find the <em style="font-style:italic; color:#fbbf24;">right</em> software<br>for your vet practice
       </h1>
 
       <!-- Subtitle -->
-      <p style="font-family:var(--font-body); font-size:1.125rem; color:#b9d0ef; line-height:1.7; max-width:600px; margin:0 auto 2.5rem;">
+      <p style="font-family:var(--font-body); font-size:1.125rem; color:#c4d5b7; line-height:1.7; max-width:600px; margin:0 auto 2.5rem;">
         We independently test and compare 30+ veterinary PIMS
         so you don't have to. Real data. Honest opinions. Zero vendor bias.
       </p>
 
       <!-- CTAs -->
       <div style="display:flex; flex-wrap:wrap; gap:0.75rem; justify-content:center; margin-bottom:3rem;">
-        <a href="#top-picks" class="btn-primary" style="font-size:1rem; padding:0.875rem 2rem;">
+        <a href="#top-picks" class="btn-primary" style="font-size:1rem; padding:0.875rem 2rem; background:#fbbf24; color:#1a2416;" onmouseover="this.style.background='#f59e0b';" onmouseout="this.style.background='#fbbf24';">
           See Our Top Picks
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="width:18px;height:18px;">
             <path fill-rule="evenodd" d="M5.22 14.78a.75.75 0 001.06 0l7.22-7.22v5.69a.75.75 0 001.5 0v-7.5a.75.75 0 00-.75-.75h-7.5a.75.75 0 000 1.5h5.69l-7.22 7.22a.75.75 0 000 1.06z" clip-rule="evenodd" />
           </svg>
         </a>
-        <a href="/compare/digitail-vs-ezyvet" style="display:inline-flex; align-items:center; gap:0.5rem; font-family:var(--font-body); font-size:1rem; font-weight:600; color:white; border:1.5px solid rgba(255,255,255,0.35); border-radius:8px; padding:0.875rem 2rem; text-decoration:none; transition:border-color 0.2s, background 0.2s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.7)';this.style.background='rgba(255,255,255,0.07)';" onmouseout="this.style.borderColor='rgba(255,255,255,0.35)';this.style.background='transparent';">
+        <a href="/compare" style="display:inline-flex; align-items:center; gap:0.5rem; font-family:var(--font-body); font-size:1rem; font-weight:600; color:white; border:1.5px solid rgba(255,255,255,0.4); border-radius:8px; padding:0.875rem 2rem; text-decoration:none; transition:border-color 0.2s, background 0.2s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.8)';this.style.background='rgba(255,255,255,0.08)';" onmouseout="this.style.borderColor='rgba(255,255,255,0.4)';this.style.background='transparent';">
           Compare Side-by-Side
         </a>
       </div>
@@ -100,9 +100,9 @@ const schema = {
           { stat: "$0", label: "Vendor Influence" },
           { stat: "2026", label: "Data Current" },
         ].map((item) => (
-          <div style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12); border-radius:12px; padding:1.25rem 1rem; text-align:center;">
-            <div style="font-family:var(--font-mono); font-size:1.75rem; font-weight:700; color:#2dd4bf; line-height:1;">{item.stat}</div>
-            <div style="font-family:var(--font-body); font-size:0.78rem; color:#96b8e7; margin-top:0.35rem; font-weight:500;">{item.label}</div>
+          <div style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); border-radius:12px; padding:1.25rem 1rem; text-align:center;">
+            <div style="font-family:var(--font-mono); font-size:1.75rem; font-weight:700; color:#fbbf24; line-height:1;">{item.stat}</div>
+            <div style="font-family:var(--font-body); font-size:0.78rem; color:#c4d5b7; margin-top:0.35rem; font-weight:500;">{item.label}</div>
           </div>
         ))}
       </div>
@@ -113,7 +113,7 @@ const schema = {
   <!-- ═══════════════════════════════════════════════════════════
        METHODOLOGY — HOW WE WORK
   ═══════════════════════════════════════════════════════════ -->
-  <section style="background:#f5f5f4; margin:0 -1.5rem; padding:0 1.5rem;">
+  <section style="background:#f2f5ef; margin:0 -1.5rem; padding:0 1.5rem;">
     <div class="container-wide" style="padding-top:4.5rem; padding-bottom:4.5rem;">
 
       <SectionHeader
@@ -184,7 +184,7 @@ const schema = {
 
     <!-- See all reviews link -->
     <div style="text-align:center; margin-top:2rem;">
-      <a href="/reviews" style="font-family:var(--font-body); font-size:0.9rem; font-weight:600; color:#0d9488; text-decoration:none;">
+      <a href="/reviews" style="font-family:var(--font-body); font-size:0.9rem; font-weight:600; color:#466c34; text-decoration:none;">
         See all {allTools.length} software reviews →
       </a>
     </div>
@@ -194,7 +194,7 @@ const schema = {
   <!-- ═══════════════════════════════════════════════════════════
        BROWSE BY CATEGORY
   ═══════════════════════════════════════════════════════════ -->
-  <section style="background:#f5f5f4; margin:0 -1.5rem; padding:0 1.5rem;">
+  <section style="background:#f2f5ef; margin:0 -1.5rem; padding:0 1.5rem;">
     <div class="container-wide" style="padding-top:4.5rem; padding-bottom:4.5rem;">
 
       <SectionHeader
@@ -251,7 +251,7 @@ const schema = {
 
       <!-- Quick comparison links -->
       <div style="margin-top:2.5rem; background:white; border:1px solid #e7e5e4; border-radius:12px; padding:1.5rem 2rem;">
-        <p style="font-family:var(--font-body); font-size:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:#0d9488; margin:0 0 1rem;">Popular comparisons</p>
+        <p style="font-family:var(--font-body); font-size:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:#466c34; margin:0 0 1rem;">Popular comparisons</p>
         <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
           {[
             { label: "Digitail vs ezyVet", slug: "digitail-vs-ezyvet" },
@@ -261,7 +261,7 @@ const schema = {
             { label: "DaySmart vs Hippo Manager", slug: "daysmart-vet-vs-hippo-manager" },
             { label: "ezyVet vs Cornerstone", slug: "ezyvet-vs-cornerstone" },
           ].map((comp) => (
-            <a href={"/compare/" + comp.slug} style="font-family:var(--font-body); font-size:0.8rem; font-weight:600; color:#1e3d6f; background:#eef3fb; border:1px solid #b9d0ef; border-radius:999px; padding:0.3rem 0.85rem; text-decoration:none; transition:background 0.15s, border-color 0.15s;" onmouseover="this.style.background='#dce8f7';" onmouseout="this.style.background='#eef3fb';">
+            <a href={"/compare/" + comp.slug} style="font-family:var(--font-body); font-size:0.8rem; font-weight:600; color:#344a2b; background:#f2f5ef; border:1px solid #c4d5b7; border-radius:999px; padding:0.3rem 0.85rem; text-decoration:none; transition:background 0.15s, border-color 0.15s;" onmouseover="this.style.background='#e2eadb';" onmouseout="this.style.background='#f2f5ef';">
               {comp.label}
             </a>
           ))}
@@ -275,11 +275,11 @@ const schema = {
        REVENUE CALCULATOR CTA
   ═══════════════════════════════════════════════════════════ -->
   <section class="container-wide" style="padding-top:4.5rem; padding-bottom:4.5rem;">
-    <div style="background:linear-gradient(135deg,#0a1628 0%,#1e3d6f 100%); border-radius:16px; padding:3rem 2.5rem; display:grid; grid-template-columns:1fr auto; gap:2rem; align-items:center;">
+    <div style="background:linear-gradient(135deg,#263620 0%,#446038 100%); border-radius:16px; padding:3rem 2.5rem; display:grid; grid-template-columns:1fr auto; gap:2rem; align-items:center;">
       <div>
-        <div style="display:inline-block; font-family:var(--font-body); font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.12em; color:#2dd4bf; margin-bottom:0.75rem;">Free Tool</div>
+        <div style="display:inline-block; font-family:var(--font-body); font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.12em; color:#fbbf24; margin-bottom:0.75rem;">Free Tool</div>
         <h2 style="font-family:var(--font-heading); font-size:clamp(1.5rem,3vw,2rem); font-weight:700; color:white; margin:0 0 0.75rem;">How much is your no-show rate costing you?</h2>
-        <p style="font-family:var(--font-body); font-size:0.9375rem; color:#b9d0ef; margin:0; line-height:1.65;">Enter your practice details and get an instant revenue estimate, no-show loss breakdown, and personalized software recommendations.</p>
+        <p style="font-family:var(--font-body); font-size:0.9375rem; color:#c4d5b7; margin:0; line-height:1.65;">Enter your practice details and get an instant revenue estimate, no-show loss breakdown, and personalized software recommendations.</p>
       </div>
       <div style="flex-shrink:0;">
         <a href="/tools/revenue-calculator" class="btn-primary" style="white-space:nowrap; padding:1rem 1.75rem; font-size:0.9375rem;">

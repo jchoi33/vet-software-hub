@@ -2,32 +2,32 @@
 
 /* ─── Design Tokens via Tailwind @theme ─────────────────────────────────────── */
 @theme {
-  /* Navy — trust + expertise */
-  --color-navy-50:  #eef3fb;
-  --color-navy-100: #dce8f7;
-  --color-navy-200: #b9d0ef;
-  --color-navy-300: #96b8e7;
-  --color-navy-400: #6898d6;
-  --color-navy-500: #3670b8;
-  --color-navy-600: #2a5494;
-  --color-navy-700: #1e3d6f;
-  --color-navy-800: #162d54;
-  --color-navy-900: #0f2140;
-  --color-navy-950: #0a1628;
+  /* Forest / deep sage — replaces cold navy for headings + authority */
+  --color-navy-50:  #f2f5ef;
+  --color-navy-100: #e2eadb;
+  --color-navy-200: #c4d5b7;
+  --color-navy-300: #a0b98e;
+  --color-navy-400: #7a9a68;
+  --color-navy-500: #5a7a48;
+  --color-navy-600: #446038;
+  --color-navy-700: #344a2b;
+  --color-navy-800: #263620;
+  --color-navy-900: #1a2416;
+  --color-navy-950: #111810;
 
-  /* Teal — CTAs, links, highlights */
-  --color-teal-50:  #f0fdfa;
-  --color-teal-100: #ccfbf1;
-  --color-teal-200: #99f6e4;
-  --color-teal-300: #5eead4;
-  --color-teal-400: #2dd4bf;
-  --color-teal-500: #14b8a6;
-  --color-teal-600: #0d9488;
-  --color-teal-700: #0f766e;
-  --color-teal-800: #115e59;
-  --color-teal-900: #134e4a;
+  /* Sage green — primary accent (replaces teal) */
+  --color-teal-50:  #f2f5ef;
+  --color-teal-100: #e2eadb;
+  --color-teal-200: #c4d5b7;
+  --color-teal-300: #9aba82;
+  --color-teal-400: #74a05a;
+  --color-teal-500: #5a8744;
+  --color-teal-600: #466c34;
+  --color-teal-700: #365228;
+  --color-teal-800: #28401e;
+  --color-teal-900: #1c2e15;
 
-  /* Stone — warm neutrals */
+  /* Stone — warm neutrals (unchanged — already warm) */
   --color-stone-50:  #fafaf9;
   --color-stone-100: #f5f5f4;
   --color-stone-200: #e7e5e4;
@@ -40,7 +40,7 @@
   --color-stone-900: #1c1917;
   --color-stone-950: #0c0a09;
 
-  /* Amber — ratings, warnings */
+  /* Amber — ratings, highlights, CTAs, warmth */
   --color-amber-50:  #fffbeb;
   --color-amber-100: #fef3c7;
   --color-amber-200: #fde68a;
@@ -49,17 +49,22 @@
   --color-amber-500: #f59e0b;
   --color-amber-600: #d97706;
 
-  /* Keep accent for backward compat with existing pages */
-  --color-accent-50:  #f0fdfa;
-  --color-accent-100: #ccfbf1;
-  --color-accent-200: #99f6e4;
-  --color-accent-300: #5eead4;
-  --color-accent-400: #2dd4bf;
-  --color-accent-500: #14b8a6;
-  --color-accent-600: #0d9488;
-  --color-accent-700: #0f766e;
-  --color-accent-800: #115e59;
-  --color-accent-900: #134e4a;
+  /* Cream — warm page backgrounds */
+  --color-cream-50:  #fdf9f3;
+  --color-cream-100: #faf4ea;
+  --color-cream-200: #f5e8d0;
+
+  /* Keep accent for backward compat with existing inner pages */
+  --color-accent-50:  #f2f5ef;
+  --color-accent-100: #e2eadb;
+  --color-accent-200: #c4d5b7;
+  --color-accent-300: #9aba82;
+  --color-accent-400: #74a05a;
+  --color-accent-500: #5a8744;
+  --color-accent-600: #466c34;
+  --color-accent-700: #365228;
+  --color-accent-800: #28401e;
+  --color-accent-900: #1c2e15;
 
   /* Typography */
   --font-heading: "Source Serif 4", Georgia, "Times New Roman", serif;
@@ -67,26 +72,32 @@
   --font-mono:    "JetBrains Mono", "Fira Code", "Courier New", monospace;
 }
 
-/* ─── CSS Custom Properties (for non-Tailwind usage) ────────────────────────── */
+/* ─── CSS Custom Properties (for non-Tailwind / inline-style usage) ──────────── */
 :root {
-  --navy-950: #0a1628;
-  --navy-900: #0f2140;
-  --navy-800: #162d54;
-  --navy-700: #1e3d6f;
-  --navy-600: #2a5494;
-  --navy-500: #3670b8;
-  --navy-100: #dce8f7;
-  --navy-50:  #eef3fb;
+  /* Forest greens — replaces cold navy */
+  --navy-950: #111810;
+  --navy-900: #1a2416;
+  --navy-800: #263620;
+  --navy-700: #344a2b;
+  --navy-600: #446038;
+  --navy-500: #5a7a48;
+  --navy-100: #e2eadb;
+  --navy-50:  #f2f5ef;
 
-  --teal-600: #0d9488;
-  --teal-500: #14b8a6;
-  --teal-400: #2dd4bf;
-  --teal-50:  #f0fdfa;
+  /* Sage greens — replaces teal */
+  --teal-600: #466c34;
+  --teal-500: #5a8744;
+  --teal-400: #74a05a;
+  --teal-50:  #f2f5ef;
+  --teal-200: #c4d5b7;
+  --teal-700: #365228;
 
+  /* Amber — warmth, ratings */
   --amber-500: #f59e0b;
   --amber-400: #fbbf24;
   --amber-100: #fef3c7;
 
+  /* Stone — warm neutrals */
   --stone-950: #1c1917;
   --stone-800: #292524;
   --stone-700: #44403c;
@@ -97,6 +108,14 @@
   --stone-200: #e7e5e4;
   --stone-100: #f5f5f4;
   --stone-50:  #fafaf9;
+
+  /* Cream page backgrounds */
+  --cream-50:  #fdf9f3;
+  --cream-100: #faf4ea;
+
+  /* Sage section background */
+  --sage-bg:   #f2f5ef;
+  --sage-bg-2: #eaf0e4;
 
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -122,7 +141,7 @@
 
   body {
     font-family: var(--font-body);
-    background-color: #fafaf9;
+    background-color: #fdf9f3;
     color: var(--stone-800);
     line-height: 1.6;
   }
@@ -134,7 +153,6 @@
     font-weight: 700;
   }
 
-  /* DM Sans for labels, UI, nav */
   .font-ui {
     font-family: var(--font-body);
   }
@@ -184,7 +202,6 @@
 
 /* ─── Utility Classes ────────────────────────────────────────────────────────── */
 
-/* Section container */
 .container-wide {
   max-width: 1180px;
   margin-left: auto;
@@ -201,10 +218,10 @@
   padding-right: 1.5rem;
 }
 
-/* Card base */
+/* Card base — warm white + cream borders */
 .card {
-  background: white;
-  border: 1px solid var(--stone-200);
+  background: #fefefe;
+  border: 1px solid #dde5d5;
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-rest);
   transition: box-shadow var(--transition-smooth), transform var(--transition-smooth), border-color var(--transition-smooth);
@@ -213,14 +230,14 @@
 .card:hover {
   box-shadow: var(--shadow-hover);
   transform: translateY(-2px);
-  border-color: var(--stone-300);
+  border-color: #c4d5b7;
 }
 
 .card-lg {
   border-radius: var(--radius-lg);
 }
 
-/* Button styles */
+/* Primary CTA — forest green */
 .btn-primary {
   display: inline-flex;
   align-items: center;
@@ -240,7 +257,7 @@
 
 .btn-primary:hover {
   background-color: var(--teal-500);
-  box-shadow: 0 4px 16px rgba(13,148,136,0.30);
+  box-shadow: 0 4px 16px rgba(70,108,52,0.30);
   transform: translateY(-1px);
 }
 
@@ -262,7 +279,7 @@
 }
 
 .btn-secondary:hover {
-  background-color: var(--stone-50);
+  background-color: var(--cream-50);
   border-color: var(--stone-400);
   box-shadow: var(--shadow-rest);
 }

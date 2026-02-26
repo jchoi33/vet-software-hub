@@ -1,0 +1,197 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import RevenueCalculator from "../../components/RevenueCalculator";
+import EmailCapture from "../../components/EmailCapture.astro";
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: "Vet Practice Revenue Calculator",
+  description: "Free calculator: estimate your veterinary practice's monthly revenue, no-show losses, and ROI of switching software. Get personalized PIMS recommendations.",
+  url: "https://vetsoftwarehub.com/tools/revenue-calculator",
+  applicationCategory: "BusinessApplication",
+  operatingSystem: "Web browser",
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+  },
+};
+
+const faqSchemaJson = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "How does the vet practice revenue calculator work?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Enter your number of vets, appointments per day, average transaction value, no-show rate, and current software cost. The calculator estimates your monthly and annual revenue, quantifies your no-show losses, projects potential revenue recovery with better reminder tools, and calculates the ROI of upgrading your practice management software.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "What is a good no-show rate for a veterinary practice?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "The veterinary industry average no-show rate is 6-10%. A rate below 6% is excellent. Above 10% indicates a significant opportunity to recover revenue through automated appointment reminders, two-way client texting, and online booking tools. Practices using dedicated client communication software like PetDesk report reducing no-show rates by 20-40%.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "What is the average revenue per veterinarian per month?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Average revenue per full-time veterinarian in the United States ranges from $25,000 to $45,000 per month, depending on practice type, location, service mix, and appointment volume. General practices typically fall in the $25,000-$35,000 range, while specialty and emergency practices can exceed $45,000 per vet per month.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "How much can better veterinary software improve my revenue?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Better veterinary PIMS can improve revenue in several ways: (1) Automated reminders and two-way texting typically reduce no-show rates by 15-40%, directly recovering missed revenue. (2) AI-powered SOAP note generation saves 30-60 minutes per veterinarian per day, enabling more appointments or improving work-life balance. (3) Streamlined invoicing and automated charge capture reduce revenue leakage from unbilled services. Individual results vary by practice and tool.",
+      },
+    },
+  ],
+});
+---
+
+<BaseLayout
+  title="Vet Practice Revenue Calculator 2026 — Free Tool | VetSoftwareHub"
+  description="Free veterinary practice revenue calculator. Estimate monthly revenue, quantify no-show losses, calculate software ROI, and get personalized PIMS recommendations for your practice size."
+  canonical="https://vetsoftwarehub.com/tools/revenue-calculator"
+  ogTitle="Free Vet Practice Revenue Calculator"
+  ogDescription="How much is your no-show rate costing you? Calculate your practice revenue and get matched to the right software."
+  schema={schema}
+>
+  <!-- Breadcrumb -->
+  <div class="mx-auto max-w-4xl px-4 pt-8">
+    <div class="mb-4 flex flex-wrap gap-2 text-xs">
+      <a href="/" class="text-navy-400 hover:text-accent-600 transition-colors">Home</a>
+      <span class="text-navy-300">/</span>
+      <a href="/tools" class="text-navy-400 hover:text-accent-600 transition-colors">Free Tools</a>
+      <span class="text-navy-300">/</span>
+      <span class="text-navy-600">Revenue Calculator</span>
+    </div>
+  </div>
+
+  <!-- Hero header -->
+  <header class="bg-gradient-to-br from-teal-900 via-teal-800 to-emerald-900 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 mb-10">
+    <div class="mx-auto max-w-4xl py-14 sm:py-18 text-center">
+      <div class="mb-4 inline-flex items-center gap-2 rounded-full border border-teal-600/40 bg-teal-800/50 px-4 py-1.5 text-xs font-semibold text-teal-300">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5">
+          <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd" />
+        </svg>
+        Free Tool — No Account Required
+      </div>
+      <h1 class="font-heading text-3xl font-bold text-white sm:text-4xl lg:text-5xl leading-tight">
+        Vet Practice Revenue Calculator
+      </h1>
+      <p class="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-teal-100">
+        How much is your no-show rate costing you each month? Enter your practice details 
+        to get an instant revenue estimate, see your no-show losses in dollars, 
+        and find the right software to recover them.
+      </p>
+      <div class="mt-6 flex flex-wrap items-center justify-center gap-6 text-sm text-teal-300">
+        <span class="flex items-center gap-1.5">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4 text-teal-400">
+            <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+          </svg>
+          Instant results
+        </span>
+        <span class="flex items-center gap-1.5">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4 text-teal-400">
+            <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+          </svg>
+          Personalized software picks
+        </span>
+        <span class="flex items-center gap-1.5">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4 text-teal-400">
+            <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+          </svg>
+          No-show ROI breakdown
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Calculator -->
+  <div class="mx-auto max-w-4xl px-4 pb-16 sm:pb-20">
+    <RevenueCalculator client:load />
+  </div>
+
+  <!-- FAQ Section -->
+  <section class="bg-navy-50 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-4xl py-16 sm:py-20">
+      <h2 class="font-heading text-2xl font-bold text-navy-900 sm:text-3xl text-center">
+        Frequently Asked Questions
+      </h2>
+      <div class="mt-8 space-y-3">
+        {[
+          {
+            q: "How does the vet practice revenue calculator work?",
+            a: "Enter your number of vets, appointments per day, average transaction value, no-show rate, and current software cost. The calculator estimates your monthly and annual revenue, quantifies your no-show losses in dollar terms, projects potential revenue recovery with better client reminder tools, and calculates the ROI of upgrading your practice management software.",
+          },
+          {
+            q: "What is a good no-show rate for a veterinary practice?",
+            a: "The veterinary industry average no-show rate is 6–10%. A rate below 6% is excellent. Above 10% indicates a significant revenue recovery opportunity. Practices using dedicated client communication software like PetDesk report reducing no-show rates by 20–40% through automated reminders and two-way text messaging.",
+          },
+          {
+            q: "What is the average revenue per veterinarian per month?",
+            a: "Average revenue per full-time veterinarian in the USA ranges from $25,000 to $45,000 per month, depending on practice type, location, service mix, and appointment volume. General practices typically fall in the $25,000–$35,000 range, while specialty and emergency practices can exceed $45,000 per vet.",
+          },
+          {
+            q: "How much can better veterinary software improve my revenue?",
+            a: "Better PIMS can improve revenue through three channels: (1) Automated reminders and two-way texting typically reduce no-show rates by 15–40%. (2) AI-powered SOAP note generation saves 30–60 minutes per veterinarian per day, enabling more appointments. (3) Automated charge capture reduces unbilled services. Individual results vary by practice and tool choice.",
+          },
+          {
+            q: "Is this calculator free to use?",
+            a: "Yes — completely free, no account required. Enter your details, see your results instantly, and optionally enter your email to receive a PDF copy of your personalized revenue report and software recommendations.",
+          },
+        ].map((item) => (
+          <details class="group rounded-lg border border-navy-100 bg-white">
+            <summary class="flex cursor-pointer items-center justify-between p-5 font-heading font-semibold text-navy-800 transition-colors hover:text-accent-600">
+              {item.q}
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 shrink-0 text-navy-400 transition-transform group-open:rotate-180" aria-hidden="true">
+                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="border-t border-navy-100 px-5 py-4 text-sm leading-relaxed text-navy-600">
+              {item.a}
+            </div>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Related tools/links -->
+  <section class="mx-auto max-w-4xl px-4 py-16 sm:py-20">
+    <h2 class="font-heading text-xl font-bold text-navy-900">Related Resources</h2>
+    <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {[
+        { href: "/guides/how-to-choose-veterinary-software", label: "How to Choose Vet Software" },
+        { href: "/guides/veterinary-software-pricing-guide", label: "Full Pricing Guide 2026" },
+        { href: "/best/best-veterinary-software-for-small-practices", label: "Best for Small Practices" },
+        { href: "/best/best-veterinary-software-with-ai", label: "Best AI Vet Software" },
+        { href: "/reviews/petdesk", label: "PetDesk Review (No-Show Reduction)" },
+        { href: "/compare/digitail-vs-shepherd", label: "Digitail vs Shepherd" },
+      ].map((link) => (
+        <a
+          href={link.href}
+          class="flex items-center justify-between rounded-xl border border-navy-100 bg-white p-4 text-sm font-medium text-accent-600 shadow-sm transition-all hover:border-accent-200 hover:shadow-md"
+        >
+          {link.label}
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4 shrink-0">
+            <path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L11.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 11-1.04-1.08l3.158-2.96H3.75A.75.75 0 013 10z" clip-rule="evenodd" />
+          </svg>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- FAQ Schema -->
+  <script type="application/ld+json" set:html={faqSchemaJson} />
+</BaseLayout>

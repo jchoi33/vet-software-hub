@@ -117,10 +117,10 @@ const rows: RowDef[] = [
 ---
 
 {/* Desktop Table */}
-<div class="hidden overflow-hidden rounded-xl border border-navy-100 sm:block">
+<div class="hidden overflow-hidden rounded-xl sm:block" style="border:1px solid #dde5d5;">
   <table class="w-full text-left text-sm">
     <thead>
-      <tr class="bg-navy-900 text-white">
+      <tr style="background:#1a2416; color:white;">
         <th class="px-5 py-3 font-heading text-sm font-semibold">Feature</th>
         <th class="px-5 py-3 font-heading text-sm font-semibold">{toolA.name}</th>
         <th class="px-5 py-3 font-heading text-sm font-semibold">{toolB.name}</th>
@@ -128,35 +128,31 @@ const rows: RowDef[] = [
     </thead>
     <tbody>
       {rows.map((row, idx) => (
-        <tr class={idx % 2 === 0 ? "bg-white" : "bg-navy-50/50"}>
-          <td class="px-5 py-3 font-medium text-navy-700">{row.label}</td>
+        <tr style={idx % 2 === 0 ? "background:white;" : "background:#f9faf8;"}>
+          <td class="px-5 py-3 font-medium" style="color:#44403c;">{row.label}</td>
           <td
-            class:list={[
-              "px-5 py-3 text-navy-800",
-              row.winner === "a" && "bg-accent-50 font-semibold text-accent-700",
-            ]}
+            class="px-5 py-3"
+            style={row.winner === "a" ? "background:#f2f5ef; color:#344a2b; font-weight:600;" : "color:#292524;"}
           >
             {row.valueA}
           </td>
           <td
-            class:list={[
-              "px-5 py-3 text-navy-800",
-              row.winner === "b" && "bg-accent-50 font-semibold text-accent-700",
-            ]}
+            class="px-5 py-3"
+            style={row.winner === "b" ? "background:#f2f5ef; color:#344a2b; font-weight:600;" : "color:#292524;"}
           >
             {row.valueB}
           </td>
         </tr>
       ))}
       {/* Key Features row */}
-      <tr class={rows.length % 2 === 0 ? "bg-white" : "bg-navy-50/50"}>
-        <td class="px-5 py-3 align-top font-medium text-navy-700">Key Features</td>
-        <td class="px-5 py-3 align-top text-navy-800">
+      <tr style={rows.length % 2 === 0 ? "background:white;" : "background:#f9faf8;"}>
+        <td class="px-5 py-3 align-top font-medium" style="color:#44403c;">Key Features</td>
+        <td class="px-5 py-3 align-top" style="color:#292524;">
           <ul class="list-inside list-disc space-y-1">
             {toolA.key_features.map((f) => <li>{f}</li>)}
           </ul>
         </td>
-        <td class="px-5 py-3 align-top text-navy-800">
+        <td class="px-5 py-3 align-top" style="color:#292524;">
           <ul class="list-inside list-disc space-y-1">
             {toolB.key_features.map((f) => <li>{f}</li>)}
           </ul>
@@ -169,49 +165,49 @@ const rows: RowDef[] = [
 {/* Mobile Stacked Cards */}
 <div class="flex flex-col gap-4 sm:hidden">
   {[toolA, toolB].map((tool) => (
-    <div class="rounded-xl border border-navy-100 bg-white p-5 shadow-sm">
-      <h3 class="mb-3 font-heading text-lg font-bold text-navy-900">{tool.name}</h3>
+    <div class="rounded-xl bg-white p-5 shadow-sm" style="border:1px solid #dde5d5;">
+      <h3 class="mb-3 font-heading text-lg font-bold" style="color:#1a2416;">{tool.name}</h3>
       <dl class="space-y-2.5">
-        <div class="flex justify-between border-b border-navy-50 pb-2">
-          <dt class="text-sm font-medium text-navy-500">Starting Price</dt>
-          <dd class="text-sm font-semibold text-navy-800">{formatPrice(tool.starting_price_monthly)}</dd>
+        <div class="flex justify-between pb-2" style="border-bottom:1px solid #f2f5ef;">
+          <dt class="text-sm font-medium" style="color:#78716c;">Starting Price</dt>
+          <dd class="text-sm font-semibold" style="color:#344a2b;">{formatPrice(tool.starting_price_monthly)}</dd>
         </div>
-        <div class="flex justify-between border-b border-navy-50 pb-2">
-          <dt class="text-sm font-medium text-navy-500">Deployment</dt>
-          <dd class="text-sm text-navy-800">{tool.deployment}</dd>
+        <div class="flex justify-between pb-2" style="border-bottom:1px solid #f2f5ef;">
+          <dt class="text-sm font-medium" style="color:#78716c;">Deployment</dt>
+          <dd class="text-sm" style="color:#292524;">{tool.deployment}</dd>
         </div>
-        <div class="flex justify-between border-b border-navy-50 pb-2">
-          <dt class="text-sm font-medium text-navy-500">Rating (G2)</dt>
-          <dd class="text-sm font-semibold text-navy-800">{formatRating(tool.rating_g2)}</dd>
+        <div class="flex justify-between pb-2" style="border-bottom:1px solid #f2f5ef;">
+          <dt class="text-sm font-medium" style="color:#78716c;">Rating (G2)</dt>
+          <dd class="text-sm font-semibold" style="color:#292524;">{formatRating(tool.rating_g2)}</dd>
         </div>
-        <div class="flex justify-between border-b border-navy-50 pb-2">
-          <dt class="text-sm font-medium text-navy-500">Rating (Capterra)</dt>
-          <dd class="text-sm font-semibold text-navy-800">{formatRating(tool.rating_capterra)}</dd>
+        <div class="flex justify-between pb-2" style="border-bottom:1px solid #f2f5ef;">
+          <dt class="text-sm font-medium" style="color:#78716c;">Rating (Capterra)</dt>
+          <dd class="text-sm font-semibold" style="color:#292524;">{formatRating(tool.rating_capterra)}</dd>
         </div>
-        <div class="flex justify-between border-b border-navy-50 pb-2">
-          <dt class="text-sm font-medium text-navy-500">Free Trial</dt>
-          <dd class="text-sm text-navy-800">{tool.free_trial ? "Yes" : "No"}</dd>
+        <div class="flex justify-between pb-2" style="border-bottom:1px solid #f2f5ef;">
+          <dt class="text-sm font-medium" style="color:#78716c;">Free Trial</dt>
+          <dd class="text-sm font-semibold" style={tool.free_trial ? "color:#466c34;" : "color:#a8a29e;"}>{tool.free_trial ? "Yes" : "No"}</dd>
         </div>
-        <div class="flex justify-between border-b border-navy-50 pb-2">
-          <dt class="text-sm font-medium text-navy-500">Free Plan</dt>
-          <dd class="text-sm text-navy-800">{tool.free_plan ? "Yes" : "No"}</dd>
+        <div class="flex justify-between pb-2" style="border-bottom:1px solid #f2f5ef;">
+          <dt class="text-sm font-medium" style="color:#78716c;">Free Plan</dt>
+          <dd class="text-sm font-semibold" style={tool.free_plan ? "color:#466c34;" : "color:#a8a29e;"}>{tool.free_plan ? "Yes" : "No"}</dd>
         </div>
-        <div class="flex justify-between border-b border-navy-50 pb-2">
-          <dt class="text-sm font-medium text-navy-500">Founded</dt>
-          <dd class="text-sm text-navy-800">{tool.founded}</dd>
+        <div class="flex justify-between pb-2" style="border-bottom:1px solid #f2f5ef;">
+          <dt class="text-sm font-medium" style="color:#78716c;">Founded</dt>
+          <dd class="text-sm" style="color:#292524;">{tool.founded}</dd>
         </div>
-        <div class="border-b border-navy-50 pb-2">
-          <dt class="mb-1 text-sm font-medium text-navy-500">Best For</dt>
+        <div class="pb-2" style="border-bottom:1px solid #f2f5ef;">
+          <dt class="mb-1 text-sm font-medium" style="color:#78716c;">Best For</dt>
           <dd class="flex flex-wrap gap-1">
             {tool.best_for.map((tag) => (
-              <span class="rounded-full bg-navy-50 px-2 py-0.5 text-xs font-medium text-navy-600">{tag}</span>
+              <span class="rounded-full px-2 py-0.5 text-xs font-medium" style="background:#f2f5ef; color:#344a2b;">{tag}</span>
             ))}
           </dd>
         </div>
         <div>
-          <dt class="mb-1 text-sm font-medium text-navy-500">Key Features</dt>
+          <dt class="mb-1 text-sm font-medium" style="color:#78716c;">Key Features</dt>
           <dd>
-            <ul class="list-inside list-disc space-y-1 text-sm text-navy-800">
+            <ul class="list-inside list-disc space-y-1 text-sm" style="color:#292524;">
               {tool.key_features.map((f) => <li>{f}</li>)}
             </ul>
           </dd>

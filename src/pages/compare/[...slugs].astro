@@ -380,55 +380,55 @@ const currentFAQs = faqs[pairKey] || [];
   lastUpdated="February 25, 2026"
 >
   <!-- Affiliate Disclosure -->
-  <div class="mb-8 rounded-lg border border-navy-100 bg-navy-50/50 px-4 py-3 text-xs text-navy-500">
-    <strong>Disclosure:</strong> VetSoftwareHub is reader-supported. When you click our affiliate links and make a purchase, we may earn a commission at no extra cost to you. We independently evaluate every product. Our opinions are our own.
+  <div class="mb-8 rounded-lg px-4 py-3 text-xs" style="border:1px solid #dde5d5; background:#f9faf8; color:#78716c;">
+    <strong style="color:#44403c;">Disclosure:</strong> VetSoftwareHub is reader-supported. When you click our affiliate links and make a purchase, we may earn a commission at no extra cost to you. We independently evaluate every product. Our opinions are our own.
   </div>
 
   <!-- H1 Title -->
-  <h1 class="font-heading text-3xl font-bold text-navy-900 sm:text-4xl">
+  <h1 class="font-heading text-3xl font-bold sm:text-4xl" style="color:#1a2416;">
     {toolA.name} vs {toolB.name}: Which Veterinary Software Is Better in 2026?
   </h1>
-  <p class="mt-4 text-lg text-navy-500">
+  <p class="mt-4 text-lg" style="color:#57534e;">
     We compared {toolA.name} and {toolB.name} across pricing, features, ratings, and real-world fit to help you make the right choice for your veterinary practice.
   </p>
 
   <!-- ============================================================ -->
   <!-- Section 1: Quick Comparison Summary                          -->
   <!-- ============================================================ -->
-  <div class="mt-10 rounded-xl border border-navy-100 bg-white shadow-sm">
-    <div class="grid grid-cols-1 divide-y divide-navy-100 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+  <div class="mt-10 rounded-xl bg-white shadow-sm" style="border:1px solid #dde5d5;">
+    <div class="grid grid-cols-1 sm:grid-cols-3" style="divide-color:#dde5d5;">
       <!-- Tool A Summary -->
-      <div class="flex flex-col items-center p-6 text-center">
-        <h3 class="font-heading text-lg font-bold text-navy-900">{toolA.name}</h3>
+      <div class="flex flex-col items-center p-6 text-center" style="border-bottom:1px solid #dde5d5;">
+        <h3 class="font-heading text-lg font-bold" style="color:#1a2416;">{toolA.name}</h3>
         <div class="mt-3">
           <RatingStars rating={ratingA} />
         </div>
-        <p class="mt-2 text-sm font-semibold text-navy-700">{priceA}</p>
-        <p class="mt-1 text-xs text-navy-400">{toolA.deployment}</p>
+        <p class="mt-2 text-sm font-semibold" style="color:#344a2b;">{priceA}</p>
+        <p class="mt-1 text-xs" style="color:#a8a29e;">{toolA.deployment}</p>
       </div>
 
       <!-- VS Badge -->
-      <div class="flex flex-col items-center justify-center p-6 text-center">
-        <span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-navy-900 font-heading text-sm font-bold text-white">
+      <div class="flex flex-col items-center justify-center p-6 text-center" style="border-bottom:1px solid #dde5d5; border-left:1px solid #dde5d5; border-right:1px solid #dde5d5;">
+        <span class="inline-flex h-12 w-12 items-center justify-center rounded-full font-heading text-sm font-bold text-white" style="background:#1a2416;">
           VS
         </span>
       </div>
 
       <!-- Tool B Summary -->
-      <div class="flex flex-col items-center p-6 text-center">
-        <h3 class="font-heading text-lg font-bold text-navy-900">{toolB.name}</h3>
+      <div class="flex flex-col items-center p-6 text-center" style="border-bottom:1px solid #dde5d5;">
+        <h3 class="font-heading text-lg font-bold" style="color:#1a2416;">{toolB.name}</h3>
         <div class="mt-3">
           <RatingStars rating={ratingB} />
         </div>
-        <p class="mt-2 text-sm font-semibold text-navy-700">{priceB}</p>
-        <p class="mt-1 text-xs text-navy-400">{toolB.deployment}</p>
+        <p class="mt-2 text-sm font-semibold" style="color:#344a2b;">{priceB}</p>
+        <p class="mt-1 text-xs" style="color:#a8a29e;">{toolB.deployment}</p>
       </div>
     </div>
 
     <!-- Quick Verdict -->
-    <div class="border-t border-navy-100 px-6 py-5">
-      <h4 class="font-heading text-sm font-bold uppercase tracking-wide text-navy-400">Quick Verdict</h4>
-      <p class="mt-2 text-sm leading-relaxed text-navy-700">{quickVerdict}</p>
+    <div class="px-6 py-5" style="border-top:1px solid #dde5d5;">
+      <h4 class="font-heading text-sm font-bold uppercase tracking-wide" style="color:#a8a29e;">Quick Verdict</h4>
+      <p class="mt-2 text-sm leading-relaxed" style="color:#44403c;">{quickVerdict}</p>
     </div>
   </div>
 
@@ -436,7 +436,7 @@ const currentFAQs = faqs[pairKey] || [];
   <!-- Section 2: Comparison Table                                   -->
   <!-- ============================================================ -->
   <section class="mt-14">
-    <h2 class="font-heading text-2xl font-bold text-navy-900">{toolA.name} vs {toolB.name} at a Glance</h2>
+    <h2 class="font-heading text-2xl font-bold" style="color:#1a2416;">{toolA.name} vs {toolB.name} at a Glance</h2>
     <div class="mt-6">
       <ComparisonTable toolA={toolA} toolB={toolB} />
     </div>
@@ -446,19 +446,19 @@ const currentFAQs = faqs[pairKey] || [];
   <!-- Section 3: Overview of Both Tools                             -->
   <!-- ============================================================ -->
   <section class="mt-14">
-    <h2 class="font-heading text-2xl font-bold text-navy-900">Overview of Both Tools</h2>
+    <h2 class="font-heading text-2xl font-bold" style="color:#1a2416;">Overview of Both Tools</h2>
 
     <div class="mt-6 space-y-6">
       <div>
-        <h3 class="font-heading text-xl font-semibold text-navy-800">{toolA.name}</h3>
-        <p class="mt-2 text-navy-500 leading-relaxed">
+        <h3 class="font-heading text-xl font-semibold" style="color:#263620;">{toolA.name}</h3>
+        <p class="mt-2 leading-relaxed" style="color:#57534e;">
           {toolA.name} is a {toolA.deployment.toLowerCase()} veterinary practice management platform founded in {toolA.founded} and headquartered in {toolA.hq}. Marketed as "{toolA.tagline.toLowerCase()}", it serves {toolA.users_approx.toLowerCase()} and is best suited for {toolA.best_for.map((b) => b.toLowerCase()).join(", ")}. The platform supports {toolA.practice_types.join(", ")} practice types.
         </p>
       </div>
 
       <div>
-        <h3 class="font-heading text-xl font-semibold text-navy-800">{toolB.name}</h3>
-        <p class="mt-2 text-navy-500 leading-relaxed">
+        <h3 class="font-heading text-xl font-semibold" style="color:#263620;">{toolB.name}</h3>
+        <p class="mt-2 leading-relaxed" style="color:#57534e;">
           {toolB.name} is a {toolB.deployment.toLowerCase()} veterinary software solution founded in {toolB.founded} and headquartered in {toolB.hq}. Described as "{toolB.tagline.toLowerCase()}", it serves {toolB.users_approx.toLowerCase()} and is best suited for {toolB.best_for.map((b) => b.toLowerCase()).join(", ")}. It supports {toolB.practice_types.join(", ")} practice types.
         </p>
       </div>
@@ -469,28 +469,27 @@ const currentFAQs = faqs[pairKey] || [];
   <!-- Section 4: Feature-by-Feature Comparison                      -->
   <!-- ============================================================ -->
   <section class="mt-14">
-    <h2 class="font-heading text-2xl font-bold text-navy-900">Feature-by-Feature Comparison</h2>
-    <p class="mt-2 text-navy-500">
+    <h2 class="font-heading text-2xl font-bold" style="color:#1a2416;">Feature-by-Feature Comparison</h2>
+    <p class="mt-2" style="color:#57534e;">
       We evaluated {toolA.name} and {toolB.name} across six key areas that matter most to veterinary practices.
     </p>
 
     <div class="mt-8 space-y-8">
       {currentFeatureAreas.map((area) => (
-        <div class="rounded-lg border border-navy-100 bg-white p-6">
-          <div class="flex items-center justify-between">
-            <h3 class="font-heading text-lg font-semibold text-navy-800">{area.title}</h3>
+        <div class="rounded-lg bg-white p-6" style="border:1px solid #dde5d5;">
+          <div class="flex items-center justify-between gap-4 flex-wrap">
+            <h3 class="font-heading text-lg font-semibold" style="color:#263620;">{area.title}</h3>
             <span
-              class:list={[
-                "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold",
-                area.edge === "a" && "bg-accent-50 text-accent-700",
-                area.edge === "b" && "bg-blue-50 text-blue-700",
-                area.edge === "tie" && "bg-navy-50 text-navy-600",
-              ]}
+              style={area.edge === "a"
+                ? "display:inline-flex;align-items:center;border-radius:999px;padding:0.25rem 0.75rem;font-size:0.75rem;font-weight:600;background:#f2f5ef;color:#344a2b;"
+                : area.edge === "b"
+                ? "display:inline-flex;align-items:center;border-radius:999px;padding:0.25rem 0.75rem;font-size:0.75rem;font-weight:600;background:#fef3c7;color:#92400e;"
+                : "display:inline-flex;align-items:center;border-radius:999px;padding:0.25rem 0.75rem;font-size:0.75rem;font-weight:600;background:#f5f5f4;color:#78716c;"}
             >
               {area.edge === "a" ? `${toolA.name} wins` : area.edge === "b" ? `${toolB.name} wins` : "Tie"}
             </span>
           </div>
-          <p class="mt-3 text-sm leading-relaxed text-navy-500">{area.analysis}</p>
+          <p class="mt-3 text-sm leading-relaxed" style="color:#57534e;">{area.analysis}</p>
         </div>
       ))}
     </div>
@@ -500,30 +499,30 @@ const currentFAQs = faqs[pairKey] || [];
   <!-- Section 5: Pricing Comparison                                 -->
   <!-- ============================================================ -->
   <section class="mt-14">
-    <h2 class="font-heading text-2xl font-bold text-navy-900">Pricing Comparison</h2>
+    <h2 class="font-heading text-2xl font-bold" style="color:#1a2416;">Pricing Comparison</h2>
 
     <div class="mt-6 grid gap-6 sm:grid-cols-2">
       {[toolA, toolB].map((tool) => (
-        <div class="rounded-xl border border-navy-100 bg-white p-6 shadow-sm">
-          <h3 class="font-heading text-lg font-bold text-navy-900">{tool.name}</h3>
+        <div class="rounded-xl bg-white p-6 shadow-sm" style="border:1px solid #dde5d5;">
+          <h3 class="font-heading text-lg font-bold" style="color:#1a2416;">{tool.name}</h3>
           <dl class="mt-4 space-y-3">
-            <div class="flex justify-between border-b border-navy-50 pb-2">
-              <dt class="text-sm text-navy-500">Starting Price</dt>
-              <dd class="text-sm font-semibold text-navy-800">{getPricingDisplay(tool)}</dd>
+            <div class="flex justify-between pb-2" style="border-bottom:1px solid #f2f5ef;">
+              <dt class="text-sm" style="color:#78716c;">Starting Price</dt>
+              <dd class="text-sm font-semibold" style="color:#344a2b;">{getPricingDisplay(tool)}</dd>
             </div>
-            <div class="flex justify-between border-b border-navy-50 pb-2">
-              <dt class="text-sm text-navy-500">Pricing Model</dt>
-              <dd class="text-sm text-navy-800">{tool.pricing_model}</dd>
+            <div class="flex justify-between pb-2" style="border-bottom:1px solid #f2f5ef;">
+              <dt class="text-sm" style="color:#78716c;">Pricing Model</dt>
+              <dd class="text-sm" style="color:#292524;">{tool.pricing_model}</dd>
             </div>
-            <div class="flex justify-between border-b border-navy-50 pb-2">
-              <dt class="text-sm text-navy-500">Free Trial</dt>
-              <dd class:list={["text-sm font-semibold", tool.free_trial ? "text-accent-600" : "text-navy-400"]}>
+            <div class="flex justify-between pb-2" style="border-bottom:1px solid #f2f5ef;">
+              <dt class="text-sm" style="color:#78716c;">Free Trial</dt>
+              <dd class="text-sm font-semibold" style={tool.free_trial ? "color:#466c34;" : "color:#a8a29e;"}>
                 {tool.free_trial ? "Yes" : "No"}
               </dd>
             </div>
             <div class="flex justify-between">
-              <dt class="text-sm text-navy-500">Free Plan</dt>
-              <dd class:list={["text-sm font-semibold", tool.free_plan ? "text-accent-600" : "text-navy-400"]}>
+              <dt class="text-sm" style="color:#78716c;">Free Plan</dt>
+              <dd class="text-sm font-semibold" style={tool.free_plan ? "color:#466c34;" : "color:#a8a29e;"}>
                 {tool.free_plan ? "Yes" : "No"}
               </dd>
             </div>
@@ -532,7 +531,7 @@ const currentFAQs = faqs[pairKey] || [];
       ))}
     </div>
 
-    <p class="mt-4 text-sm text-navy-400">
+    <p class="mt-4 text-sm" style="color:#a8a29e;">
       Prices shown are published starting rates. Actual pricing may vary based on practice size, contract length, and negotiation. Contact each vendor for a personalized quote.
     </p>
   </section>
@@ -541,25 +540,25 @@ const currentFAQs = faqs[pairKey] || [];
   <!-- Section 6: User Ratings Comparison                            -->
   <!-- ============================================================ -->
   <section class="mt-14">
-    <h2 class="font-heading text-2xl font-bold text-navy-900">User Ratings Comparison</h2>
-    <p class="mt-2 text-sm text-navy-500">
+    <h2 class="font-heading text-2xl font-bold" style="color:#1a2416;">User Ratings Comparison</h2>
+    <p class="mt-2 text-sm" style="color:#78716c;">
       Aggregate ratings from G2 and Capterra, the two leading B2B software review platforms.
     </p>
 
     <div class="mt-6 grid gap-6 sm:grid-cols-2">
       {[toolA, toolB].map((tool) => (
-        <div class="rounded-xl border border-navy-100 bg-white p-6 shadow-sm">
-          <h3 class="font-heading text-lg font-bold text-navy-900">{tool.name}</h3>
+        <div class="rounded-xl bg-white p-6 shadow-sm" style="border:1px solid #dde5d5;">
+          <h3 class="font-heading text-lg font-bold" style="color:#1a2416;">{tool.name}</h3>
           <div class="mt-4 space-y-4">
             <div>
-              <p class="mb-1 text-xs font-medium uppercase tracking-wide text-navy-400">G2 Rating</p>
+              <p class="mb-1 text-xs font-medium uppercase tracking-wide" style="color:#a8a29e;">G2 Rating</p>
               <RatingStars rating={tool.rating_g2} />
             </div>
             <div>
-              <p class="mb-1 text-xs font-medium uppercase tracking-wide text-navy-400">Capterra Rating</p>
+              <p class="mb-1 text-xs font-medium uppercase tracking-wide" style="color:#a8a29e;">Capterra Rating</p>
               <RatingStars rating={tool.rating_capterra} />
             </div>
-            <p class="text-xs text-navy-400">Based on approximately {tool.review_count_approx} reviews</p>
+            <p class="text-xs" style="color:#a8a29e;">Based on approximately {tool.review_count_approx} reviews</p>
           </div>
         </div>
       ))}
@@ -570,15 +569,15 @@ const currentFAQs = faqs[pairKey] || [];
   <!-- Section 7: Who Should Choose Tool A?                          -->
   <!-- ============================================================ -->
   <section class="mt-14">
-    <h2 class="font-heading text-2xl font-bold text-navy-900">Who Should Choose {toolA.name}?</h2>
+    <h2 class="font-heading text-2xl font-bold" style="color:#1a2416;">Who Should Choose {toolA.name}?</h2>
     <div class="mt-4">
-      <p class="text-navy-500 leading-relaxed">
+      <p class="leading-relaxed" style="color:#57534e;">
         Based on our analysis, {toolA.name} is the right choice if your practice matches any of the following profiles:
       </p>
       <ul class="mt-4 space-y-2">
         {toolA.best_for.map((useCase) => (
-          <li class="flex items-start gap-2 text-sm text-navy-700">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="mt-0.5 h-4 w-4 shrink-0 text-accent-500" aria-hidden="true">
+          <li class="flex items-start gap-2 text-sm" style="color:#44403c;">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="#466c34" class="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true">
               <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
             </svg>
             <span>{useCase}</span>
@@ -588,7 +587,7 @@ const currentFAQs = faqs[pairKey] || [];
     </div>
 
     <div class="mt-6">
-      <h3 class="font-heading text-lg font-semibold text-navy-800">{toolA.name} Strengths</h3>
+      <h3 class="font-heading text-lg font-semibold" style="color:#263620;">{toolA.name} Strengths</h3>
       <div class="mt-3">
         <ProsCons pros={toolA.pros} cons={toolA.cons} />
       </div>
@@ -599,15 +598,15 @@ const currentFAQs = faqs[pairKey] || [];
   <!-- Section 8: Who Should Choose Tool B?                          -->
   <!-- ============================================================ -->
   <section class="mt-14">
-    <h2 class="font-heading text-2xl font-bold text-navy-900">Who Should Choose {toolB.name}?</h2>
+    <h2 class="font-heading text-2xl font-bold" style="color:#1a2416;">Who Should Choose {toolB.name}?</h2>
     <div class="mt-4">
-      <p class="text-navy-500 leading-relaxed">
+      <p class="leading-relaxed" style="color:#57534e;">
         Based on our analysis, {toolB.name} is the right choice if your practice matches any of the following profiles:
       </p>
       <ul class="mt-4 space-y-2">
         {toolB.best_for.map((useCase) => (
-          <li class="flex items-start gap-2 text-sm text-navy-700">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="mt-0.5 h-4 w-4 shrink-0 text-accent-500" aria-hidden="true">
+          <li class="flex items-start gap-2 text-sm" style="color:#44403c;">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="#466c34" class="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true">
               <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
             </svg>
             <span>{useCase}</span>
@@ -617,7 +616,7 @@ const currentFAQs = faqs[pairKey] || [];
     </div>
 
     <div class="mt-6">
-      <h3 class="font-heading text-lg font-semibold text-navy-800">{toolB.name} Strengths</h3>
+      <h3 class="font-heading text-lg font-semibold" style="color:#263620;">{toolB.name} Strengths</h3>
       <div class="mt-3">
         <ProsCons pros={toolB.pros} cons={toolB.cons} />
       </div>
@@ -628,9 +627,9 @@ const currentFAQs = faqs[pairKey] || [];
   <!-- Section 9: Our Recommendation                                 -->
   <!-- ============================================================ -->
   <section class="mt-14">
-    <h2 class="font-heading text-2xl font-bold text-navy-900">Our Recommendation</h2>
-    <div class="mt-4 rounded-xl border-2 border-accent-200 bg-accent-50/30 p-6 sm:p-8">
-      <p class="text-navy-700 leading-relaxed">{recommendation}</p>
+    <h2 class="font-heading text-2xl font-bold" style="color:#1a2416;">Our Recommendation</h2>
+    <div class="mt-4 rounded-xl p-6 sm:p-8" style="border:2px solid #c4d5b7; background:#f7f9f5;">
+      <p class="leading-relaxed" style="color:#44403c;">{recommendation}</p>
 
       <div class="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-6">
         <AffiliateButton
@@ -653,25 +652,25 @@ const currentFAQs = faqs[pairKey] || [];
   <!-- Section 10: FAQ                                               -->
   <!-- ============================================================ -->
   <section class="mt-14">
-    <h2 class="font-heading text-2xl font-bold text-navy-900">Frequently Asked Questions</h2>
+    <h2 class="font-heading text-2xl font-bold" style="color:#1a2416;">Frequently Asked Questions</h2>
 
     <div class="mt-6 space-y-3">
       {currentFAQs.map((faq) => (
-        <details class="group rounded-lg border border-navy-100 bg-white">
-          <summary class="flex cursor-pointer items-center justify-between px-5 py-4 font-heading text-sm font-semibold text-navy-800 transition-colors hover:text-accent-600">
+        <details class="group rounded-lg bg-white" style="border:1px solid #dde5d5;">
+          <summary class="flex cursor-pointer items-center justify-between px-5 py-4 font-heading text-sm font-semibold transition-colors" style="color:#263620;" onmouseover="this.style.color='#466c34';" onmouseout="this.style.color='#263620';">
             <span>{faq.question}</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"
-              fill="currentColor"
-              class="h-5 w-5 shrink-0 text-navy-400 transition-transform group-open:rotate-180"
+              fill="#a8a29e"
+              class="h-5 w-5 shrink-0 transition-transform group-open:rotate-180"
               aria-hidden="true"
             >
               <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
             </svg>
           </summary>
-          <div class="border-t border-navy-100 px-5 py-4">
-            <p class="text-sm leading-relaxed text-navy-500">{faq.answer}</p>
+          <div class="px-5 py-4" style="border-top:1px solid #dde5d5;">
+            <p class="text-sm leading-relaxed" style="color:#57534e;">{faq.answer}</p>
           </div>
         </details>
       ))}

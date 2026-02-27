@@ -62,7 +62,14 @@ const toolsForSelector = allTools.map((t) => ({
   slug: t.slug,
   tagline: t.tagline,
   price: t.starting_price_monthly ? "$" + t.starting_price_monthly + "/mo" : (t.free_plan ? "Free plan" : "Custom"),
+  rawPrice: t.starting_price_monthly,
   initial: t.name.charAt(0).toUpperCase(),
+  rating_g2: t.rating_g2,
+  rating_capterra: t.rating_capterra,
+  free_trial: t.free_trial,
+  free_plan: t.free_plan,
+  deployment: t.deployment,
+  features: t.key_features,
 }));
 
 const schema = {
@@ -182,9 +189,28 @@ const schema = {
 
     </div>
 
+    <!-- Live preview panel — shown once 2+ tools selected -->
+    <div id="compare-preview" style="display:none; max-width:800px; margin:1.5rem auto 0; background:white; border:1px solid #dde5d5; border-radius:16px; overflow:hidden;">
+
+      <!-- Preview header -->
+      <div style="background:#1a2416; padding:0.875rem 1.25rem; display:flex; align-items:center; gap:0.5rem;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="#fbbf24" style="width:15px;height:15px;flex-shrink:0;">
+          <path d="M10 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" />
+          <path fill-rule="evenodd" d="M.664 10.59a1.651 1.651 0 010-1.186A10.004 10.004 0 0110 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0110 17c-4.257 0-7.893-2.66-9.336-6.41zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+        </svg>
+        <span style="font-family:var(--font-body); font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:#c4d5b7;">Live Preview</span>
+      </div>
+
+      <!-- Preview table rendered by JS -->
+      <div id="preview-table-container" style="overflow-x:auto;">
+        <!-- filled by renderPreview() -->
+      </div>
+
+    </div>
+
     <!-- Note about 3-tool limit -->
     <p style="text-align:center; font-family:var(--font-body); font-size:0.8rem; color:#a8a29e; margin-top:0.875rem; margin-bottom:0;">
-      Comparing 3 tools? We'll route you to the first pair — or <a href="#full-index" style="color:#466c34; text-decoration:none; font-weight:600;">browse all {pairCount} comparisons below</a>.
+      Comparing 3 tools? We'll route you to the first pair. <a href="#full-index" style="color:#466c34; text-decoration:none; font-weight:600;">Browse all {pairCount} comparisons below.</a>
     </p>
 
   </section>
@@ -281,6 +307,140 @@ const schema = {
   const emptyHint = document.getElementById('empty-hint');
   const countLabel = document.getElementById('selection-count');
   const compareBtn = document.getElementById('compare-btn');
+  const comparePreview = document.getElementById('compare-preview');
+  const previewTableContainer = document.getElementById('preview-table-container');
+
+  // ── Live preview table ────────────────────────────────────────────────
+  function starStr(rating) {
+    if (rating === null) return '<span style="color:#a8a29e;">N/A</span>';
+    const full = Math.floor(rating);
+    const half = rating - full >= 0.5;
+    let s = '';
+    for (let i = 0; i < full; i++) s += '★';
+    if (half) s += '½';
+    return '<span style="color:#f59e0b;">' + s + '</span> <span style="color:#57534e;font-size:0.72rem;">' + rating.toFixed(1) + '</span>';
+  }
+
+  function yesNo(val) {
+    return val
+      ? '<span style="color:#466c34;font-weight:600;">Yes</span>'
+      : '<span style="color:#a8a29e;">No</span>';
+  }
+
+  function renderPreview() {
+    if (selected.length < 2) {
+      comparePreview.style.display = 'none';
+      return;
+    }
+    comparePreview.style.display = 'block';
+
+    const colCount = selected.length;
+    // Build full tool data for each selected slug
+    const fullTools = selected.map(s => tools.find(t => t.slug === s.slug));
+
+    const rows = [
+      { label: 'Starting Price', key: 'price' },
+      { label: 'G2 Rating',      key: 'rating_g2' },
+      { label: 'Capterra Rating',key: 'rating_capterra' },
+      { label: 'Free Trial',     key: 'free_trial' },
+      { label: 'Free Plan',      key: 'free_plan' },
+      { label: 'Deployment',     key: 'deployment' },
+    ];
+
+    let colW = Math.floor(80 / colCount);
+    let html = '<table style="width:100%;border-collapse:collapse;font-family:var(--font-body);font-size:0.8125rem;">';
+
+    // Header row
+    html += '<thead><tr>';
+    html += '<th style="width:20%;padding:0.625rem 1rem;text-align:left;background:#f9faf8;border-bottom:1px solid #dde5d5;color:#78716c;font-weight:600;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.05em;">Feature</th>';
+    fullTools.forEach((t, i) => {
+      html += '<th style="width:' + colW + '%;padding:0.625rem 1rem;text-align:left;background:#f9faf8;border-bottom:1px solid #dde5d5;color:#1a2416;font-weight:700;">';
+      html += '<div style="display:flex;align-items:center;gap:0.5rem;">';
+      html += '<div style="width:24px;height:24px;background:#466c34;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span style="color:white;font-weight:700;font-size:0.75rem;">' + t.initial + '</span></div>';
+      html += t.name;
+      html += '</div></th>';
+    });
+    html += '</tr></thead>';
+
+    // Body rows
+    html += '<tbody>';
+    rows.forEach((row, ri) => {
+      const bg = ri % 2 === 0 ? 'background:white;' : 'background:#f9faf8;';
+      html += '<tr style="' + bg + '">';
+      html += '<td style="padding:0.5rem 1rem;color:#78716c;font-weight:500;border-bottom:1px solid #f2f5ef;">' + row.label + '</td>';
+
+      // Compute values for each tool
+      const vals = fullTools.map(t => {
+        if (row.key === 'price') return t.price;
+        if (row.key === 'rating_g2') return { raw: t.rating_g2, html: starStr(t.rating_g2) };
+        if (row.key === 'rating_capterra') return { raw: t.rating_capterra, html: starStr(t.rating_capterra) };
+        if (row.key === 'free_trial') return { raw: t.free_trial, html: yesNo(t.free_trial) };
+        if (row.key === 'free_plan') return { raw: t.free_plan, html: yesNo(t.free_plan) };
+        if (row.key === 'deployment') return t.deployment;
+        return '-';
+      });
+
+      // Determine winner for numeric/boolean fields
+      let winnerIdx = -1;
+      if (row.key === 'price') {
+        // lower price wins
+        const prices = fullTools.map(t => t.rawPrice);
+        const valid = prices.filter(p => p !== null);
+        if (valid.length > 0) {
+          const minP = Math.min(...valid);
+          const winCount = prices.filter(p => p === minP).length;
+          if (winCount === 1) winnerIdx = prices.indexOf(minP);
+        }
+      } else if (row.key === 'rating_g2' || row.key === 'rating_capterra') {
+        const ratings = fullTools.map(t => row.key === 'rating_g2' ? t.rating_g2 : t.rating_capterra);
+        const valid = ratings.filter(r => r !== null);
+        if (valid.length > 0) {
+          const maxR = Math.max(...valid);
+          const winCount = ratings.filter(r => r === maxR).length;
+          if (winCount === 1) winnerIdx = ratings.indexOf(maxR);
+        }
+      } else if (row.key === 'free_trial' || row.key === 'free_plan') {
+        const bools = fullTools.map(t => row.key === 'free_trial' ? t.free_trial : t.free_plan);
+        const trueCount = bools.filter(Boolean).length;
+        if (trueCount === 1) winnerIdx = bools.indexOf(true);
+      }
+
+      vals.forEach((val, vi) => {
+        const isWinner = vi === winnerIdx;
+        const cellBg = isWinner ? 'background:#f2f5ef;' : '';
+        const content = typeof val === 'object' && val.html ? val.html : String(val);
+        html += '<td style="padding:0.5rem 1rem;border-bottom:1px solid #f2f5ef;' + cellBg + 'color:#292524;">' + content + '</td>';
+      });
+
+      html += '</tr>';
+    });
+
+    // Key features overlap row
+    const bg = rows.length % 2 === 0 ? 'background:white;' : 'background:#f9faf8;';
+    html += '<tr style="' + bg + '">';
+    html += '<td style="padding:0.5rem 1rem;color:#78716c;font-weight:500;vertical-align:top;">Key Features</td>';
+    fullTools.forEach(t => {
+      html += '<td style="padding:0.5rem 1rem;vertical-align:top;color:#292524;">';
+      html += '<ul style="list-style:disc;padding-left:1.1rem;margin:0;display:flex;flex-direction:column;gap:0.2rem;">';
+      t.features.slice(0, 5).forEach(f => { html += '<li style="font-size:0.775rem;">' + f + '</li>'; });
+      if (t.features.length > 5) html += '<li style="font-size:0.72rem;color:#a8a29e;">+' + (t.features.length - 5) + ' more</li>';
+      html += '</ul></td>';
+    });
+    html += '</tr>';
+
+    html += '</tbody></table>';
+
+    // Compare link row if exactly 2 tools
+    if (selected.length === 2) {
+      const slugs = selected.map(s => s.slug).sort();
+      const url = '/compare/' + slugs[0] + '-vs-' + slugs[1];
+      html += '<div style="padding:0.875rem 1rem;background:#f9faf8;border-top:1px solid #dde5d5;text-align:right;">';
+      html += '<a href="' + url + '" style="font-family:var(--font-body);font-size:0.8rem;font-weight:600;color:#466c34;text-decoration:none;">View full ' + selected[0].name + ' vs ' + selected[1].name + ' comparison →</a>';
+      html += '</div>';
+    }
+
+    previewTableContainer.innerHTML = html;
+  }
 
   // Render selected tool chips
   function renderSelected() {
@@ -313,6 +473,7 @@ const schema = {
           selected.splice(i, 1);
           renderSelected();
           updateCompareBtn();
+          renderPreview();
         });
       });
     }
@@ -378,6 +539,7 @@ const schema = {
           selected.push(tool);
           renderSelected();
           updateCompareBtn();
+          renderPreview();
         }
         searchInput.value = '';
         dropdown.style.display = 'none';

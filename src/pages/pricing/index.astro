@@ -48,7 +48,7 @@ const tierGroups: TierGroup[] = [
     sublabel: "Up to $100/month",
     badgeBg: "#f0fdf4",
     badgeColor: "#15803d",
-    sectionBg: "#f5f5f4",
+    sectionBg: "#f2f5ef",
     tools: buildToolCards(budgetTools),
   },
   {
@@ -64,7 +64,7 @@ const tierGroups: TierGroup[] = [
     sublabel: "$200+/month",
     badgeBg: "#fef2f2",
     badgeColor: "#991b1b",
-    sectionBg: "#f5f5f4",
+    sectionBg: "#f2f5ef",
     tools: buildToolCards(premiumTools),
   },
   {
@@ -170,26 +170,26 @@ const schema = {
           {tools.map(({ tool, pricingDisplay, pricingHref, priceNum, initial }) => (
             <a
               href={pricingHref}
-              style="display:flex; align-items:center; gap:1rem; background:white; border:1px solid #e7e5e4; border-radius:12px; padding:1.125rem 1.25rem; text-decoration:none; transition:box-shadow 0.2s, border-color 0.2s, transform 0.2s;"
-              onmouseover="this.style.boxShadow='0 8px 24px rgba(0,0,0,0.08)';this.style.borderColor='#b9d0ef';this.style.transform='translateY(-2px)';"
-              onmouseout="this.style.boxShadow='none';this.style.borderColor='#e7e5e4';this.style.transform='none';"
+              style="display:flex; align-items:center; gap:1rem; background:white; border:1px solid #dde5d5; border-radius:12px; padding:1.125rem 1.25rem; text-decoration:none; transition:box-shadow 0.2s, border-color 0.2s, transform 0.2s;"
+              onmouseover="this.style.boxShadow='0 8px 24px rgba(0,0,0,0.08)';this.style.borderColor='#c4d5b7';this.style.transform='translateY(-2px)';"
+              onmouseout="this.style.boxShadow='none';this.style.borderColor='#dde5d5';this.style.transform='none';"
             >
               <!-- Avatar -->
-              <div style="width:40px; height:40px; background:#eef3fb; border:1px solid #b9d0ef; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                <span style="font-family:var(--font-heading); font-size:1.125rem; font-weight:700; color:#1e3d6f;">{initial}</span>
+              <div style="width:40px; height:40px; background:#f2f5ef; border:1px solid #c4d5b7; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                <span style="font-family:var(--font-heading); font-size:1.125rem; font-weight:700; color:#344a2b;">{initial}</span>
               </div>
 
               <!-- Info -->
               <div style="min-width:0; flex:1;">
-                <div style="font-family:var(--font-heading); font-size:0.9375rem; font-weight:700; color:#0a1628; margin-bottom:0.2rem;">{tool.name}</div>
-                <div style="font-family:var(--font-mono); font-size:0.8rem; font-weight:600; color:#0d9488;">{pricingDisplay}</div>
+                <div style="font-family:var(--font-heading); font-size:0.9375rem; font-weight:700; color:#1a2416; margin-bottom:0.2rem;">{tool.name}</div>
+                <div style="font-family:var(--font-mono); font-size:0.8rem; font-weight:600; color:#466c34;">{pricingDisplay}</div>
                 {tool.free_trial && (
-                  <div style="font-family:var(--font-body); font-size:0.7rem; color:#0f766e; margin-top:0.2rem;">✓ Free trial available</div>
+                  <div style="font-family:var(--font-body); font-size:0.7rem; color:#466c34; margin-top:0.2rem;">✓ Free trial available</div>
                 )}
               </div>
 
               <!-- Arrow -->
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="width:16px;height:16px;color:#c4b9ae;flex-shrink:0;">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="width:16px;height:16px;color:#a8b9a0;flex-shrink:0;">
                 <path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L11.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 11-1.04-1.08l3.158-2.96H3.75A.75.75 0 013 10z" clip-rule="evenodd" />
               </svg>
             </a>

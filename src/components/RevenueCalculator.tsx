@@ -66,7 +66,7 @@ const TOOLS: Tool[] = [
     slug: "digitail",
     tagline: "AI-native, all-in-one platform for modern veterinary clinics",
     website: "https://digitail.com",
-    starting_price_monthly: 150,
+    starting_price_monthly: 299,
     pricing_model: "Per veterinarian/month",
     free_trial: true,
     best_for: ["Multi-location clinics", "Growing practices", "AI-forward teams"],

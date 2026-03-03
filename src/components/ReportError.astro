@@ -1,0 +1,106 @@
+---
+interface Props {
+  toolName: string;
+  pageType?: string; // "review" | "pricing" | "comparison" | "general"
+}
+
+const { toolName, pageType = "general" } = Astro.props;
+
+// Replace this with your actual Formspree form ID after creating one at formspree.io
+const FORMSPREE_ID = "xeojkdwa";
+---
+
+<section style="margin:0 -1.5rem; padding:0 1.5rem 0; background:#f9fafb;">
+  <div class="container-wide" style="padding-top:0; padding-bottom:0;">
+
+    <details style="border-top:1px solid #e5e7eb; padding:1rem 0;">
+      <summary style="cursor:pointer; list-style:none; display:flex; align-items:center; gap:0.5rem; font-family:var(--font-body); font-size:0.8125rem; color:#6b7280; user-select:none;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="width:14px;height:14px;flex-shrink:0;">
+          <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+        </svg>
+        Spot incorrect data? Report it
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="width:14px;height:14px;margin-left:auto;transition:transform 0.2s;" class="report-chevron">
+          <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+        </svg>
+      </summary>
+
+      <div style="padding-top:1.25rem; padding-bottom:1.5rem; max-width:560px;">
+        <p style="font-family:var(--font-body); font-size:0.8125rem; color:#6b7280; margin:0 0 1rem; line-height:1.6;">
+          We verify all data manually but pricing and features change. If something looks off, let us know and we'll update it within 48 hours.
+        </p>
+
+        <form
+          action={"https://formspree.io/f/" + FORMSPREE_ID}
+          method="POST"
+          style="display:flex; flex-direction:column; gap:0.75rem;"
+        >
+          <!-- Hidden fields for context -->
+          <input type="hidden" name="tool" value={toolName} />
+          <input type="hidden" name="page_type" value={pageType} />
+          <input type="hidden" name="page_url" value={Astro.url.pathname} />
+
+          <!-- What's wrong -->
+          <div>
+            <label for="report-issue" style="display:block; font-family:var(--font-body); font-size:0.75rem; font-weight:600; color:#374151; margin-bottom:0.3rem;">
+              What's incorrect? <span style="color:#ef4444;">*</span>
+            </label>
+            <textarea
+              id="report-issue"
+              name="issue"
+              required
+              rows="2"
+              placeholder={"e.g. " + toolName + "'s pricing has changed to $X/mo as of January 2026"}
+              style="width:100%; font-family:var(--font-body); font-size:0.8125rem; border:1px solid #d1d5db; border-radius:8px; padding:0.5rem 0.75rem; color:#111827; background:white; resize:vertical; outline:none; box-sizing:border-box;"
+            ></textarea>
+          </div>
+
+          <!-- Correct value -->
+          <div>
+            <label for="report-correct" style="display:block; font-family:var(--font-body); font-size:0.75rem; font-weight:600; color:#374151; margin-bottom:0.3rem;">
+              Correct information (optional)
+            </label>
+            <input
+              id="report-correct"
+              type="text"
+              name="correct_value"
+              placeholder="e.g. $149/mo, or link to official pricing page"
+              style="width:100%; font-family:var(--font-body); font-size:0.8125rem; border:1px solid #d1d5db; border-radius:8px; padding:0.5rem 0.75rem; color:#111827; background:white; outline:none; box-sizing:border-box;"
+            />
+          </div>
+
+          <!-- Email (optional) -->
+          <div>
+            <label for="report-email" style="display:block; font-family:var(--font-body); font-size:0.75rem; font-weight:600; color:#374151; margin-bottom:0.3rem;">
+              Your email (optional — we'll notify you when fixed)
+            </label>
+            <input
+              id="report-email"
+              type="email"
+              name="email"
+              placeholder="you@example.com"
+              style="width:100%; font-family:var(--font-body); font-size:0.8125rem; border:1px solid #d1d5db; border-radius:8px; padding:0.5rem 0.75rem; color:#111827; background:white; outline:none; box-sizing:border-box;"
+            />
+          </div>
+
+          <div>
+            <button
+              type="submit"
+              style="font-family:var(--font-body); font-size:0.8125rem; font-weight:600; color:white; background:#466c34; border:none; border-radius:8px; padding:0.5rem 1.25rem; cursor:pointer; transition:background 0.15s;"
+              onmouseover="this.style.background='#344a2b';"
+              onmouseout="this.style.background='#466c34';"
+            >
+              Send Report
+            </button>
+          </div>
+        </form>
+      </div>
+    </details>
+
+  </div>
+</section>
+
+<style>
+  details[open] .report-chevron {
+    transform: rotate(180deg);
+  }
+</style>

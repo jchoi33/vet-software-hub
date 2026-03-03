@@ -5,6 +5,7 @@ import AffiliateButton from "../../components/AffiliateButton.astro";
 import RatingStars from "../../components/RatingStars.astro";
 import PricingCard from "../../components/PricingCard.astro";
 import EmailCapture from "../../components/EmailCapture.astro";
+import ReportError from "../../components/ReportError.astro";
 import { getAllTools, getAverageRating, getAffiliateLink, getPricingDisplay } from "../../utils/tools";
 import type { Tool } from "../../utils/tools";
 import { getReviewMeta } from "../../utils/seo";
@@ -988,6 +989,11 @@ const emailSubheading = `Includes our full analysis of ${tool.name} plus 19 othe
       Ratings shown are averages from Capterra. Pricing reflects publicly available starting prices and may vary based on practice size.
     </p>
   </section>
+
+  <!-- ========================================== -->
+  <!-- REPORT ERROR                               -->
+  <!-- ========================================== -->
+  <ReportError toolName={tool.name} pageType="review" />
 
   <!-- ========================================== -->
   <!-- EMAIL CAPTURE                              -->

@@ -5,6 +5,7 @@ import ProsCons from "../../components/ProsCons.astro";
 import AffiliateButton from "../../components/AffiliateButton.astro";
 import RatingStars from "../../components/RatingStars.astro";
 import EmailCapture from "../../components/EmailCapture.astro";
+import ReportError from "../../components/ReportError.astro";
 import { getAllComparisonPairs, getToolBySlug, getAverageRating, getAffiliateLink, getPricingDisplay } from "../../utils/tools";
 import type { Tool } from "../../utils/tools";
 import { getComparisonMeta } from "../../utils/seo";
@@ -676,6 +677,11 @@ const currentFAQs = faqs[pairKey] || [];
       ))}
     </div>
   </section>
+
+  <!-- ============================================================ -->
+  <!-- Report Error                                                  -->
+  <!-- ============================================================ -->
+  <ReportError toolName={toolA.name + " vs " + toolB.name} pageType="comparison" />
 
   <!-- ============================================================ -->
   <!-- Email Capture                                                 -->

@@ -4,9 +4,9 @@ import ToolCard from "../components/ToolCard.astro";
 import EmailCapture from "../components/EmailCapture.astro";
 import SectionHeader from "../components/SectionHeader.astro";
 import CategoryCard from "../components/CategoryCard.astro";
-import { getAllTools, getAverageRating, getAffiliateLink } from "../utils/tools";
+import { getAllActiveTools, getAverageRating, getAffiliateLink } from "../utils/tools";
 
-const allTools = getAllTools();
+const allTools = getAllActiveTools();
 
 // Top 3 picks: highest average rating among tools with affiliate programs
 const top3 = allTools

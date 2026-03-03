@@ -6,6 +6,9 @@ export interface Tool {
   slug: string;
   tagline: string;
   website: string;
+  discontinued?: boolean;
+  discontinued_date?: string;
+  acquired_by?: string;
   founded: number;
   hq: string;
   deployment: string;
@@ -32,6 +35,11 @@ export function getAllTools(): Tool[] {
   return toolsData.tools.filter((t: any) => t.slug && t.slug !== null) as Tool[];
 }
 
+// Active tools only — excludes discontinued products
+export function getAllActiveTools(): Tool[] {
+  return getAllTools().filter(t => !t.discontinued);
+}
+
 export function getToolBySlug(slug: string): Tool | undefined {
   return getAllTools().find(t => t.slug === slug);
 }
@@ -40,17 +48,31 @@ export function getToolById(id: string): Tool | undefined {
   return getAllTools().find(t => t.id === id);
 }
 
-// Generate all unique comparison pairs
+// Generate all unique comparison pairs (includes discontinued — used by getStaticPaths to build all pages)
 export function getAllComparisonPairs(): [Tool, Tool][] {
   const tools = getAllTools();
   const pairs: [Tool, Tool][] = [];
-  
+
   for (let i = 0; i < tools.length; i++) {
     for (let j = i + 1; j < tools.length; j++) {
       pairs.push([tools[i], tools[j]]);
     }
   }
-  
+
+  return pairs;
+}
+
+// Active comparison pairs only — excludes discontinued tools (used by compare hub index)
+export function getAllActiveComparisonPairs(): [Tool, Tool][] {
+  const tools = getAllActiveTools();
+  const pairs: [Tool, Tool][] = [];
+
+  for (let i = 0; i < tools.length; i++) {
+    for (let j = i + 1; j < tools.length; j++) {
+      pairs.push([tools[i], tools[j]]);
+    }
+  }
+
   return pairs;
 }
 

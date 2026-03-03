@@ -2,11 +2,11 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import EmailCapture from "../../components/EmailCapture.astro";
 import SectionHeader from "../../components/SectionHeader.astro";
-import { getAllTools, getAllComparisonPairs, getComparisonSlug, getAverageRating, getPricingDisplay } from "../../utils/tools";
+import { getAllActiveTools, getAllActiveComparisonPairs, getComparisonSlug, getAverageRating, getPricingDisplay } from "../../utils/tools";
 import type { Tool } from "../../utils/tools";
 
-const allTools = getAllTools();
-const allPairs = getAllComparisonPairs();
+const allTools = getAllActiveTools();
+const allPairs = getAllActiveComparisonPairs();
 const pairCount = allPairs.length;
 
 // Popular comparisons — 12 hand-curated pairs

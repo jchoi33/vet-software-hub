@@ -2,9 +2,9 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import EmailCapture from "../../components/EmailCapture.astro";
 import SectionHeader from "../../components/SectionHeader.astro";
-import { getAllTools, getAverageRating, getPricingDisplay } from "../../utils/tools";
+import { getAllActiveTools, getAverageRating, getPricingDisplay } from "../../utils/tools";
 
-const allTools = getAllTools();
+const allTools = getAllActiveTools();
 const sortedTools = [...allTools].sort((a, b) => a.name.localeCompare(b.name));
 
 // Pre-compute all card data to avoid template literal issues in JSX

@@ -36,11 +36,14 @@ const isDark = variant === "dark" || variant === "banner";
 
     <!-- Form -->
     <form
+      action="https://vet-softwares-newsletter.beehiiv.com/subscribe"
+      method="GET"
+      target="_blank"
       style="display:flex; gap:0.625rem; max-width:440px; margin:0 auto;"
-      onsubmit="event.preventDefault(); this.innerHTML = '<p style=\'font-family:var(--font-body);color:var(--teal-400);font-weight:600;\'>✓ You\'re in! Check your inbox.</p>';"
     >
       <input
         type="email"
+        name="email"
         required
         placeholder="your@email.com"
         style={`flex:1; font-family:var(--font-body); font-size:0.9375rem; padding:0.6875rem 1rem; border-radius:var(--radius-sm); border:1px solid ${isDark ? "var(--navy-700)" : "var(--stone-300)"}; background:${isDark ? "var(--navy-900)" : "white"}; color:${isDark ? "white" : "var(--stone-800)"}; outline:none;`}

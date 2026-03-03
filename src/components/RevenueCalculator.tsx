@@ -76,15 +76,15 @@ const TOOLS: Tool[] = [
     affiliate_program: true,
   },
   {
-    name: "Hippo Manager",
-    slug: "hippo-manager",
-    tagline: "Simple, intuitive cloud veterinary software",
-    website: "https://hippomanager.com",
-    starting_price_monthly: 120,
+    name: "VetBadger",
+    slug: "vetbadger",
+    tagline: "Veterinary software designed to reduce burnout",
+    website: "https://vetbadger.com",
+    starting_price_monthly: 99,
     pricing_model: "Per practice/month",
     free_trial: true,
     best_for: ["Small practices wanting simplicity", "Budget-conscious clinics", "Solo vets"],
-    pros: ["Very user-friendly", "Affordable pricing", "Clean interface", "Good customer support"],
+    pros: ["Workflow designed to reduce burnout", "Affordable pricing", "Clean interface", "Free trial available"],
     rating_capterra: 4.5,
     rating_g2: 4.4,
     affiliate_program: true,
@@ -108,7 +108,7 @@ const TOOLS: Tool[] = [
     slug: "daysmart-vet",
     tagline: "Easy-to-use cloud-based practice management",
     website: "https://www.daysmart.com/vet",
-    starting_price_monthly: 120,
+    starting_price_monthly: 116,
     pricing_model: "Per practice/month",
     free_trial: true,
     best_for: ["Small to mid-size practices", "Client communication focus", "Practices wanting simplicity"],
@@ -136,8 +136,8 @@ const TOOLS: Tool[] = [
     slug: "onward-vet",
     tagline: "AI-powered PIMS with speech-to-text and automated SOAP notes",
     website: "https://onwardvet.com",
-    starting_price_monthly: 175,
-    pricing_model: "Per veterinarian/month",
+    starting_price_monthly: 300,
+    pricing_model: "Per practice/month",
     free_trial: true,
     best_for: ["Tech-forward practices", "Solo vets wanting AI assistance", "Practices drowning in documentation"],
     pros: ["AI-driven note-taking saves significant time", "Modern interface", "Built to reduce documentation burden"],
@@ -150,8 +150,8 @@ const TOOLS: Tool[] = [
     slug: "provet-cloud",
     tagline: "Comprehensive cloud-based veterinary practice management",
     website: "https://provetcloud.com",
-    starting_price_monthly: 169,
-    pricing_model: "Per practice",
+    starting_price_monthly: 249,
+    pricing_model: "Per practice/month",
     free_trial: true,
     best_for: ["International/multi-country practices", "Mid to large clinics", "Practices wanting robust inventory"],
     pros: ["Strong international support", "Robust inventory management", "Scalable"],
@@ -227,8 +227,8 @@ function getRecommendations(inputs: CalcInputs): RecommendedTool[] {
     if (numVets === 1 && tool.slug === "shepherd") {
       whyRecommended = "Built by a veterinarian for solo practitioners. The 50% startup discount makes it the most affordable full-featured PIMS available.";
       badge = "Best for Solo Vets";
-    } else if (numVets <= 3 && tool.slug === "hippo-manager") {
-      whyRecommended = "The cleanest interface for small teams at $120/mo. Your staff can be fully onboarded in a single day.";
+    } else if (numVets <= 3 && tool.slug === "vetbadger") {
+      whyRecommended = "Designed specifically to reduce staff burnout. At $99/mo with a free trial, it is one of the most affordable full-featured cloud PIMS available.";
       badge = "Easiest to Learn";
     } else if (numVets <= 3 && tool.slug === "shepherd") {
       whyRecommended = "At $99/mo per location with a 50% new-practice discount, it is the best-value full-featured PIMS for small clinics.";

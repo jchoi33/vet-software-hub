@@ -53,7 +53,7 @@ export function getStaticPaths() {
         },
         {
           heading: "Step 3: Set a Realistic Budget",
-          body: "Veterinary PIMS pricing ranges from free (AcuroVet) to $400+/month (Weave). But the advertised starting price is rarely the full cost. Budget for the following when comparing options:",
+          body: "Veterinary PIMS pricing ranges from $79/month (AcuroVet) to $300+/month for full-featured platforms. But the advertised starting price is rarely the full cost. Budget for the following when comparing options:",
           bullets: [
             "Monthly subscription: The base price you will see advertised",
             "Implementation fee: Often $500-$2,500 one-time — ask specifically",
@@ -70,7 +70,7 @@ export function getStaticPaths() {
             "Cloud-based: Access from anywhere, automatic updates, no server hardware, subscription pricing",
             "On-premise: Data stays local, works without internet, one-time license cost — but requires IT maintenance and hardware",
             "Hybrid: Some tools offer both (rare in veterinary PIMS)",
-            "Most new entrants (Digitail, Shepherd, Hippo Manager, Onward Vet) are cloud-only",
+            "Most new entrants (Digitail, Shepherd, Onward Vet, VetBadger) are cloud-only",
           ],
         },
         {
@@ -109,14 +109,14 @@ export function getStaticPaths() {
         },
         {
           question: "What is the best veterinary software for a new practice?",
-          answer: "For new practices, we recommend Shepherd ($99/mo with a 50% startup discount) or Hippo Manager ($120/mo). Both are easy to learn, cloud-based, and affordably priced. Shepherd was designed by a practicing veterinarian and has the most intuitive workflow for general practice.",
+          answer: "For new practices, we recommend Shepherd ($99/mo with a 50% startup discount) or VetBadger ($99/mo). Both are easy to learn, cloud-based, and affordably priced. Shepherd was designed by a practicing veterinarian and has the most intuitive workflow for general practice.",
         },
         {
           question: "Do I need AI features in my veterinary software?",
           answer: "AI features (like automated SOAP note generation) are increasingly valuable but not required. If you find documentation takes significant time away from patient care, Digitail and Onward Vet offer meaningful AI-powered note generation that can save 30-60 minutes per day for a busy veterinarian.",
         },
       ],
-      relatedTools: ["shepherd", "digitail", "hippo-manager"],
+      relatedTools: ["shepherd", "digitail", "vetbadger"],
       relatedLinks: [
         { href: "/best/best-veterinary-software-for-small-practices", label: "Best Vet Software for Small Practices" },
         { href: "/best/best-veterinary-software-with-ai", label: "Best AI Veterinary Software" },
@@ -149,7 +149,7 @@ export function getStaticPaths() {
           body: "We categorize the veterinary PIMS market into four pricing tiers based on the starting monthly cost:",
           bullets: [
             "Free tier: AcuroVet (free basic plan) — covers essentials for solo and mobile vets",
-            "Budget tier ($80-$130/mo): Shepherd ($99), Hippo Manager ($120), DaySmart Vet ($120), VETport ($99), VetBadger ($99) — good for small practices",
+            "Budget tier ($79-$130/mo): AcuroVet ($79), Shepherd ($99), Panacea Vet ($99), VETport ($99), VetBadger ($99), DaySmart Vet ($116) — good for small practices",
             "Mid-range tier ($150-$250/mo): Digitail ($150), Provet Cloud ($169), Neo ($200), ezyVet ($250) — most practices fall here",
             "Premium tier ($300+/mo): Vetspire ($349), Weave ($399), Cornerstone (custom $15K+ upfront) — for specialty, enterprise, and IDEXX-committed practices",
           ],
@@ -159,7 +159,7 @@ export function getStaticPaths() {
           body: "Understanding the pricing model is critical for accurate budgeting. Veterinary PIMS vendors use different models, and your practice size determines which model works best for you:",
           bullets: [
             "Per veterinarian: Digitail, Vetspire, Onward Vet — scales with doctor count. A 3-vet practice at $150/vet = $450/mo",
-            "Per location: Shepherd, Hippo Manager, VetBadger — scales with clinic count. 1 location = stated price, 3 locations = 3x",
+            "Per location: Shepherd, VetBadger, Panacea Vet — scales with clinic count. 1 location = stated price, 3 locations = 3x",
             "Flat rate (custom): ezyVet, ezyVet, Covetrus Ascend — negotiated based on practice size",
             "One-time license: AVImark, Cornerstone — large upfront cost + annual support fees",
           ],
@@ -222,7 +222,7 @@ export function getStaticPaths() {
       sections: [
         {
           heading: "What Is Cloud-Based Veterinary Software?",
-          body: "Cloud-based veterinary PIMS (also called SaaS or web-based) stores your data on remote servers managed by the software vendor. You access the software through a web browser on any device — laptop, tablet, or smartphone. Examples include Digitail, ezyVet, Shepherd, Hippo Manager, and most modern PIMS.",
+          body: "Cloud-based veterinary PIMS (also called SaaS or web-based) stores your data on remote servers managed by the software vendor. You access the software through a web browser on any device — laptop, tablet, or smartphone. Examples include Digitail, ezyVet, Shepherd, VetBadger, and most modern PIMS.",
           bullets: [
             "Access from anywhere with internet — clinic, home, or field",
             "No server hardware to purchase, maintain, or upgrade",
@@ -301,7 +301,7 @@ export function getStaticPaths() {
         },
         {
           question: "What is the best cloud-based veterinary software?",
-          answer: "For small practices: Shepherd ($99/mo) or Hippo Manager ($120/mo). For growing and multi-location practices: Digitail ($150/mo) or ezyVet ($250/mo). For specialty clinics: Vetspire ($349/mo). See our full best cloud-based veterinary software guide for detailed comparisons.",
+          answer: "For small practices: Shepherd ($99/mo) or VetBadger ($99/mo). For growing and multi-location practices: Digitail ($150/mo) or ezyVet ($261/mo). For specialty clinics: Vetspire (custom pricing). See our full best cloud-based veterinary software guide for detailed comparisons.",
         },
       ],
       relatedTools: ["shepherd", "digitail", "ezyvet", "avimark"],
@@ -347,7 +347,7 @@ export function getStaticPaths() {
           heading: "Pricing for Multi-Location Operations",
           body: "Costs scale significantly for multi-location practices. Here is what to expect:",
           bullets: [
-            "Per-location pricing: Tools like Shepherd and Hippo Manager charge per location — 3 locations = 3x the price",
+            "Per-location pricing: Tools like Shepherd and VetBadger charge per location — 3 locations = 3x the price",
             "Per-veterinarian pricing: Digitail and Vetspire charge per vet — a 10-doctor group at $150/vet = $1,500/mo",
             "Enterprise custom pricing: ezyVet and Provet Cloud negotiate custom contracts for groups with 3+ locations",
             "Implementation costs are higher for multi-location: Budget $2,000-$10,000 for enterprise onboarding and migration",
@@ -473,7 +473,7 @@ export function getStaticPaths() {
         },
         {
           question: "How much extra does AI veterinary software cost?",
-          answer: "In most cases, AI features are bundled into the standard subscription rather than sold as a separate add-on. Digitail includes Tails AI in its base plan starting at $150/mo per veterinarian. Onward Vet starts at $99/mo per veterinarian with AI included. Compared to the time saved, the cost premium over non-AI PIMS is minimal.",
+          answer: "In most cases, AI features are bundled into the standard subscription rather than sold as a separate add-on. Digitail includes Tails AI in its base plan starting at $150/mo per veterinarian. Onward Vet starts at $300/mo per practice with AI included. Compared to the time saved, the cost premium over non-AI PIMS is minimal.",
         },
         {
           question: "What is the best AI veterinary software?",

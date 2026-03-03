@@ -54,12 +54,12 @@ function getCompetitors(slug: string): Competitor[] {
     ],
     shepherd: [
       { name: "Digitail", slug: "digitail", price: "From $150/mo", rating: "4.8", bestFor: "Growing practices" },
-      { name: "Hippo Manager", slug: "hippo-manager", price: "From $120/mo", rating: "4.5", bestFor: "Small practices" },
-      { name: "DaySmart Vet", slug: "daysmart-vet", price: "From $120/mo", rating: "4.3", bestFor: "Client communication" },
+      { name: "VetBadger", slug: "vetbadger", price: "From $99/mo", rating: "4.5", bestFor: "Small practices" },
+      { name: "DaySmart Vet", slug: "daysmart-vet", price: "From $116/mo", rating: "4.3", bestFor: "Client communication" },
     ],
     "daysmart-vet": [
       { name: "Shepherd", slug: "shepherd", price: "From $99/mo", rating: "4.9", bestFor: "Start-up practices" },
-      { name: "Hippo Manager", slug: "hippo-manager", price: "From $120/mo", rating: "4.5", bestFor: "Small practices" },
+      { name: "VetBadger", slug: "vetbadger", price: "From $99/mo", rating: "4.5", bestFor: "Small practices" },
       { name: "Digitail", slug: "digitail", price: "From $150/mo", rating: "4.8", bestFor: "AI-forward teams" },
     ],
     vetspire: [
@@ -99,12 +99,12 @@ function getCompetitors(slug: string): Competitor[] {
     ],
     vetport: [
       { name: "Shepherd", slug: "shepherd", price: "From $99/mo", rating: "4.9", bestFor: "Start-up practices" },
-      { name: "Hippo Manager", slug: "hippo-manager", price: "From $120/mo", rating: "4.5", bestFor: "Simple interface" },
-      { name: "AcuroVet", slug: "acurovet", price: "Free plan", rating: "4.3", bestFor: "Mobile/ambulatory" },
+      { name: "Panacea Vet", slug: "panacea", price: "From $99/mo", rating: "4.5", bestFor: "Simple interface" },
+      { name: "AcuroVet", slug: "acurovet", price: "From $79/mo", rating: "4.3", bestFor: "Mobile/ambulatory" },
     ],
     petdesk: [
-      { name: "Weave", slug: "weave", price: "From $399/mo", rating: "4.2", bestFor: "Phone + communication" },
-      { name: "DaySmart Vet", slug: "daysmart-vet", price: "From $120/mo", rating: "4.3", bestFor: "Full PIMS + comms" },
+      { name: "Weave", slug: "weave", price: "From $249/mo", rating: "4.2", bestFor: "Phone + communication" },
+      { name: "DaySmart Vet", slug: "daysmart-vet", price: "From $116/mo", rating: "4.3", bestFor: "Full PIMS + comms" },
       { name: "Digitail", slug: "digitail", price: "From $150/mo", rating: "4.8", bestFor: "All-in-one platform" },
     ],
     "onward-vet": [
@@ -114,18 +114,18 @@ function getCompetitors(slug: string): Competitor[] {
     ],
     panacea: [
       { name: "Shepherd", slug: "shepherd", price: "From $99/mo", rating: "4.9", bestFor: "Start-up practices" },
-      { name: "Hippo Manager", slug: "hippo-manager", price: "From $120/mo", rating: "4.5", bestFor: "Simple interface" },
+      { name: "VetBadger", slug: "vetbadger", price: "From $99/mo", rating: "4.5", bestFor: "Work-life balance" },
       { name: "Digitail", slug: "digitail", price: "From $150/mo", rating: "4.8", bestFor: "Growing practices" },
     ],
     acurovet: [
       { name: "VETport", slug: "vetport", price: "From $99/mo", rating: "4.1", bestFor: "Budget practices" },
       { name: "Shepherd", slug: "shepherd", price: "From $99/mo", rating: "4.9", bestFor: "Start-up practices" },
-      { name: "Hippo Manager", slug: "hippo-manager", price: "From $120/mo", rating: "4.5", bestFor: "Simple interface" },
+      { name: "Panacea Vet", slug: "panacea", price: "From $99/mo", rating: "4.5", bestFor: "Simple interface" },
     ],
     vetbadger: [
       { name: "Shepherd", slug: "shepherd", price: "From $99/mo", rating: "4.9", bestFor: "Start-up practices" },
-      { name: "Hippo Manager", slug: "hippo-manager", price: "From $120/mo", rating: "4.5", bestFor: "Small practices" },
-      { name: "DaySmart Vet", slug: "daysmart-vet", price: "From $120/mo", rating: "4.3", bestFor: "Client communication" },
+      { name: "Panacea Vet", slug: "panacea", price: "From $99/mo", rating: "4.5", bestFor: "Small practices" },
+      { name: "DaySmart Vet", slug: "daysmart-vet", price: "From $116/mo", rating: "4.3", bestFor: "Client communication" },
     ],
     weave: [
       { name: "PetDesk", slug: "petdesk", price: "From $200/mo", rating: "4.5", bestFor: "Client engagement" },
@@ -182,7 +182,7 @@ function getToolContent(t: Tool): ToolContent {
         `Pricing for ezyVet starts at approximately $${t.starting_price_monthly}/mo with a ${t.pricing_model.toLowerCase()} approach. The investment is justified for larger operations that need deep customization and robust reporting, though smaller practices may find it more than they need.`,
       ],
       lookElsewhere: [
-        "Small or start-up practices looking for a simple, easy-to-learn system should consider alternatives like Shepherd or Hippo Manager. ezyVet's steep learning curve and complex onboarding process can overwhelm smaller teams.",
+        "Small or start-up practices looking for a simple, easy-to-learn system should consider alternatives like Shepherd or VetBadger. ezyVet's steep learning curve and complex onboarding process can overwhelm smaller teams.",
         "Budget-conscious solo veterinarians will find ezyVet's pricing significantly above entry-level options. The custom quote model means costs can escalate quickly for larger practices.",
         "Clinics that want a plug-and-play solution without extensive configuration time should look elsewhere. ezyVet's strength is its customizability, but that comes at the cost of a longer setup and training period.",
       ],
@@ -253,7 +253,7 @@ function getToolContent(t: Tool): ToolContent {
       lookElsewhere: [
         "Small general practices or start-ups that need a simple, affordable system will find Vetspire to be overkill. Its feature depth and price point are designed for practices with more complex clinical needs.",
         "Practices that want a strong client-facing mobile app for pet owners should note that Vetspire does not offer a dedicated pet parent app, unlike competitors such as Digitail.",
-        "Solo veterinarians who primarily need scheduling, basic records, and invoicing would be better served by Shepherd or Hippo Manager at a fraction of the cost.",
+        "Solo veterinarians who primarily need scheduling, basic records, and invoicing would be better served by Shepherd or VetBadger at a fraction of the cost.",
       ],
       featureDescriptions: {
         "Clinical decision support": "Built-in clinical guidance that helps veterinarians follow best-practice protocols during patient encounters.",
@@ -289,14 +289,14 @@ function getToolContent(t: Tool): ToolContent {
     },
     "hippo-manager": {
       whatIs: [
-        `${t.name} is a ${t.tagline.toLowerCase()} that has been serving veterinary practices since ${t.founded}. Built and operated in the ${t.hq}, Hippo Manager is a cloud-based PIMS that prioritizes simplicity and ease of use above all else. Its target audience is the independent small animal practice that wants modern cloud software without enterprise complexity or price tags.`,
-        `We found Hippo Manager to be one of the cleanest, most approachable interfaces in the veterinary PIMS market. There is nothing superfluous. The platform is ${t.deployment.toLowerCase()} and designed for ${t.practice_types.join(", ").toLowerCase()} practice types. It covers the core workflows a general practice needs: scheduling, medical records, invoicing, inventory, and reminders.`,
-        `At $${t.starting_price_monthly}/mo per practice with a ${t.pricing_model.toLowerCase()} structure, Hippo Manager is among the more affordable cloud PIMS options. A free trial is available, which we strongly recommend taking advantage of.`,
+        `⚠️ Important update: Hippo Manager was acquired by Shepherd Veterinary Software and discontinued as a standalone product on March 1, 2025. The Hippo Manager platform is no longer available for new sign-ups. Existing customers have been migrated to Shepherd. This review is preserved for historical reference.`,
+        `Hippo Manager was a cloud-based PIMS that prioritized simplicity and ease of use for independent small animal practices. It was built and operated in the ${t.hq} and served practices from ${t.founded} until its discontinuation in 2025.`,
+        `Practices looking for a similarly simple and affordable alternative should evaluate Shepherd ($99/mo — the acquiring company), VetBadger ($99/mo), or Panacea Vet ($99/mo). All three offer free trials.`,
       ],
       lookElsewhere: [
-        "Large hospitals and multi-location enterprises that need advanced customization, complex reporting, or multi-location management should consider ezyVet or Provet Cloud instead.",
-        "Practices that want AI-powered features like automated SOAP note generation should look at Digitail or Onward Vet. Hippo Manager does not offer AI clinical tools.",
-        "Clinics that depend on a wide ecosystem of third-party integrations beyond the major lab providers may find Hippo Manager's integration library limiting.",
+        "Hippo Manager is no longer available. New practices should evaluate Shepherd, which acquired Hippo Manager and offers a similar focus on simplicity at $99/mo.",
+        "VetBadger ($99/mo) and Panacea Vet ($99/mo) are strong alternatives for small practices seeking an affordable, easy-to-learn cloud PIMS.",
+        "If you are an existing Hippo Manager customer, contact Shepherd directly about your migration path.",
       ],
       featureDescriptions: {
         "Patient records": "Clean, straightforward patient medical records with SOAP note support and treatment history.",
@@ -307,7 +307,7 @@ function getToolContent(t: Tool): ToolContent {
         "Reminders": "Automated appointment and wellness reminders sent via email and SMS to reduce no-shows.",
         "Reporting": "Core financial and operational reports covering revenue, appointments, and client activity.",
       },
-      verdictSummary: `Hippo Manager earns its reputation as one of the easiest-to-use veterinary PIMS on the market. For small practices that want a clean, reliable cloud system at a fair price ($${t.starting_price_monthly}/mo), it is an excellent choice. The interface is intuitive enough that staff can learn it in hours, not weeks. If you run a simple general practice and do not need enterprise features, Hippo Manager deserves a serious look.`,
+      verdictSummary: `Hippo Manager was a well-regarded, easy-to-use veterinary PIMS — but it is no longer available. The product was acquired by Shepherd Veterinary Software and discontinued in March 2025. If you are evaluating software today, we recommend Shepherd ($99/mo), VetBadger ($99/mo), or Panacea Vet ($99/mo) as the closest active alternatives.`,
     },
     "provet-cloud": {
       whatIs: [
@@ -510,7 +510,7 @@ function getToolContent(t: Tool): ToolContent {
       whatIs: [
         `${t.name} is an ${t.tagline.toLowerCase()} founded in ${t.founded} and based in the ${t.hq}. VetBadger has carved out an interesting position in the market by building its brand around veterinarian well-being and work-life balance — a meaningful differentiator in a profession with historically high burnout rates.`,
         `The platform is ${t.deployment.toLowerCase()} and targets ${t.practice_types.join(", ").toLowerCase()} practices. We found VetBadger to be a solid, no-frills cloud PIMS that covers the essentials while genuinely thinking about how software design affects the daily stress level of veterinary teams. Automated reminders and smart communication tools are designed to reduce after-hours interruptions.`,
-        `VetBadger starts at $${t.starting_price_monthly}/mo per practice with a ${t.pricing_model.toLowerCase()} structure. A free trial is available. The pricing puts it in the same tier as Shepherd and Hippo Manager.`,
+        `VetBadger starts at $${t.starting_price_monthly}/mo per practice with a ${t.pricing_model.toLowerCase()} structure. A free trial is available. The pricing puts it in the same affordable tier as Shepherd and Panacea Vet.`,
       ],
       lookElsewhere: [
         "Large hospitals, multi-location enterprises, or specialty clinics that need advanced clinical features and complex workflow customization should look at ezyVet or Vetspire instead.",
@@ -525,7 +525,7 @@ function getToolContent(t: Tool): ToolContent {
         "Invoicing": "Integrated invoicing tied to patient records and treatment plans.",
         "Financial integration": "Direct connections to accounting tools QuickBooks and Xero for streamlined financial management.",
       },
-      verdictSummary: `VetBadger is worth considering for small practices and solo veterinarians who care deeply about sustainable work patterns and reducing burnout. At $${t.starting_price_monthly}/mo with a genuine philosophy behind the product design, it delivers on its promise of making daily practice management feel less exhausting. If Shepherd and Hippo Manager are your other finalists, try all three — VetBadger's differentiation is real even if it is harder to quantify in a feature list.`,
+      verdictSummary: `VetBadger is worth considering for small practices and solo veterinarians who care deeply about sustainable work patterns and reducing burnout. At $${t.starting_price_monthly}/mo with a genuine philosophy behind the product design, it delivers on its promise of making daily practice management feel less exhausting. If Shepherd and Panacea Vet are your other finalists, try all three — VetBadger's differentiation is real even if it is harder to quantify in a feature list.`,
     },
     weave: {
       whatIs: [
@@ -640,7 +640,7 @@ const smallPracticeTags = tool.best_for
 
 const faqSmallPracticeAnswer = isSmallPracticeFriendly
   ? `Yes, ${tool.name} is well suited for small practices. Its ${smallPracticeTags} focus means the platform was designed with smaller teams in mind. The interface is straightforward and does not require extensive training.`
-  : `${tool.name} can work for small practices, but it is primarily designed for ${tool.best_for[0].toLowerCase()}. Smaller practices may find that they are paying for features they do not need. We recommend evaluating alternatives like Shepherd ($99/mo) or Hippo Manager ($120/mo) if you run a small or solo practice.`;
+  : `${tool.name} can work for small practices, but it is primarily designed for ${tool.best_for[0].toLowerCase()}. Smaller practices may find that they are paying for features they do not need. We recommend evaluating alternatives like Shepherd ($99/mo) or VetBadger ($99/mo) if you run a small or solo practice.`;
 
 // Schema FAQ answers (shorter versions)
 const schemaFaqCloudAnswer = `Yes. ${tool.name} is a ${tool.deployment.toLowerCase()} platform. You can access it from any device with a web browser and an internet connection.`;
